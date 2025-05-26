@@ -1,29 +1,27 @@
 use macroquad::prelude::*;
+use map::Map;
+
+mod asset;
+mod draw_grid;
+mod glyph;
+mod map;
+mod tile;
 
 #[macroquad::main("Strategy RPG")]
 async fn main() {
-    // Load the font (make sure the path is correct)
-    let font = load_ttf_font("assets/fonts/kongtext.ttf").await.unwrap();
-    let texture = load_texture("assets/textures/nineslice.png").await.unwrap();
+    asset::load_assets().await;
+
+    let map = map::Map::new();
 
     loop {
-        clear_background(RED);
+        clear_background(BLACK);
 
-        draw_texture(&texture, 50.0, 50.0, WHITE);
-        trace!("Texture loaded successfully");
-
-        
-        draw_text_ex(
-            "Hello, Macroquad!",
-            20.0,
-            40.0,
-            TextParams {
-                font: Some(&font),
-                font_size: 40,
-                color: WHITE,
-                ..Default::default()
-            },
-        );
+        for x in 0..Map::WIDTH {
+            for y in 0..Map::HEIGHT {
+                let tile = map.get_tile(x, y);
+                draw_grid::draw_tile(x, y, tile);
+            }
+        }
 
         next_frame().await;
     }
