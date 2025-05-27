@@ -1,3 +1,4 @@
+use crate::coord::Coord;
 use crate::tile::Tile;
 
 pub struct Map {
@@ -36,7 +37,7 @@ impl Map {
         Map { tiles }
     }
 
-    pub fn get_tile(&self, x: u16, y: u16) -> &Tile {
-        &self.tiles[(y * Self::WIDTH + x) as usize]
+    pub fn tile(&self, coord: Coord) -> &Tile {
+        &self.tiles[(coord.y * Self::WIDTH + coord.x) as usize]
     }
 }
