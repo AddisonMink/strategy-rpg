@@ -42,6 +42,10 @@ impl Map {
         &self.tiles[(coord.y * Self::WIDTH + coord.x) as usize]
     }
 
+    pub fn walkable(&self, coord: Coord) -> bool {
+        coord.x < Self::WIDTH && coord.y < Self::HEIGHT && self.tile(coord).walkable
+    }
+
     pub fn check_line_of_sight(&self, from: Coord, to: Coord) -> bool {
         algorithm::check_bresenhem_line(from, to, |coord| self.tile(coord).transparent)
     }

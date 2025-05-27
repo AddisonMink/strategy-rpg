@@ -5,6 +5,7 @@ pub struct Tile {
     pub glyph: Glyph,
     pub background: Option<Color>,
     pub transparent: bool,
+    pub walkable: bool,
 }
 
 impl Tile {
@@ -15,6 +16,7 @@ impl Tile {
         },
         background: None,
         transparent: true,
+        walkable: true,
     };
 
     pub const WALL: Tile = Tile {
@@ -24,5 +26,6 @@ impl Tile {
         },
         background: Some(DARKGRAY),
         transparent: false,
+        walkable: false,
     };
 }

@@ -58,6 +58,10 @@ impl Entities {
         self.positions.get(&id)
     }
 
+    pub fn position_mut(&mut self, id: EntityID) -> Option<&mut Position> {
+        self.positions.get_mut(&id)
+    }
+
     pub fn add_unit(&mut self, id: EntityID, glyph: Glyph, vision: u16) {
         let unit = Unit { glyph, vision };
         self.units.insert(id, unit);

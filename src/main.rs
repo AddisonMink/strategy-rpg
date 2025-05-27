@@ -10,9 +10,11 @@ use map::Map;
 mod algorithm;
 mod asset;
 mod coord;
+mod direction;
 mod draw_grid;
 mod entity;
 mod glyph;
+mod input;
 mod light_grid;
 mod map;
 mod tile;
@@ -41,15 +43,32 @@ async fn main() {
         2,
     );
 
-    let light_grid = LightGrid::new(&map, &entities);
+    let mut light_grid = LightGrid::new(&map, &entities);
 
     loop {
+        update_unit_position(&map, &mut light_grid, &mut entities, unit_id);
         clear_background(BLACK);
-
         draw_visible_grid(&map, &entities, &light_grid, unit_id);
-
         next_frame().await;
     }
+}
+
+fn update_unit_position(
+    map: &Map,
+    light_grid: &mut LightGrid,
+    entities: &mut Entities,
+    entity_id: EntityID,
+) -> Option<()> {
+    let position = entities.position_mut(entity_id)?;
+    if let Some(direction) = input::pressed_direction() {
+        let new_coord = position.coord.shift(direction);
+        if map.walkable(new_coord) {
+            position.coord = new_coord;
+        }
+        *light_grid = LightGrid::new(map, entities);
+    }
+
+    Some(())
 }
 
 fn draw_light_grid(light_grid: &LightGrid) {
