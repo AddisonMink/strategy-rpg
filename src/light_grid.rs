@@ -9,7 +9,7 @@ pub struct LightGrid {
 }
 
 impl LightGrid {
-    pub fn new(entities: &Entities) -> Self {
+    pub fn new(map: &Map, entities: &Entities) -> Self {
         let mut lights: Vec<u16> = vec![u16::max_value(); (Map::WIDTH * Map::HEIGHT) as usize];
 
         for light in entities.iter_lights() {
@@ -24,7 +24,9 @@ impl LightGrid {
                 for x in x0..=x1 {
                     for y in y0..=y1 {
                         let coord = Coord { x, y };
-                        if coord.manhattan_distance(&center) <= radius {
+                        if coord.manhattan_distance(&center) <= radius
+                            && map.check_line_of_sight(center, coord)
+                        {
                             let index = y as usize * Map::WIDTH as usize + x as usize;
                             lights[index] = 0;
                         }

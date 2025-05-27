@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 pub struct Tile {
     pub glyph: Glyph,
     pub background: Option<Color>,
+    pub transparent: bool,
 }
 
 impl Tile {
@@ -13,6 +14,7 @@ impl Tile {
             color: LIGHTGRAY,
         },
         background: None,
+        transparent: true,
     };
 
     pub const WALL: Tile = Tile {
@@ -21,5 +23,6 @@ impl Tile {
             color: LIGHTGRAY,
         },
         background: Some(DARKGRAY),
+        transparent: false,
     };
 }

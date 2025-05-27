@@ -1,3 +1,4 @@
+use crate::algorithm;
 use crate::coord::Coord;
 use crate::tile::Tile;
 
@@ -39,5 +40,9 @@ impl Map {
 
     pub fn tile(&self, coord: Coord) -> &Tile {
         &self.tiles[(coord.y * Self::WIDTH + coord.x) as usize]
+    }
+
+    pub fn check_line_of_sight(&self, from: Coord, to: Coord) -> bool {
+        algorithm::check_bresenhem_line(from, to, |coord| self.tile(coord).transparent)
     }
 }

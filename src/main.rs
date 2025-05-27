@@ -4,6 +4,7 @@ use light_grid::LightGrid;
 use macroquad::prelude::*;
 use map::Map;
 
+mod algorithm;
 mod asset;
 mod coord;
 mod draw_grid;
@@ -24,7 +25,7 @@ async fn main() {
     entities.add_light(light_id, 5);
     entities.add_position(light_id, Coord { x: 1, y: 1 });
 
-    let light_grid = LightGrid::new(&entities);
+    let light_grid = LightGrid::new(&map, &entities);
 
     loop {
         clear_background(BLACK);
