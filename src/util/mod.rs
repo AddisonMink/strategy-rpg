@@ -1,3 +1,4 @@
+pub mod algorithm;
 pub mod asset;
 pub mod coord;
 pub mod direction;

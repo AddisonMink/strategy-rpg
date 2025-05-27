@@ -1,4 +1,4 @@
-use crate::coord::Coord;
+use super::coord::Coord;
 
 pub fn check_bresenhem_line<F>(from: Coord, to: Coord, accept: F) -> bool
 where

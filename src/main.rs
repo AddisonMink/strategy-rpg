@@ -1,16 +1,11 @@
 use macroquad::prelude::*;
-use map::Map;
 
-mod algorithm;
-mod draw_grid;
-mod entity;
-mod light_grid;
-mod map;
-mod tile;
+mod model;
+mod render;
 mod util;
 
-use entity::{Entities, EntityID};
-use light_grid::LightGrid;
+use model::*;
+use render::*;
 use util::*;
 
 #[macroquad::main("Strategy RPG")]
@@ -84,18 +79,6 @@ fn update_unit_position(
     Some(())
 }
 
-fn draw_light_grid(light_grid: &LightGrid) {
-    for x in 0..Map::WIDTH {
-        for y in 0..Map::HEIGHT {
-            let coord = Coord { x, y };
-            let distance = light_grid.distance_from_light(coord);
-            if distance < 10 {
-                draw_grid::draw_string(coord, &distance.to_string(), WHITE);
-            }
-        }
-    }
-}
-
 fn draw_visible_grid(
     map: &Map,
     entities: &Entities,
@@ -150,31 +133,4 @@ fn draw_visible_grid(
     }
 
     Some(())
-}
-
-fn draw_full_grid(map: &Map, entities: &Entities, light_grid: &LightGrid) {
-    for x in 0..Map::WIDTH {
-        for y in 0..Map::HEIGHT {
-            let coord = Coord { x, y };
-            if light_grid.distance_from_light(coord) == 0 {
-                let tile = map.tile(coord);
-                if let Some(bg_color) = tile.background {
-                    draw_grid::draw_square(coord, bg_color);
-                }
-                if let Some(unit) = entities.unit_at(coord) {
-                    draw_grid::draw_glyph(coord, unit.glyph);
-                } else {
-                    draw_grid::draw_glyph(coord, tile.glyph);
-                }
-            }
-        }
-    }
-}
-
-fn mix_color(primary: Color, secondary: Color, ratio: f32) -> Color {
-    let r = primary.r * (1.0 - ratio) + secondary.r * ratio;
-    let g = primary.g * (1.0 - ratio) + secondary.g * ratio;
-    let b = primary.b * (1.0 - ratio) + secondary.b * ratio;
-    let a = primary.a * (1.0 - ratio) + secondary.a * ratio;
-    Color { r, g, b, a }
 }
