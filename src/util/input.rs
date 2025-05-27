@@ -1,4 +1,4 @@
-use crate::direction::Direction;
+use super::direction::Direction;
 use macroquad::prelude::*;
 
 pub fn pressed_direction() -> Option<Direction> {

@@ -1,21 +1,17 @@
-use coord::Coord;
-use entity::*;
-use glyph::Glyph;
-use light_grid::LightGrid;
 use macroquad::prelude::*;
 use map::Map;
 
 mod algorithm;
-mod asset;
-mod coord;
-mod direction;
 mod draw_grid;
 mod entity;
-mod glyph;
-mod input;
 mod light_grid;
 mod map;
 mod tile;
+mod util;
+
+use entity::{Entities, EntityID};
+use light_grid::LightGrid;
+use util::*;
 
 #[macroquad::main("Strategy RPG")]
 async fn main() {
@@ -64,8 +60,8 @@ async fn main() {
 
         update_unit_position(&map, &mut light_grid, &mut entities, unit_id);
         clear_background(BLACK);
-        draw_text("0.0.1", 0.0, 16.0, 16.0, WHITE);
         draw_visible_grid(&map, &entities, &light_grid, unit_id, torch_light);
+        draw_text("0.0.1", 8.0, 16.0, 16.0, WHITE);
         next_frame().await;
     }
 }

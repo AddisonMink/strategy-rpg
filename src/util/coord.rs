@@ -1,4 +1,4 @@
-use crate::direction::Direction;
+use super::direction::Direction;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Coord {
