@@ -11,20 +11,24 @@ pub fn draw_square(coord: Coord, color: Color) {
     draw_rectangle(x, y, TILE_SIZE, TILE_SIZE, color);
 }
 
-pub fn draw_glyph(coord: Coord, glyph: Glyph) {
+pub fn draw_string(coord: Coord, text: &str, color: Color) {
     let x = coord.x as f32 * TILE_SIZE;
     let y = coord.y as f32 * TILE_SIZE;
-    let str = glyph.symbol.to_string();
 
     draw_text_ex(
-        &str,
+        text,
         x + TILE_SIZE / 8.0,
         y + TILE_SIZE - TILE_SIZE / 8.0,
         TextParams {
             font: MAP_FONT.get(),
             font_size: TILE_SIZE as u16,
-            color: glyph.color,
+            color,
             ..Default::default()
         },
     );
+}
+
+pub fn draw_glyph(coord: Coord, glyph: Glyph) {
+    let str = glyph.symbol.to_string();
+    draw_string(coord, &str, glyph.color);
 }

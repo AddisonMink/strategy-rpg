@@ -14,6 +14,7 @@ pub struct Position {
 
 pub struct Unit {
     pub glyph: Glyph,
+    pub vision: u16,
 }
 
 pub struct Entities {
@@ -57,9 +58,13 @@ impl Entities {
         self.positions.get(&id)
     }
 
-    pub fn add_unit(&mut self, id: EntityID, glyph: Glyph) {
-        let unit = Unit { glyph };
+    pub fn add_unit(&mut self, id: EntityID, glyph: Glyph, vision: u16) {
+        let unit = Unit { glyph, vision };
         self.units.insert(id, unit);
+    }
+
+    pub fn unit(&self, id: EntityID) -> Option<&Unit> {
+        self.units.get(&id)
     }
 
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {

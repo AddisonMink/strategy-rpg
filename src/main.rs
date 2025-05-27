@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use coord::Coord;
 use entity::*;
 use glyph::Glyph;
@@ -36,6 +38,7 @@ async fn main() {
             symbol: '@',
             color: WHITE,
         },
+        2,
     );
 
     let light_grid = LightGrid::new(&map, &entities);
@@ -43,23 +46,80 @@ async fn main() {
     loop {
         clear_background(BLACK);
 
-        for x in 0..Map::WIDTH {
-            for y in 0..Map::HEIGHT {
-                let coord = Coord { x, y };
-                if light_grid.distance_from_light(coord) == 0 {
-                    let tile = map.tile(coord);
-                    if let Some(bg_color) = tile.background {
-                        draw_grid::draw_square(coord, bg_color);
-                    }
-                    if let Some(unit) = entities.unit_at(coord) {
-                        draw_grid::draw_glyph(coord, unit.glyph);
-                    } else {
-                        draw_grid::draw_glyph(coord, tile.glyph);
-                    }
+        draw_visible_grid(&map, &entities, &light_grid, unit_id);
+
+        next_frame().await;
+    }
+}
+
+fn draw_light_grid(light_grid: &LightGrid) {
+    for x in 0..Map::WIDTH {
+        for y in 0..Map::HEIGHT {
+            let coord = Coord { x, y };
+            let distance = light_grid.distance_from_light(coord);
+            if distance < 10 {
+                draw_grid::draw_string(coord, &distance.to_string(), WHITE);
+            }
+        }
+    }
+}
+
+fn draw_visible_grid(
+    map: &Map,
+    entities: &Entities,
+    light_grid: &LightGrid,
+    entity_id: EntityID,
+) -> Option<()> {
+    let position = entities.position(entity_id)?;
+    let unit = entities.unit(entity_id)?;
+
+    for x in 0..Map::WIDTH {
+        for y in 0..Map::HEIGHT {
+            let coord = Coord { x, y };
+
+            if !map.check_line_of_sight(position.coord, coord) {
+                continue;
+            }
+
+            let distance = light_grid.distance_from_light(coord);
+            if distance <= unit.vision {
+                let tile = map.tile(coord);
+
+                if let Some(bg_color) = tile.background {
+                    draw_grid::draw_square(coord, bg_color);
+                }
+
+                if let Some(unit) = entities.unit_at(coord) {
+                    draw_grid::draw_glyph(coord, unit.glyph);
+                } else {
+                    draw_grid::draw_glyph(coord, tile.glyph);
+                }
+
+                if distance > 0 {
+                    draw_grid::draw_square(coord, BLACK.with_alpha(0.5));
                 }
             }
         }
+    }
 
-        next_frame().await;
+    Some(())
+}
+
+fn draw_full_grid(map: &Map, entities: &Entities, light_grid: &LightGrid) {
+    for x in 0..Map::WIDTH {
+        for y in 0..Map::HEIGHT {
+            let coord = Coord { x, y };
+            if light_grid.distance_from_light(coord) == 0 {
+                let tile = map.tile(coord);
+                if let Some(bg_color) = tile.background {
+                    draw_grid::draw_square(coord, bg_color);
+                }
+                if let Some(unit) = entities.unit_at(coord) {
+                    draw_grid::draw_glyph(coord, unit.glyph);
+                } else {
+                    draw_grid::draw_glyph(coord, tile.glyph);
+                }
+            }
+        }
     }
 }

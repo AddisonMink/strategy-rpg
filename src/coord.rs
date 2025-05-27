@@ -5,7 +5,7 @@ pub struct Coord {
 }
 
 impl Coord {
-    pub fn manhattan_distance(&self, other: &Coord) -> u16 {
+    pub fn manhattan_distance(&self, other: Coord) -> u16 {
         (self.x as i32 - other.x as i32).abs() as u16
             + (self.y as i32 - other.y as i32).abs() as u16
     }

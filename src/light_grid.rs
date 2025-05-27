@@ -16,19 +16,13 @@ impl LightGrid {
             if let Some(position) = entities.position(light.id) {
                 let radius = light.radius;
                 let center = position.coord;
-                let x0 = center.x.saturating_sub(radius);
-                let x1 = (center.x + radius).min(Map::WIDTH - 1);
-                let y0 = center.y.saturating_sub(radius);
-                let y1 = (center.y + radius).min(Map::HEIGHT - 1);
-
-                for x in x0..=x1 {
-                    for y in y0..=y1 {
+                for x in 0..Map::WIDTH {
+                    for y in 0..Map::HEIGHT {
                         let coord = Coord { x, y };
-                        if coord.manhattan_distance(&center) <= radius
-                            && map.check_line_of_sight(center, coord)
-                        {
+                        if map.check_line_of_sight(center, coord) {
+                            let distance = center.manhattan_distance(coord).saturating_sub(radius);
                             let index = y as usize * Map::WIDTH as usize + x as usize;
-                            lights[index] = 0;
+                            lights[index] = lights[index].min(distance);
                         }
                     }
                 }
