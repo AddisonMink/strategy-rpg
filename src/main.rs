@@ -22,6 +22,7 @@ async fn main() {
         Light {
             id: light_id,
             radius: 5,
+            color: BLUE,
         },
     );
 
@@ -39,6 +40,7 @@ async fn main() {
         Light {
             id: unit_id,
             radius: 3,
+            color: ORANGE,
         },
     );
 
@@ -53,7 +55,7 @@ async fn main() {
         unit_id,
         Unit {
             glyph: Glyph {
-                symbol: 'A',
+                symbol: '@',
                 color: WHITE,
             },
             vision: 2,
@@ -101,16 +103,10 @@ fn draw_visible_grid(
     entities: &Entities,
     light_grid: &LightGrid,
     entity_id: EntityID,
-    torch_light: f32,
+    flicker: f32,
 ) -> Option<()> {
     let position = entities.positions.get(&entity_id)?;
     let unit = entities.units.get(&entity_id)?;
-    let torch_color = Color {
-        r: 1.0 * torch_light,
-        g: 0.65 * torch_light,
-        b: 0.0,
-        a: 1.0,
-    };
 
     for x in 0..Map::WIDTH {
         for y in 0..Map::HEIGHT {
@@ -120,24 +116,26 @@ fn draw_visible_grid(
                 continue;
             }
 
+            let light_color = light_grid.color_at(coord).with_alpha(flicker);
             let distance = light_grid.distance_from_light(coord);
+
             if distance <= unit.vision {
                 let tile = map.tile(coord);
 
                 if let Some(bg_color) = tile.background {
-                    draw_grid::draw_square(coord, mix_color(bg_color, torch_color, 0.5));
+                    draw_grid::draw_square(coord, mix_color(bg_color, light_color, 0.5));
                 }
 
                 if let Some(unit) = entities.unit_at(coord) {
                     let glyph = Glyph {
                         symbol: unit.glyph.symbol,
-                        color: mix_color(unit.glyph.color, torch_color, 0.5),
+                        color: mix_color(unit.glyph.color, light_color, 0.5),
                     };
                     draw_grid::draw_glyph(coord, glyph);
                 } else {
                     let glyph = Glyph {
                         symbol: tile.glyph.symbol,
-                        color: mix_color(tile.glyph.color, torch_color, 0.5),
+                        color: mix_color(tile.glyph.color, light_color, 0.5),
                     };
                     draw_grid::draw_glyph(coord, glyph);
                 }

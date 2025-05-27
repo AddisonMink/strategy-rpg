@@ -1,4 +1,6 @@
-use crate::{coord::Coord, glyph::Glyph};
+use macroquad::color::Color;
+
+use crate::util::*;
 use std::collections::HashMap;
 
 pub type EntityID = u16;
@@ -6,6 +8,7 @@ pub type EntityID = u16;
 pub struct Light {
     pub id: EntityID,
     pub radius: u16,
+    pub color: Color,
 }
 
 pub struct Position {
