@@ -16,31 +16,48 @@ async fn main() {
     let mut entities = Entities::new();
 
     let light_id = entities.next_id();
-    entities.add_light(light_id, 5);
-    entities.add_position(light_id, Coord { x: 1, y: 1 });
 
-    let unit_id = entities.next_id();
-    entities.add_light(unit_id, 3);
-    entities.add_position(unit_id, Coord { x: 14, y: 1 });
-
-    entities.add_unit(
-        unit_id,
-        Glyph {
-            symbol: '@',
-            color: WHITE,
+    entities.lights.insert(
+        light_id,
+        Light {
+            id: light_id,
+            radius: 5,
         },
-        2,
     );
 
-    let unit_id_2 = entities.next_id();
-    entities.add_position(unit_id_2, Coord { x: 1, y: 5 });
-    entities.add_unit(
-        unit_id_2,
-        Glyph {
-            symbol: 'A',
-            color: WHITE,
+    entities.positions.insert(
+        light_id,
+        Position {
+            coord: Coord { x: 1, y: 1 },
         },
-        2,
+    );
+
+    let unit_id = entities.next_id();
+
+    entities.lights.insert(
+        unit_id,
+        Light {
+            id: unit_id,
+            radius: 3,
+        },
+    );
+
+    entities.positions.insert(
+        unit_id,
+        Position {
+            coord: Coord { x: 14, y: 3 },
+        },
+    );
+
+    entities.units.insert(
+        unit_id,
+        Unit {
+            glyph: Glyph {
+                symbol: 'A',
+                color: WHITE,
+            },
+            vision: 2,
+        },
     );
 
     let mut light_grid = LightGrid::new(&map, &entities);
@@ -67,7 +84,7 @@ fn update_unit_position(
     entities: &mut Entities,
     entity_id: EntityID,
 ) -> Option<()> {
-    let position = entities.position_mut(entity_id)?;
+    let position = entities.positions.get_mut(&entity_id)?;
     if let Some(direction) = input::pressed_direction() {
         let new_coord = position.coord.shift(direction);
         if map.walkable(new_coord) {
@@ -86,8 +103,8 @@ fn draw_visible_grid(
     entity_id: EntityID,
     torch_light: f32,
 ) -> Option<()> {
-    let position = entities.position(entity_id)?;
-    let unit = entities.unit(entity_id)?;
+    let position = entities.positions.get(&entity_id)?;
+    let unit = entities.units.get(&entity_id)?;
     let torch_color = Color {
         r: 1.0 * torch_light,
         g: 0.65 * torch_light,

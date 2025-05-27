@@ -12,8 +12,8 @@ impl LightGrid {
     pub fn new(map: &Map, entities: &Entities) -> Self {
         let mut lights: Vec<u16> = vec![u16::max_value(); (Map::WIDTH * Map::HEIGHT) as usize];
 
-        for light in entities.iter_lights() {
-            if let Some(position) = entities.position(light.id) {
+        for light in entities.lights.values() {
+            if let Some(position) = entities.positions.get(&light.id) {
                 let radius = light.radius;
                 let center = position.coord;
                 for x in 0..Map::WIDTH {
