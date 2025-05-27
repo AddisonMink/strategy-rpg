@@ -41,6 +41,17 @@ async fn main() {
         2,
     );
 
+    let unit_id_2 = entities.next_id();
+    entities.add_position(unit_id_2, Coord { x: 1, y: 5 });
+    entities.add_unit(
+        unit_id_2,
+        Glyph {
+            symbol: 'A',
+            color: WHITE,
+        },
+        2,
+    );
+
     let mut light_grid = LightGrid::new(&map, &entities);
 
     let mut time = 0.0;
@@ -53,6 +64,7 @@ async fn main() {
 
         update_unit_position(&map, &mut light_grid, &mut entities, unit_id);
         clear_background(BLACK);
+        draw_text("0.0.1", 0.0, 16.0, 16.0, WHITE);
         draw_visible_grid(&map, &entities, &light_grid, unit_id, torch_light);
         next_frame().await;
     }
