@@ -1,17 +1,20 @@
 use crate::asset::MAP_FONT;
-use crate::tile::Tile;
+use crate::coord::Coord;
+use crate::glyph::Glyph;
 use macroquad::prelude::*;
 
 const TILE_SIZE: f32 = 32.0;
 
-pub fn draw_tile(x: u16, y: u16, tile: &Tile) {
-    let x = x as f32 * TILE_SIZE;
-    let y = y as f32 * TILE_SIZE;
-    let str = tile.glyph.symbol.to_string();
+pub fn draw_square(coord: Coord, color: Color) {
+    let x = coord.x as f32 * TILE_SIZE;
+    let y = coord.y as f32 * TILE_SIZE;
+    draw_rectangle(x, y, TILE_SIZE, TILE_SIZE, color);
+}
 
-    if let Some(bg_color) = tile.background {
-        draw_rectangle(x, y, TILE_SIZE, TILE_SIZE, bg_color);
-    }
+pub fn draw_glyph(coord: Coord, glyph: Glyph) {
+    let x = coord.x as f32 * TILE_SIZE;
+    let y = coord.y as f32 * TILE_SIZE;
+    let str = glyph.symbol.to_string();
 
     draw_text_ex(
         &str,
@@ -20,7 +23,7 @@ pub fn draw_tile(x: u16, y: u16, tile: &Tile) {
         TextParams {
             font: MAP_FONT.get(),
             font_size: TILE_SIZE as u16,
-            color: tile.glyph.color,
+            color: glyph.color,
             ..Default::default()
         },
     );

@@ -13,7 +13,7 @@ impl LightGrid {
         let mut lights: Vec<u16> = vec![u16::max_value(); (Map::WIDTH * Map::HEIGHT) as usize];
 
         for light in entities.iter_lights() {
-            if let Some(position) = entities.get_position(light.id) {
+            if let Some(position) = entities.position(light.id) {
                 let radius = light.radius;
                 let center = position.coord;
                 let x0 = center.x.saturating_sub(radius);
@@ -38,7 +38,7 @@ impl LightGrid {
         LightGrid { lights }
     }
 
-    pub fn light_value(&self, coord: Coord) -> u16 {
+    pub fn distance_from_light(&self, coord: Coord) -> u16 {
         let index = coord.y as usize * Map::WIDTH as usize + coord.x as usize;
         self.lights[index]
     }

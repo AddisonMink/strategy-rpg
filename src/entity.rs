@@ -1,4 +1,4 @@
-use crate::coord::Coord;
+use crate::{coord::Coord, glyph::Glyph};
 use std::collections::HashMap;
 
 pub type EntityID = u16;
@@ -12,9 +12,14 @@ pub struct Position {
     pub coord: Coord,
 }
 
+pub struct Unit {
+    pub glyph: Glyph,
+}
+
 pub struct Entities {
     lights: HashMap<EntityID, Light>,
     positions: HashMap<EntityID, Position>,
+    units: HashMap<EntityID, Unit>,
     next_id: EntityID,
 }
 
@@ -23,6 +28,7 @@ impl Entities {
         Entities {
             lights: HashMap::new(),
             positions: HashMap::new(),
+            units: HashMap::new(),
             next_id: 0,
         }
     }
@@ -47,7 +53,22 @@ impl Entities {
         self.positions.insert(id, position);
     }
 
-    pub fn get_position(&self, id: EntityID) -> Option<&Position> {
+    pub fn position(&self, id: EntityID) -> Option<&Position> {
         self.positions.get(&id)
+    }
+
+    pub fn add_unit(&mut self, id: EntityID, glyph: Glyph) {
+        let unit = Unit { glyph };
+        self.units.insert(id, unit);
+    }
+
+    pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {
+        self.positions.iter().find_map(|(&id, pos)| {
+            if pos.coord == coord {
+                self.units.get(&id)
+            } else {
+                None
+            }
+        })
     }
 }
