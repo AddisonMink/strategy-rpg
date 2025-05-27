@@ -36,3 +36,25 @@ where
         }
     }
 }
+
+pub fn perlin_noise_1d(x: f32, period: f32, amplitude: f32, seed: u64) -> f32 {
+    let gradients = [-2.0, -1.0, 0.0, 1.0, 2.0];
+
+    let hash = |vertex: usize| {
+        let h = vertex as u64 ^ seed;
+        (h.wrapping_mul(6364136223846793005).wrapping_add(1) >> 32) as usize % gradients.len()
+    };
+
+    let gradient = |vertex: usize| gradients[hash(vertex)];
+
+    let smooth = |x: f32| 6.0 * x.powi(5) - 15.0 * x.powi(4) + 10.0 * x.powi(3);
+
+    let mu = (x % period) / period;
+    let smooth_mu = smooth(mu);
+    let v0 = (x / period) as usize;
+    let v1 = v0 + 1;
+    let y0 = gradient(v0) * mu * amplitude;
+    let y1 = gradient(v1) * (-1.0 + mu) * amplitude;
+    let result = y0 * (1.0 - smooth_mu) + y1 * smooth_mu;
+    (result + 2.0 * amplitude) * 0.25 / amplitude
+}

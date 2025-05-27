@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use coord::Coord;
 use entity::*;
 use glyph::Glyph;
@@ -45,10 +43,17 @@ async fn main() {
 
     let mut light_grid = LightGrid::new(&map, &entities);
 
+    let mut time = 0.0;
+
     loop {
+        time += get_frame_time();
+        let base = 0.5;
+        let flicker = algorithm::perlin_noise_1d(time, 0.5, 1.0, 42);
+        let torch_light = base + flicker * 0.5;
+
         update_unit_position(&map, &mut light_grid, &mut entities, unit_id);
         clear_background(BLACK);
-        draw_visible_grid(&map, &entities, &light_grid, unit_id);
+        draw_visible_grid(&map, &entities, &light_grid, unit_id, torch_light);
         next_frame().await;
     }
 }
@@ -88,9 +93,16 @@ fn draw_visible_grid(
     entities: &Entities,
     light_grid: &LightGrid,
     entity_id: EntityID,
+    torch_light: f32,
 ) -> Option<()> {
     let position = entities.position(entity_id)?;
     let unit = entities.unit(entity_id)?;
+    let torch_color = Color {
+        r: 1.0 * torch_light,
+        g: 0.65 * torch_light,
+        b: 0.0,
+        a: 1.0,
+    };
 
     for x in 0..Map::WIDTH {
         for y in 0..Map::HEIGHT {
@@ -105,13 +117,21 @@ fn draw_visible_grid(
                 let tile = map.tile(coord);
 
                 if let Some(bg_color) = tile.background {
-                    draw_grid::draw_square(coord, bg_color);
+                    draw_grid::draw_square(coord, mix_color(bg_color, torch_color, 0.5));
                 }
 
                 if let Some(unit) = entities.unit_at(coord) {
-                    draw_grid::draw_glyph(coord, unit.glyph);
+                    let glyph = Glyph {
+                        symbol: unit.glyph.symbol,
+                        color: mix_color(unit.glyph.color, torch_color, 0.5),
+                    };
+                    draw_grid::draw_glyph(coord, glyph);
                 } else {
-                    draw_grid::draw_glyph(coord, tile.glyph);
+                    let glyph = Glyph {
+                        symbol: tile.glyph.symbol,
+                        color: mix_color(tile.glyph.color, torch_color, 0.5),
+                    };
+                    draw_grid::draw_glyph(coord, glyph);
                 }
 
                 if distance > 0 {
@@ -141,4 +161,12 @@ fn draw_full_grid(map: &Map, entities: &Entities, light_grid: &LightGrid) {
             }
         }
     }
+}
+
+fn mix_color(primary: Color, secondary: Color, ratio: f32) -> Color {
+    let r = primary.r * (1.0 - ratio) + secondary.r * ratio;
+    let g = primary.g * (1.0 - ratio) + secondary.g * ratio;
+    let b = primary.b * (1.0 - ratio) + secondary.b * ratio;
+    let a = primary.a * (1.0 - ratio) + secondary.a * ratio;
+    Color { r, g, b, a }
 }
