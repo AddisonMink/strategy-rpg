@@ -13,9 +13,10 @@ async fn main() {
     asset::load_assets().await;
 
     let mut game = Game::new(Map::new());
-    let unit_id = game.add_unit(make_unit);
+    game.add_unit(make_unit);
     game.add_point_light(make_point_light);
     game.light_grid = LightGrid::new(&game);
+    game.next_turn();
     let mut time = 0.0;
 
     loop {
@@ -24,9 +25,9 @@ async fn main() {
         let flicker = algorithm::perlin_noise_1d(time, 0.5, 1.0, 42);
         let torch_light = base + flicker * 0.5;
 
-        update_unit_position(&mut game, unit_id);
+        update_unit_position(&mut game);
         clear_background(BLACK);
-        draw_visible_grid(&game, unit_id, torch_light);
+        draw_visible_grid(&game, torch_light);
         draw_text("0.0.1", 8.0, 16.0, 16.0, WHITE);
         next_frame().await;
     }
@@ -41,6 +42,7 @@ fn make_unit(id: UnitId) -> Unit {
             color: WHITE,
         },
         vision: 2,
+        movement: 3,
         light: Some(Light {
             radius: 3,
             color: ORANGE,
@@ -59,12 +61,12 @@ fn make_point_light(id: PointLightId) -> PointLight {
     }
 }
 
-fn update_unit_position(game: &mut Game, unit_id: UnitId) -> Option<()> {
-    let coord = game.unit(unit_id)?.coord;
+fn update_unit_position(game: &mut Game) -> Option<()> {
+    let coord = game.active_unit()?.coord;
     if let Some(direction) = input::pressed_direction() {
         let new_coord = coord.shift(direction);
         if game.map.walkable(new_coord) {
-            game.unit_mut(unit_id)?.coord = new_coord;
+            game.active_unit_mut()?.coord = new_coord;
         }
         game.light_grid = LightGrid::new(game);
     }
@@ -72,8 +74,8 @@ fn update_unit_position(game: &mut Game, unit_id: UnitId) -> Option<()> {
     Some(())
 }
 
-fn draw_visible_grid(game: &Game, unit_id: UnitId, flicker: f32) -> Option<()> {
-    let unit = game.unit(unit_id)?;
+fn draw_visible_grid(game: &Game, flicker: f32) -> Option<()> {
+    let unit = game.active_unit()?;
 
     for x in 0..Map::WIDTH {
         for y in 0..Map::HEIGHT {

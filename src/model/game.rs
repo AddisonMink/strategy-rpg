@@ -5,12 +5,14 @@ use super::point_light::*;
 use super::unit::*;
 use crate::util::*;
 use std::collections::HashMap;
+use std::collections::VecDeque;
 
 pub struct Game {
     units: HashMap<UnitId, Unit>,
     next_unit_id: UnitId,
     point_lights: HashMap<PointLightId, PointLight>,
     next_point_light_id: PointLightId,
+    turn_queue: VecDeque<UnitId>,
     pub map: Map,
     pub light_grid: LightGrid,
 }
@@ -22,6 +24,7 @@ impl Game {
             next_unit_id: UnitId(0),
             point_lights: HashMap::new(),
             next_point_light_id: PointLightId(0),
+            turn_queue: VecDeque::new(),
             map,
             light_grid: LightGrid::empty(),
         }
@@ -47,12 +50,29 @@ impl Game {
         self.units.get(&id)
     }
 
+    pub fn active_unit(&self) -> Option<&Unit> {
+        self.turn_queue.front().and_then(|id| self.units.get(id))
+    }
+
+    pub fn active_unit_mut(&mut self) -> Option<&mut Unit> {
+        self.turn_queue.front().and_then(|id| self.units.get_mut(id))
+    }
+
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {
         self.units.values().find(|unit| unit.coord == coord)
     }
 
     pub fn unit_mut(&mut self, id: UnitId) -> Option<&mut Unit> {
         self.units.get_mut(&id)
+    }
+
+    pub fn next_turn(&mut self) -> Option<UnitId> {
+        if self.turn_queue.is_empty() {
+            for unit_id in self.units.keys() {
+                self.turn_queue.push_back(*unit_id);
+            }
+        }
+        self.turn_queue.front().cloned()
     }
 
     pub fn lights_iter(&self) -> impl Iterator<Item = (Coord, &Light)> {

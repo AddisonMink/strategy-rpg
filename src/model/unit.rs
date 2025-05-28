@@ -12,6 +12,7 @@ pub struct Unit {
 
     // attributes
     pub vision: u16,
+    pub movement: u16,
 
     // state
     pub coord: Coord,
