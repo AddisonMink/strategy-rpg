@@ -26,7 +26,7 @@ async fn main() {
         update::update_game(&mut game);
         clear_background(BLACK);
         render::draw_map(&game, flicker);
-        draw_text("0.0.1", 8.0, 16.0, 16.0, WHITE);
+        draw_text("0.0.1", 550.0, 16.0, 16.0, WHITE);
         next_frame().await;
     }
 }
