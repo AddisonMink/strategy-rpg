@@ -1,3 +1,4 @@
+use super::GameState;
 use super::LightGrid;
 use super::Map;
 use super::light::Light;
@@ -15,6 +16,7 @@ pub struct Game {
     turn_queue: VecDeque<UnitId>,
     pub map: Map,
     pub light_grid: LightGrid,
+    pub state: GameState,
 }
 
 impl Game {
@@ -27,6 +29,7 @@ impl Game {
             turn_queue: VecDeque::new(),
             map,
             light_grid: LightGrid::empty(),
+            state: GameState::Start,
         }
     }
 
@@ -55,7 +58,9 @@ impl Game {
     }
 
     pub fn active_unit_mut(&mut self) -> Option<&mut Unit> {
-        self.turn_queue.front().and_then(|id| self.units.get_mut(id))
+        self.turn_queue
+            .front()
+            .and_then(|id| self.units.get_mut(id))
     }
 
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {

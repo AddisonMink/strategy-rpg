@@ -2,6 +2,7 @@ use macroquad::prelude::*;
 
 mod model;
 mod render;
+mod update;
 mod util;
 
 use model::*;
@@ -25,7 +26,7 @@ async fn main() {
         let flicker = algorithm::perlin_noise_1d(time, 0.5, 1.0, 42);
         let torch_light = base + flicker * 0.5;
 
-        update_unit_position(&mut game);
+        update::update_game(&mut game);
         clear_background(BLACK);
         draw_visible_grid(&game, torch_light);
         draw_text("0.0.1", 8.0, 16.0, 16.0, WHITE);
