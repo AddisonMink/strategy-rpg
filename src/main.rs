@@ -6,8 +6,6 @@ mod update;
 mod util;
 
 use model::*;
-use render::*;
-use util::*;
 
 #[macroquad::main("Strategy RPG")]
 async fn main() {
@@ -15,6 +13,7 @@ async fn main() {
 
     let mut game = Game::new(Map::new());
     game.add_unit(make_unit);
+    game.add_unit(make_unit_2);
     game.add_point_light(make_point_light);
     game.light_grid = LightGrid::new(&game);
     game.next_turn();
@@ -48,6 +47,20 @@ fn make_unit(id: UnitId) -> Unit {
             radius: 3,
             color: ORANGE,
         }),
+    }
+}
+
+fn make_unit_2(id: UnitId) -> Unit {
+    Unit {
+        id,
+        coord: Coord { x: 1, y: 1 },
+        glyph: Glyph {
+            symbol: 'A',
+            color: WHITE,
+        },
+        vision: 2,
+        movement: 3,
+        light: None,
     }
 }
 

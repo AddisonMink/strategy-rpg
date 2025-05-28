@@ -6,18 +6,21 @@ use macroquad::prelude::*;
 pub fn draw_map(game: &Game, flicker: f32) -> Option<()> {
     let unit = game.active_unit()?;
 
+    let unit_povs: Vec<(Coord, u16)> = game.unit_iter().map(|u| (u.coord, u.vision)).collect();
+
     for x in 0..Map::WIDTH {
         for y in 0..Map::HEIGHT {
             let coord = Coord { x, y };
-
-            if !game.map.check_line_of_sight(unit.coord, coord) {
-                continue;
-            }
-
+            let distance_from_light = game.light_grid.distance_from_light(coord);
             let light_color = game.light_grid.color_at(coord).with_alpha(flicker);
-            let distance = game.light_grid.distance_from_light(coord);
 
-            if distance <= unit.vision {
+            let unit_can_see = unit_povs.iter().any(|(origin, vision)| {
+                let distance = origin.manhattan_distance(coord);
+                game.map.check_line_of_sight(*origin, coord)
+                    && (distance <= *vision || distance_from_light <= *vision)
+            });
+
+            if unit_can_see {
                 let tile = game.map.tile(coord);
 
                 if let Some(bg_color) = tile.background {
@@ -38,7 +41,7 @@ pub fn draw_map(game: &Game, flicker: f32) -> Option<()> {
                     draw_grid::draw_glyph(coord, glyph);
                 }
 
-                if distance > 0 {
+                if distance_from_light > 0 {
                     draw_grid::draw_square(coord, BLACK.with_alpha(0.5));
                 }
             }
