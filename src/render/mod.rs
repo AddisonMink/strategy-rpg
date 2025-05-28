@@ -32,6 +32,7 @@ pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
             let unit = game.active_unit()?;
 
             let panel = &Panel::builder(&unit.name.to_uppercase(), unit.glyph.color)
+                .big_glyph(unit.glyph, 4.0)
                 .line(&format!("Movement: {}", moves_left), WHITE)
                 .build();
 

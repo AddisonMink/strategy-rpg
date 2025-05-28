@@ -53,7 +53,6 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
             }
         }
         GameState::EndingTurn => {
-            trace!("Ending turn");
             game.next_turn();
 
             game.state = GameState::StartingTurn {
