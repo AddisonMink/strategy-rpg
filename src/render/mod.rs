@@ -10,6 +10,9 @@ pub use util::*;
 
 use crate::model::*;
 
+const INFO_PANEL_X: f32 = 552.0;
+const INFO_PANEL_Y: f32 = 10.0;
+
 pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
     draw_grid::draw_frame_panel();
     draw_map(game, flicker);
@@ -24,6 +27,16 @@ pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
 
             draw_map(game, flicker);
             draw_grid::draw_panel_centered(panel);
+        }
+        GameState::SelectingMove { moves_left } => {
+            let unit = game.active_unit()?;
+
+            let panel = &Panel::builder(&unit.name.to_uppercase(), unit.glyph.color)
+                .line(&format!("Movement: {}", moves_left), WHITE)
+                .build();
+
+            draw_map(game, flicker);
+            panel.draw(INFO_PANEL_X, INFO_PANEL_Y);
         }
         _ => {}
     }
