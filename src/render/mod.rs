@@ -20,9 +20,10 @@ pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
     match game.state {
         GameState::StartingTurn { .. } => {
             let unit = game.active_unit()?;
+            let str = format!("{}'s Turn", unit.name);
 
-            let panel = &Panel::builder("", WHITE)
-                .line(&unit.name, unit.glyph.color)
+            let panel = &Panel::builder("INFO", WHITE)
+                .line(&str, unit.glyph.color)
                 .build();
 
             draw_map(game, flicker);
