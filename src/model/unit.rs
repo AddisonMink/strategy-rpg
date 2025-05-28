@@ -4,11 +4,12 @@ use crate::util::*;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UnitId(pub u16);
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct Unit {
     // identifiers
     pub id: UnitId,
     pub glyph: Glyph,
+    pub name: String,
 
     // attributes
     pub vision: u16,

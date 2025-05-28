@@ -2,10 +2,26 @@ use macroquad::prelude::trace;
 
 use crate::model::*;
 
-pub fn update_game(game: &mut Game) -> Option<()> {
+const TURN_START_DURATION: f32 = 1.0;
+
+pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
     match game.state {
         GameState::Start => {
-            game.state = GameState::SelectingMove { moves_left: 3 };
+            game.state = GameState::StartingTurn {
+                time: TURN_START_DURATION,
+            }
+        }
+        GameState::StartingTurn { time } => {
+            if time > 0.0 {
+                game.state = GameState::StartingTurn {
+                    time: time - delta_time,
+                };
+            } else {
+                let unit = game.active_unit()?;
+                game.state = GameState::SelectingMove {
+                    moves_left: game.active_unit()?.movement,
+                };
+            }
         }
         GameState::SelectingMove { moves_left } => {
             let dir = input::pressed_direction()?;
@@ -37,10 +53,12 @@ pub fn update_game(game: &mut Game) -> Option<()> {
             }
         }
         GameState::EndingTurn => {
+            trace!("Ending turn");
             game.next_turn();
-            let unit = game.active_unit()?;
-            let moves_left = unit.movement;
-            game.state = GameState::SelectingMove { moves_left };
+
+            game.state = GameState::StartingTurn {
+                time: TURN_START_DURATION,
+            };
         }
     }
     Some(())

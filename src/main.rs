@@ -20,12 +20,12 @@ async fn main() {
     let mut time = 0.0;
 
     loop {
-        time += get_frame_time();
+        let delta_time = get_frame_time();
+        time += delta_time;
         let flicker = algorithm::perlin_noise_1d(time, 0.5, 1.0, 42);
-
-        update::update_game(&mut game);
+        update::update_game(&mut game, delta_time);
         clear_background(BLACK);
-        render::draw_map(&game, flicker);
+        render::draw_game(&game, flicker);
         draw_text("0.0.1", 550.0, 16.0, 16.0, WHITE);
         next_frame().await;
     }
@@ -39,6 +39,7 @@ fn make_unit(id: UnitId) -> Unit {
             symbol: '@',
             color: WHITE,
         },
+        name: "Player 1".to_string(),
         vision: 2,
         movement: 3,
         light: Some(Light {
@@ -56,6 +57,7 @@ fn make_unit_2(id: UnitId) -> Unit {
             symbol: 'A',
             color: WHITE,
         },
+        name: "Player 2".to_string(),
         vision: 2,
         movement: 3,
         light: None,

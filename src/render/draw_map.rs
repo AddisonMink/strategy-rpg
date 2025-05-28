@@ -5,8 +5,6 @@ use crate::model::*;
 use macroquad::prelude::*;
 
 pub fn draw_map(game: &Game, flicker: f32) {
-    draw_grid::draw_panel();
-
     let unit_povs: Vec<(Coord, u16)> = game.unit_iter().map(|u| (u.coord, u.vision)).collect();
 
     for x in 0..Map::WIDTH {

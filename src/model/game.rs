@@ -1,3 +1,5 @@
+use macroquad::prelude::trace;
+
 use super::GameState;
 use super::LightGrid;
 use super::Map;
@@ -76,13 +78,14 @@ impl Game {
     }
 
     pub fn next_turn(&mut self) -> Option<UnitId> {
+        self.turn_queue.pop_front();
+
         if self.turn_queue.is_empty() {
             for unit_id in self.units.keys() {
                 self.turn_queue.push_back(*unit_id);
             }
-        } else {
-            self.turn_queue.pop_front();
         }
+
         self.turn_queue.front().cloned()
     }
 

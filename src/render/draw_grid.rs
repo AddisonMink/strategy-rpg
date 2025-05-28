@@ -6,10 +6,18 @@ use macroquad::prelude::*;
 
 const ORIGIN: Vec2 = Vec2::new(20.0, 20.0);
 const TILE_SIZE: f32 = 32.0;
+const FRAME_WIDTH: f32 = 532.0;
+const FRAME_HEIGHT: f32 = 244.0;
 
-pub fn draw_panel() {
-    let panel = Panel::empty("MAP", WHITE, 532.0, 244.0);
+pub fn draw_frame_panel() {
+    let panel = Panel::empty("MAP", WHITE, FRAME_WIDTH, FRAME_HEIGHT);
     panel.draw(10.0, 10.0);
+}
+
+pub fn draw_panel_centered(panel: &Panel) {
+    let x = ORIGIN.x + (FRAME_WIDTH - panel.get_width()) / 2.0;
+    let y = ORIGIN.y + (FRAME_HEIGHT - panel.get_height()) / 2.0;
+    panel.draw(x, y);
 }
 
 pub fn draw_square(coord: Coord, color: Color) {
