@@ -12,58 +12,10 @@ use util::*;
 async fn main() {
     asset::load_assets().await;
 
-    let map = map::Map::new();
-    let mut entities = Entities::new();
-
-    let light_id = entities.next_id();
-
-    entities.lights.insert(
-        light_id,
-        Light {
-            id: light_id,
-            radius: 5,
-            color: BLUE,
-        },
-    );
-
-    entities.positions.insert(
-        light_id,
-        Position {
-            coord: Coord { x: 1, y: 1 },
-        },
-    );
-
-    let unit_id = entities.next_id();
-
-    entities.lights.insert(
-        unit_id,
-        Light {
-            id: unit_id,
-            radius: 3,
-            color: ORANGE,
-        },
-    );
-
-    entities.positions.insert(
-        unit_id,
-        Position {
-            coord: Coord { x: 14, y: 3 },
-        },
-    );
-
-    entities.units.insert(
-        unit_id,
-        Unit {
-            glyph: Glyph {
-                symbol: '@',
-                color: WHITE,
-            },
-            vision: 2,
-        },
-    );
-
-    let mut light_grid = LightGrid::new(&map, &entities);
-
+    let mut game = Game::new(Map::new());
+    let unit_id = game.add_unit(make_unit);
+    game.add_point_light(make_point_light);
+    game.light_grid = LightGrid::new(&game);
     let mut time = 0.0;
 
     loop {
@@ -72,61 +24,76 @@ async fn main() {
         let flicker = algorithm::perlin_noise_1d(time, 0.5, 1.0, 42);
         let torch_light = base + flicker * 0.5;
 
-        update_unit_position(&map, &mut light_grid, &mut entities, unit_id);
+        update_unit_position(&mut game, unit_id);
         clear_background(BLACK);
-        draw_visible_grid(&map, &entities, &light_grid, unit_id, torch_light);
+        draw_visible_grid(&game, unit_id, torch_light);
         draw_text("0.0.1", 8.0, 16.0, 16.0, WHITE);
         next_frame().await;
     }
 }
 
-fn update_unit_position(
-    map: &Map,
-    light_grid: &mut LightGrid,
-    entities: &mut Entities,
-    entity_id: EntityID,
-) -> Option<()> {
-    let position = entities.positions.get_mut(&entity_id)?;
+fn make_unit(id: UnitId) -> Unit {
+    Unit {
+        id,
+        coord: Coord { x: 14, y: 1 },
+        glyph: Glyph {
+            symbol: '@',
+            color: WHITE,
+        },
+        vision: 2,
+        light: Some(Light {
+            radius: 3,
+            color: ORANGE,
+        }),
+    }
+}
+
+fn make_point_light(id: PointLightId) -> PointLight {
+    PointLight {
+        id,
+        coord: Coord { x: 1, y: 1 },
+        light: Light {
+            radius: 5,
+            color: BLUE,
+        },
+    }
+}
+
+fn update_unit_position(game: &mut Game, unit_id: UnitId) -> Option<()> {
+    let coord = game.unit(unit_id)?.coord;
     if let Some(direction) = input::pressed_direction() {
-        let new_coord = position.coord.shift(direction);
-        if map.walkable(new_coord) {
-            position.coord = new_coord;
+        let new_coord = coord.shift(direction);
+        if game.map.walkable(new_coord) {
+            game.unit_mut(unit_id)?.coord = new_coord;
         }
-        *light_grid = LightGrid::new(map, entities);
+        game.light_grid = LightGrid::new(game);
     }
 
     Some(())
 }
 
-fn draw_visible_grid(
-    map: &Map,
-    entities: &Entities,
-    light_grid: &LightGrid,
-    entity_id: EntityID,
-    flicker: f32,
-) -> Option<()> {
-    let position = entities.positions.get(&entity_id)?;
-    let unit = entities.units.get(&entity_id)?;
+fn draw_visible_grid(game: &Game, unit_id: UnitId, flicker: f32) -> Option<()> {
+    let unit = game.unit(unit_id)?;
 
     for x in 0..Map::WIDTH {
         for y in 0..Map::HEIGHT {
             let coord = Coord { x, y };
 
-            if !map.check_line_of_sight(position.coord, coord) {
+            if !game.map.check_line_of_sight(unit.coord, coord) {
                 continue;
             }
 
-            let light_color = light_grid.color_at(coord).with_alpha(flicker);
-            let distance = light_grid.distance_from_light(coord);
+            let light_color = game.light_grid.color_at(coord).with_alpha(flicker);
+            let distance = game.light_grid.distance_from_light(coord);
 
             if distance <= unit.vision {
-                let tile = map.tile(coord);
+                let tile = game.map.tile(coord);
 
                 if let Some(bg_color) = tile.background {
                     draw_grid::draw_square(coord, mix_color(bg_color, light_color, 0.5));
                 }
 
-                if let Some(unit) = entities.unit_at(coord) {
+                if let Some(unit) = game.unit_at(coord) {
                     let glyph = Glyph {
                         symbol: unit.glyph.symbol,
                         color: mix_color(unit.glyph.color, light_color, 0.5),
