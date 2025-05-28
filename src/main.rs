@@ -21,9 +21,7 @@ async fn main() {
 
     loop {
         time += get_frame_time();
-        let base = 0.5;
         let flicker = algorithm::perlin_noise_1d(time, 0.5, 1.0, 42);
-        let torch_light = base + flicker * 0.5;
 
         update::update_game(&mut game);
         clear_background(BLACK);

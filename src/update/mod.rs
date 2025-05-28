@@ -12,6 +12,7 @@ pub fn update_game(game: &mut Game) -> Option<()> {
             let coord = game.active_unit()?.coord;
             let next_coord = coord.shift(dir);
             game.map.walkable(next_coord).then_some(())?;
+            game.unit_at(next_coord).is_none().then_some(())?;
 
             game.state = GameState::ExecutingMove {
                 next_coord,
