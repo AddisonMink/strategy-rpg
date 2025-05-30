@@ -1,4 +1,5 @@
-use super::coord::Coord;
+use super::{Direction, coord::Coord};
+use std::collections::VecDeque;
 
 pub fn check_bresenhem_line<F>(from: Coord, to: Coord, accept: F) -> bool
 where
@@ -57,4 +58,50 @@ pub fn perlin_noise_1d(x: f32, period: f32, amplitude: f32, seed: u64) -> f32 {
     let y1 = gradient(v1) * (-1.0 + mu) * amplitude;
     let result = y0 * (1.0 - smooth_mu) + y1 * smooth_mu;
     (result + 2.0 * amplitude) * 0.25 / amplitude
+}
+
+pub fn breadth_first_search<F, G>(from: Coord, accept: F, goal: G) -> VecDeque<Coord>
+where
+    F: Fn(Coord) -> bool,
+    G: Fn(Coord) -> bool,
+{
+    let mut queue = VecDeque::new();
+    let mut visited = std::collections::HashSet::new();
+    let mut came_from = std::collections::HashMap::new();
+
+    queue.push_back(from);
+    visited.insert(from);
+
+    while let Some(coord) = queue.pop_front() {
+        if goal(coord) {
+            // Reconstruct path
+            let mut path = VecDeque::new();
+            let mut current = coord;
+            path.push_front(current);
+            while let Some(&prev) = came_from.get(&current) {
+                current = prev;
+                path.push_front(current);
+            }
+            // remove origin
+            path.pop_front();
+            return path;
+        }
+
+        for dir in [
+            Direction::Up,
+            Direction::Down,
+            Direction::Left,
+            Direction::Right,
+        ] {
+            let next_coord = coord.shift(dir);
+
+            if accept(next_coord) && !visited.contains(&next_coord) {
+                queue.push_back(next_coord);
+                visited.insert(next_coord);
+                came_from.insert(next_coord, coord);
+            }
+        }
+    }
+
+    VecDeque::new() // No path found
 }

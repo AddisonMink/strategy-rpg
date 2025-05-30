@@ -1,6 +1,6 @@
 use super::direction::Direction;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Coord {
     pub x: u16,
     pub y: u16,

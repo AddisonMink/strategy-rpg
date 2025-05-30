@@ -1,7 +1,16 @@
+use super::behavior::*;
 use crate::model::*;
 use macroquad::prelude::*;
+use std::collections::VecDeque;
 
 pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
+    let select_move = |unit: &Unit, game: &Game| -> Option<VecDeque<Coord>> {
+        let player = find_nearest_visible_player(game, unit.coord, unit.vision)?;
+        let mut path = find_path_to_adjacent(game, unit.coord, player.coord);
+        path.truncate(unit.movement as usize);
+        Some(path)
+    };
+
     Unit {
         id,
         is_player: false,
@@ -11,7 +20,7 @@ pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
         movement: 2,
         coord,
         light: None,
-        npc_behavior: None,
+        npc_behavior: Some(NpcBehavior { select_move }),
     }
 }
 

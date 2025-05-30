@@ -75,6 +75,10 @@ impl Game {
         self.units.values()
     }
 
+    pub fn unit_players_iter(&self) -> impl Iterator<Item = &Unit> {
+        self.units.values().filter(|unit| unit.is_player)
+    }
+
     pub fn next_turn(&mut self) -> Option<UnitId> {
         self.turn_queue.pop_front();
 

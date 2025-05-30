@@ -15,4 +15,4 @@ pub use light_grid::LightGrid;
 pub use map::Map;
 pub use point_light::{PointLight, PointLightId};
 pub use tile::Tile;
-pub use unit::{Unit, UnitId};
+pub use unit::*;

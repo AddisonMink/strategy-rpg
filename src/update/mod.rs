@@ -1,9 +1,10 @@
 use std::collections::VecDeque;
 
+
 use crate::model::*;
 
 const TURN_START_DURATION: f32 = 1.0;
-const NPC_MOVE_DURATION: f32 = 0.5;
+const NPC_MOVE_DURATION: f32 = 0.2;
 
 pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
     match game.state.clone() {
@@ -30,12 +31,14 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
         }
         GameState::NpcSelectingMove => {
             let unit = game.active_unit()?;
-            if let Some(behavior) = unit.npc_behavior.as_ref() {
-                let path = (behavior.select_move)(unit, game);
-                game.state = GameState::NpcExecutingMove { path, time: 0.0 };
-            } else {
-                game.state = GameState::EndingTurn;
-            }
+
+            let path = unit
+                .npc_behavior
+                .as_ref()
+                .and_then(|b| (b.select_move)(unit, game))
+                .unwrap_or(VecDeque::new());
+
+            game.state = GameState::NpcExecutingMove { path, time: 0.0 };
         }
         GameState::SelectingMove { moves_left } => {
             let dir = input::pressed_direction()?;

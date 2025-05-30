@@ -28,5 +28,5 @@ pub struct Unit {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct NpcBehavior {
-    pub select_move: fn(&Unit, &Game) -> VecDeque<Coord>,
+    pub select_move: fn(&Unit, &Game) -> Option<VecDeque<Coord>>,
 }
