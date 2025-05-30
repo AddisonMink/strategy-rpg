@@ -5,3 +5,9 @@ pub struct Glyph {
     pub symbol: char,
     pub color: Color,
 }
+
+impl Glyph {
+    pub fn new(symbol: char, color: Color) -> Self {
+        Glyph { symbol, color }
+    }
+}

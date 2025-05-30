@@ -1,5 +1,3 @@
-use macroquad::prelude::trace;
-
 use super::GameState;
 use super::LightGrid;
 use super::Map;
@@ -43,9 +41,9 @@ impl Game {
         id
     }
 
-    pub fn add_unit(&mut self, f: impl FnOnce(UnitId) -> Unit) -> UnitId {
+    pub fn add_unit(&mut self, coord: Coord, f: impl FnOnce(UnitId, Coord) -> Unit) -> UnitId {
         let id = self.next_unit_id;
-        let unit = f(id);
+        let unit = f(id, coord);
         self.next_unit_id.0 += 1;
         self.units.insert(id, unit);
         id

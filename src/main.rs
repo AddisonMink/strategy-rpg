@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 
+mod data;
 mod model;
 mod render;
 mod update;
@@ -12,8 +13,10 @@ async fn main() {
     asset::load_assets().await;
 
     let mut game = Game::new(Map::new());
-    game.add_unit(make_unit);
-    game.add_unit(make_unit_2);
+    let player_id = game.add_unit(Coord::new(14, 1), data::unit::make_player);
+    let player = game.unit_mut(player_id).unwrap();
+    player.light = Some(Light::new(5, ORANGE));
+    game.add_unit(Coord::new(1, 1), data::unit::make_goon);
     game.add_point_light(make_point_light);
     game.light_grid = LightGrid::new(&game);
     game.next_turn();
@@ -26,41 +29,8 @@ async fn main() {
         update::update_game(&mut game, delta_time);
         clear_background(BLACK);
         render::draw_game(&game, flicker);
-        draw_text("0.0.2",10.0, 274.0, 16.0, WHITE);
+        draw_text("0.0.2", 10.0, 274.0, 16.0, WHITE);
         next_frame().await;
-    }
-}
-
-fn make_unit(id: UnitId) -> Unit {
-    Unit {
-        id,
-        coord: Coord { x: 14, y: 1 },
-        glyph: Glyph {
-            symbol: '@',
-            color: WHITE,
-        },
-        name: "Player 1".to_string(),
-        vision: 2,
-        movement: 3,
-        light: Some(Light {
-            radius: 3,
-            color: ORANGE,
-        }),
-    }
-}
-
-fn make_unit_2(id: UnitId) -> Unit {
-    Unit {
-        id,
-        coord: Coord { x: 1, y: 1 },
-        glyph: Glyph {
-            symbol: 'A',
-            color: WHITE,
-        },
-        name: "Player 2".to_string(),
-        vision: 2,
-        movement: 3,
-        light: None,
     }
 }
 
