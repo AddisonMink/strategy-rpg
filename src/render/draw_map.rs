@@ -5,24 +5,13 @@ use crate::model::*;
 use macroquad::prelude::*;
 
 pub fn draw_map(game: &Game, flicker: f32) {
-    let unit_povs: Vec<(Coord, u16)> = game
-        .unit_players_iter()
-        .map(|u| (u.coord, u.vision))
-        .collect();
-
     for x in 0..Map::WIDTH {
         for y in 0..Map::HEIGHT {
             let coord = Coord { x, y };
             let distance_from_light = game.light_grid.distance_from_light(coord);
             let light_color = game.light_grid.color_at(coord).with_alpha(flicker);
 
-            let unit_can_see = unit_povs.iter().any(|(origin, vision)| {
-                let distance = origin.manhattan_distance(coord);
-                game.map.check_line_of_sight(*origin, coord)
-                    && (distance <= *vision || distance_from_light <= *vision)
-            });
-
-            if unit_can_see {
+            if game.player_can_see(coord) {
                 let tile = game.map.tile(coord);
 
                 if let Some(bg_color) = tile.background {

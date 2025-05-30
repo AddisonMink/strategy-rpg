@@ -104,4 +104,13 @@ impl Game {
 
         point_lights_iter.chain(unit_lights_iter)
     }
+
+    pub fn player_can_see(&self, coord: Coord) -> bool {
+        self.unit_players_iter().any(|unit| {
+            let distance = unit.coord.manhattan_distance(coord);
+            let distance_from_light = self.light_grid.distance_from_light(coord);
+            self.map.check_line_of_sight(unit.coord, coord)
+                && (distance <= unit.vision || distance_from_light <= unit.vision)
+        })
+    }
 }

@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::model::*;
 
-const TURN_START_DURATION: f32 = 1.0;
+const TURN_START_DURATION: f32 = 0.5;
 const NPC_MOVE_DURATION: f32 = 0.2;
 
 pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
