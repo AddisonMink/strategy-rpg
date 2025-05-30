@@ -1,6 +1,5 @@
 use std::collections::VecDeque;
 
-
 use crate::model::*;
 
 const TURN_START_DURATION: f32 = 1.0;
@@ -29,6 +28,21 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
                 };
             }
         }
+        GameState::SelectingMove { moves_left } => {
+            if input::pressed_cancel() {
+                game.state = GameState::EndingTurn;
+            } else if let Some(dir) = input::pressed_direction() {
+                let coord = game.active_unit()?.coord;
+                let next_coord = coord.shift(dir);
+                game.map.walkable(next_coord).then_some(())?;
+                game.unit_at(next_coord).is_none().then_some(())?;
+
+                game.state = GameState::ExecutingMove {
+                    next_coord,
+                    moves_left: moves_left - 1,
+                };
+            }
+        }
         GameState::NpcSelectingMove => {
             let unit = game.active_unit()?;
 
@@ -39,18 +53,6 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
                 .unwrap_or(VecDeque::new());
 
             game.state = GameState::NpcExecutingMove { path, time: 0.0 };
-        }
-        GameState::SelectingMove { moves_left } => {
-            let dir = input::pressed_direction()?;
-            let coord = game.active_unit()?.coord;
-            let next_coord = coord.shift(dir);
-            game.map.walkable(next_coord).then_some(())?;
-            game.unit_at(next_coord).is_none().then_some(())?;
-
-            game.state = GameState::ExecutingMove {
-                next_coord,
-                moves_left: moves_left - 1,
-            };
         }
         GameState::ExecutingMove {
             next_coord,
