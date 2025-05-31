@@ -68,7 +68,10 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
             if moves_left > 0 {
                 game.state = GameState::SelectingMove { moves_left };
             } else {
-                game.state = GameState::EndingTurn;
+                game.state = GameState::SelectingAction {
+                    actions: vec![basic_attack()],
+                    selected_index: 0,
+                }
             }
         }
         GameState::NpcExecutingMove { path, time } => {
@@ -95,9 +98,7 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
                 };
             }
         }
-        GameState::SelectingAction => {
-            game.state = GameState::EndingTurn;
-        }
+        GameState::SelectingAction { .. } => {}
         GameState::NpcSelectingAction => {
             game.state = GameState::ExecutingEffects {
                 effects: VecDeque::new(),
@@ -115,4 +116,15 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
         }
     }
     Some(())
+}
+
+fn basic_attack() -> Action {
+    Action {
+        name: "Attack".to_string(),
+        range: Range::SingleUnit {
+            min_range: 1,
+            max_range: 1,
+        },
+        effect_templates: vec![EffectTemplate::Damage { min: 1, max: 4 }],
+    }
 }

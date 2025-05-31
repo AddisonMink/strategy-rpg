@@ -1,20 +1,26 @@
+pub mod action;
 pub mod effect;
+pub mod effect_template;
 pub mod game;
 pub mod game_state;
 pub mod light;
 pub mod light_grid;
 pub mod map;
 pub mod point_light;
+pub mod range;
 pub mod tile;
 pub mod unit;
 
 pub use crate::util::*;
+pub use action::Action;
 pub use effect::Effect;
+pub use effect_template::EffectTemplate;
 pub use game::Game;
 pub use game_state::*;
 pub use light::Light;
 pub use light_grid::LightGrid;
 pub use map::Map;
 pub use point_light::{PointLight, PointLightId};
+pub use range::Range;
 pub use tile::Tile;
 pub use unit::*;
