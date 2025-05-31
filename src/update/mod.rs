@@ -1,6 +1,5 @@
-use std::{collections::VecDeque, vec};
-
 use crate::prelude::*;
+use std::{collections::VecDeque, vec};
 
 const TURN_START_DURATION: f32 = 0.5;
 const NPC_MOVE_DURATION: f32 = 0.2;

@@ -1,8 +1,4 @@
-use super::panel::Panel;
-use crate::asset::MAP_FONT;
-use crate::coord::Coord;
-use crate::glyph::Glyph;
-use macroquad::prelude::*;
+use crate::prelude::*;
 
 const ORIGIN: Vec2 = Vec2::new(20.0, 20.0);
 const TILE_SIZE: f32 = 32.0;
@@ -35,7 +31,7 @@ pub fn draw_string(coord: Coord, text: &str, color: Color) {
         x + TILE_SIZE / 8.0 + ORIGIN.x,
         y + TILE_SIZE - TILE_SIZE / 8.0 + ORIGIN.y,
         TextParams {
-            font: MAP_FONT.get(),
+            font: asset::MAP_FONT.get(),
             font_size: TILE_SIZE as u16,
             color,
             ..Default::default()
