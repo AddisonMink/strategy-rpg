@@ -1,4 +1,4 @@
-use crate::glyph::Glyph;
+use crate::util::*;
 use macroquad::prelude::*;
 
 pub struct Tile {

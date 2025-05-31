@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::model::*;
+use crate::prelude::*;
 
 pub fn coord_is_visible(game: &Game, origin: Coord, coord: Coord, vision: u16) -> bool {
     let distance = origin.manhattan_distance(coord);

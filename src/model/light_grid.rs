@@ -1,6 +1,4 @@
-use super::game::Game;
-use super::map::Map;
-use crate::render::{add_colors, normalize_color};
+use super::*;
 use crate::util::*;
 use macroquad::prelude::*;
 
@@ -40,14 +38,14 @@ impl LightGrid {
                         let index = y as usize * Map::WIDTH as usize + x as usize;
 
                         lights[index] = lights[index].min(distance);
-                        colors[index] = add_colors(colors[index], color);
+                        colors[index] = color::add_colors(colors[index], color);
                     }
                 }
             }
         }
 
         for color in colors.iter_mut() {
-            *color = normalize_color(*color);
+            *color = color::normalize_color(*color);
         }
 
         LightGrid { lights, colors }

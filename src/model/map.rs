@@ -1,6 +1,5 @@
-use crate::algorithm;
-use crate::coord::Coord;
-use crate::tile::Tile;
+use super::*;
+use crate::util::*;
 
 pub struct Map {
     tiles: Vec<Tile>,

@@ -2,11 +2,12 @@ use macroquad::prelude::*;
 
 mod data;
 mod model;
+mod prelude;
 mod render;
 mod update;
 mod util;
 
-use model::*;
+use prelude::*;
 
 #[macroquad::main("Strategy RPG")]
 async fn main() {

@@ -1,5 +1,6 @@
 pub mod algorithm;
 pub mod asset;
+pub mod color;
 pub mod coord;
 pub mod direction;
 pub mod glyph;

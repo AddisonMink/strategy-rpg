@@ -1,4 +1,4 @@
-use super::{EffectTemplate, Range};
+use super::*;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Action {

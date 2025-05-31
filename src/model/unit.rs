@@ -1,7 +1,6 @@
-use std::collections::VecDeque;
-
-use super::{Game, light::Light};
+use super::*;
 use crate::util::*;
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UnitId(pub u16);

@@ -1,6 +1,5 @@
 use super::behavior::*;
-use crate::model::*;
-use macroquad::prelude::*;
+use crate::prelude::*;
 use std::collections::VecDeque;
 
 pub fn make_goon(id: UnitId, coord: Coord) -> Unit {

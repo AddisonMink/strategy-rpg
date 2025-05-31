@@ -3,12 +3,9 @@ pub mod draw_map;
 pub mod panel;
 pub mod util;
 
-pub use draw_map::*;
-use macroquad::prelude::*;
-pub use panel::*;
-pub use util::*;
-
-use crate::model::*;
+use crate::prelude::*;
+use draw_map::draw_map;
+use panel::Panel;
 
 const INFO_PANEL_X: f32 = 552.0;
 const INFO_PANEL_Y: f32 = 10.0;

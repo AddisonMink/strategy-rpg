@@ -1,8 +1,5 @@
-use super::Panel;
-use super::draw_grid;
-use super::util::*;
-use crate::model::*;
-use macroquad::prelude::*;
+use super::*;
+use crate::prelude::*;
 
 pub fn draw_map(game: &Game, flicker: f32) {
     for x in 0..Map::WIDTH {
@@ -15,19 +12,19 @@ pub fn draw_map(game: &Game, flicker: f32) {
                 let tile = game.map.tile(coord);
 
                 if let Some(bg_color) = tile.background {
-                    draw_grid::draw_square(coord, mix_color(bg_color, light_color, 0.5));
+                    draw_grid::draw_square(coord, color::mix_color(bg_color, light_color, 0.5));
                 }
 
                 if let Some(unit) = game.unit_at(coord) {
                     let glyph = Glyph {
                         symbol: unit.glyph.symbol,
-                        color: mix_color(unit.glyph.color, light_color, 0.5),
+                        color: color::mix_color(unit.glyph.color, light_color, 0.5),
                     };
                     draw_grid::draw_glyph(coord, glyph);
                 } else {
                     let glyph = Glyph {
                         symbol: tile.glyph.symbol,
-                        color: mix_color(tile.glyph.color, light_color, 0.5),
+                        color: color::mix_color(tile.glyph.color, light_color, 0.5),
                     };
                     draw_grid::draw_glyph(coord, glyph);
                 }
