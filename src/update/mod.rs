@@ -1,3 +1,5 @@
+use macroquad::rand::gen_range;
+
 use crate::prelude::*;
 use std::{collections::VecDeque, vec};
 
@@ -127,13 +129,28 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
             action,
             targets,
             selected_index,
-        } => {}
+        } => {
+            if input::pressed_confirm() {
+                if let Some(&target) = targets.get(selected_index) {
+                    let effects = compile_actions(action, target);
+                    game.state = GameState::ExecutingEffects { effects };
+                }
+            } else if input::pressed_cancel() {
+                game.state = GameState::SelectingAction {
+                    actions: vec![basic_attack()],
+                    selected_index: 0,
+                };
+            }
+        }
         GameState::NpcSelectingAction => {
             game.state = GameState::ExecutingEffects {
                 effects: VecDeque::new(),
             };
         }
-        GameState::ExecutingEffects { .. } => {
+        GameState::ExecutingEffects { effects } => {
+            for effect in effects {
+                execute_effect(game, effect);
+            }
             game.state = GameState::EndingTurn;
         }
         GameState::EndingTurn => {
@@ -171,4 +188,32 @@ fn find_targets_in_range(game: &Game, min_range: u16, max_range: u16) -> Vec<Uni
         .filter(|u| !u.is_player && is_valid_target(u.coord))
         .map(|u| u.id)
         .collect()
+}
+
+fn compile_actions(action: Action, target: UnitId) -> VecDeque<Effect> {
+    action
+        .effect_templates
+        .into_iter()
+        .map(|template| match template {
+            EffectTemplate::Damage { min, max } => Effect::Damage { min, max, target },
+        })
+        .collect()
+}
+
+fn execute_effect(game: &mut Game, effect: Effect) -> Option<()> {
+    match effect {
+        Effect::Damage { min, max, target } => {
+            let unit = game.unit_mut(target)?;
+            let amount = roll(min, max);
+            unit.hp = unit.hp.saturating_sub(amount);
+        }
+    }
+    Some(())
+}
+
+fn roll(min: u16, max: u16) -> u16 {
+    // rool twice and return the average
+    let roll1 = gen_range(min, max + 1);
+    let roll2 = gen_range(min, max + 1);
+    (roll1 + roll2) / 2
 }
