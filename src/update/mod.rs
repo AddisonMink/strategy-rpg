@@ -73,7 +73,7 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
         }
         GameState::NpcExecutingMove { path, time } => {
             if path.is_empty() {
-                game.state = GameState::EndingTurn;
+                game.state = GameState::NpcSelectingAction;
             } else if time <= 0.0 {
                 let next_coord = path.front().copied().unwrap();
                 let unit = game.active_unit_mut()?;
@@ -94,6 +94,17 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
                     time: time - delta_time,
                 };
             }
+        }
+        GameState::SelectingAction => {
+            game.state = GameState::EndingTurn;
+        }
+        GameState::NpcSelectingAction => {
+            game.state = GameState::ExecutingEffects {
+                effects: VecDeque::new(),
+            };
+        }
+        GameState::ExecutingEffects { .. } => {
+            game.state = GameState::EndingTurn;
         }
         GameState::EndingTurn => {
             game.next_turn();

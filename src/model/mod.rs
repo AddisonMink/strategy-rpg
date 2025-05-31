@@ -1,3 +1,4 @@
+pub mod effect;
 pub mod game;
 pub mod game_state;
 pub mod light;
@@ -8,6 +9,7 @@ pub mod tile;
 pub mod unit;
 
 pub use crate::util::*;
+pub use effect::Effect;
 pub use game::Game;
 pub use game_state::*;
 pub use light::Light;
