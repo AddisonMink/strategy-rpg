@@ -11,7 +11,7 @@ pub fn draw_map(game: &Game, flicker: f32) {
             let distance_from_light = game.light_grid.distance_from_light(coord);
             let light_color = game.light_grid.color_at(coord).with_alpha(flicker);
 
-            if game.player_can_see(coord) {
+            if game.any_player_can_see(coord) {
                 let tile = game.map.tile(coord);
 
                 if let Some(bg_color) = tile.background {

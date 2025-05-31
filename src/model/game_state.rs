@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::util::*;
 
-use super::{Action, Effect};
+use super::{Action, Effect, UnitId};
 
 #[derive(Debug, Clone)]
 pub enum GameState {
@@ -24,6 +24,11 @@ pub enum GameState {
     },
     SelectingAction {
         actions: Vec<Action>,
+        selected_index: usize,
+    },
+    SelectingSingleUnitTarget {
+        action: Action,
+        targets: Vec<UnitId>,
         selected_index: usize,
     },
     NpcSelectingAction,

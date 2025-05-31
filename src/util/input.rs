@@ -1,9 +1,14 @@
 use super::direction::Direction;
 use macroquad::prelude::*;
 
+pub fn pressed_confirm() -> bool {
+    is_key_pressed(KeyCode::J)
+}
+
 pub fn pressed_cancel() -> bool {
     is_key_pressed(KeyCode::K)
 }
+
 
 pub fn pressed_direction() -> Option<Direction> {
     if is_key_pressed(KeyCode::W) {

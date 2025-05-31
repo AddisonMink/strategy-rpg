@@ -20,7 +20,7 @@ pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
     match &game.state {
         GameState::StartingTurn { .. } => {
             let unit = game.active_unit()?;
-            let player_can_see = game.player_can_see(unit.coord);
+            let player_can_see = game.any_player_can_see(unit.coord);
 
             let (name, color) = if player_can_see {
                 (unit.name.to_uppercase(), unit.glyph.color)
@@ -54,10 +54,42 @@ pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
             action_menu_panel.draw(INFO_PANEL_X, INFO_PANEL_Y);
             action_description_panel.draw(INFO_PANEL_X, action_description_y);
         }
+        GameState::SelectingSingleUnitTarget {
+            action,
+            targets,
+            selected_index,
+        } => {
+            let action_description_panel = make_action_description_panel(action);
+            let next_panel_y = INFO_PANEL_Y + action_description_panel.get_height() + 10.0;
+            action_description_panel.draw(INFO_PANEL_X, INFO_PANEL_Y);
+
+            if targets.is_empty() {
+                let no_targets_panel = make_no_targets_panel();
+                no_targets_panel.draw(INFO_PANEL_X, next_panel_y);
+            } else {
+                let selected_id = targets[*selected_index];
+                let selected_unit = game.unit(selected_id).unwrap();
+                let unit_description_panel = make_unit_description_panel(selected_unit);
+
+                for target_id in targets.iter() {
+                    let coord = game.unit(*target_id).unwrap().coord;
+                    draw_grid::draw_square(coord, WHITE.with_alpha(0.25));
+                }
+
+                draw_grid::draw_square(selected_unit.coord, WHITE.with_alpha(0.5));
+                unit_description_panel.draw(INFO_PANEL_X, next_panel_y);
+            }
+        }
         _ => {}
     }
 
     Some(())
+}
+
+fn make_unit_description_panel(unit: &Unit) -> Panel {
+    Panel::builder(&unit.name.to_uppercase(), unit.glyph.color)
+        .big_glyph(unit.glyph, 4.0)
+        .build()
 }
 
 fn make_movement_panel(unit: &Unit, moves_left: u16) -> Panel {
@@ -110,4 +142,10 @@ fn make_action_description_panel(action: &Action) -> Panel {
     }
 
     panel.build()
+}
+
+fn make_no_targets_panel() -> Panel {
+    Panel::builder("INFO", WHITE)
+        .line("No targets!", WHITE)
+        .build()
 }

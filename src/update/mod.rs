@@ -1,4 +1,6 @@
-use std::collections::VecDeque;
+use std::{collections::VecDeque, vec};
+
+use macroquad::prelude::trace;
 
 use crate::model::*;
 
@@ -30,7 +32,10 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
         }
         GameState::SelectingMove { moves_left } => {
             if input::pressed_cancel() {
-                game.state = GameState::EndingTurn;
+                game.state = GameState::SelectingAction {
+                    actions: vec![basic_attack()],
+                    selected_index: 0,
+                }
             } else if let Some(dir) = input::pressed_direction() {
                 let coord = game.active_unit()?.coord;
                 let next_coord = coord.shift(dir);
@@ -98,7 +103,34 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
                 };
             }
         }
-        GameState::SelectingAction { .. } => {}
+        GameState::SelectingAction {
+            actions,
+            selected_index,
+        } => {
+            if input::pressed_confirm() {
+                let action = &actions[selected_index];
+
+                let Range::SingleUnit {
+                    min_range,
+                    max_range,
+                } = action.range;
+
+                let targets = find_targets_in_range(game, min_range, max_range);
+
+                game.state = GameState::SelectingSingleUnitTarget {
+                    action: action.clone(),
+                    targets,
+                    selected_index: 0,
+                };
+            } else if input::pressed_cancel() {
+                game.state = GameState::EndingTurn;
+            }
+        }
+        GameState::SelectingSingleUnitTarget {
+            action,
+            targets,
+            selected_index,
+        } => {}
         GameState::NpcSelectingAction => {
             game.state = GameState::ExecutingEffects {
                 effects: VecDeque::new(),
@@ -127,4 +159,19 @@ fn basic_attack() -> Action {
         },
         effect_templates: vec![EffectTemplate::Damage { min: 1, max: 4 }],
     }
+}
+
+fn find_targets_in_range(game: &Game, min_range: u16, max_range: u16) -> Vec<UnitId> {
+    let unit = game.active_unit().unwrap();
+    let coord = unit.coord;
+
+    let is_valid_target = |c: Coord| {
+        let distance = coord.manhattan_distance(c);
+        game.player_can_see(unit.id, coord) && distance >= min_range && distance <= max_range
+    };
+
+    game.unit_iter()
+        .filter(|u| !u.is_player && is_valid_target(u.coord))
+        .map(|u| u.id)
+        .collect()
 }
