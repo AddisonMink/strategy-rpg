@@ -3,6 +3,7 @@ use crate::prelude::*;
 pub fn make_unit_description_panel(unit: &Unit) -> Panel {
     Panel::builder(&unit.name.to_uppercase(), unit.glyph.color)
         .big_glyph(unit.glyph, 4.0)
+        .meter("HP ", WHITE, unit.hp, unit.hp_max, RED)
         .build()
 }
 

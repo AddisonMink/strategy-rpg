@@ -16,9 +16,11 @@ pub struct Unit {
     // attributes
     pub vision: u16,
     pub movement: u16,
+    pub hp_max: u16,
 
     // state
     pub coord: Coord,
+    pub hp: u16,
     pub light: Option<Light>,
 
     // Optional NPC behavior.
