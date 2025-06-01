@@ -1,27 +1,41 @@
+use ending_turn::to_ending_turn;
+use executing_effects::to_executing_effects;
+use executing_move::to_executing_move;
 use macroquad::rand::gen_range;
+use npc_executing_move::to_npc_executing_move;
+use npc_selecting_action::to_npc_selecting_action;
+use npc_selecting_move::to_npc_selecting_move;
+use selecting_action::to_selecting_action;
+use selecting_move::{to_selecting_move, to_selecting_move_ex};
+use selecting_single_unit_target::to_selecting_single_unit_target;
+use starting_turn::to_starting_turn;
+
+mod ending_turn;
+mod executing_effects;
+mod executing_move;
+mod npc_executing_move;
+mod npc_selecting_action;
+mod npc_selecting_move;
+mod selecting_action;
+mod selecting_move;
+mod selecting_single_unit_target;
+mod starting_turn;
 
 use crate::prelude::*;
-use std::{collections::VecDeque, vec};
+use std::{clone, collections::VecDeque};
 
-const TURN_START_DURATION: f32 = 0.5;
 const NPC_MOVE_DURATION: f32 = 0.2;
 
 pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
     match game.state.clone() {
-        GameState::Start => {
-            game.state = GameState::StartingTurn {
-                time: TURN_START_DURATION,
-            }
-        }
+        GameState::Start => to_starting_turn(game),
         GameState::StartingTurn { time } => {
             if time <= 0.0 {
                 let unit = game.active_unit()?;
                 if unit.is_player {
-                    game.state = GameState::SelectingMove {
-                        moves_left: unit.movement,
-                    };
+                    to_selecting_move(game);
                 } else {
-                    game.state = GameState::NpcSelectingMove;
+                    to_npc_selecting_move(game);
                 }
             } else {
                 game.state = GameState::StartingTurn {
@@ -31,20 +45,14 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
         }
         GameState::SelectingMove { moves_left } => {
             if input::pressed_cancel() {
-                game.state = GameState::SelectingAction {
-                    actions: vec![basic_attack()],
-                    selected_index: 0,
-                }
+                to_selecting_action(game);
             } else if let Some(dir) = input::pressed_direction() {
                 let coord = game.active_unit()?.coord;
                 let next_coord = coord.shift(dir);
+
                 game.map.walkable(next_coord).then_some(())?;
                 game.unit_at(next_coord).is_none().then_some(())?;
-
-                game.state = GameState::ExecutingMove {
-                    next_coord,
-                    moves_left: moves_left - 1,
-                };
+                to_executing_move(game, next_coord, moves_left - 1);
             }
         }
         GameState::NpcSelectingMove => {
@@ -56,7 +64,7 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
                 .and_then(|b| (b.select_move)(unit, game))
                 .unwrap_or(VecDeque::new());
 
-            game.state = GameState::NpcExecutingMove { path, time: 0.0 };
+            to_npc_executing_move(game, path);
         }
         GameState::ExecutingMove {
             next_coord,
@@ -70,17 +78,14 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
             }
 
             if moves_left > 0 {
-                game.state = GameState::SelectingMove { moves_left };
+                to_selecting_move_ex(game, moves_left);
             } else {
-                game.state = GameState::SelectingAction {
-                    actions: vec![basic_attack()],
-                    selected_index: 0,
-                }
+                to_selecting_action(game);
             }
         }
         GameState::NpcExecutingMove { path, time } => {
             if path.is_empty() {
-                game.state = GameState::NpcSelectingAction;
+                to_npc_selecting_action(game);
             } else if time <= 0.0 {
                 let next_coord = path.front().copied().unwrap();
                 let unit = game.active_unit_mut()?;
@@ -108,19 +113,7 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
         } => {
             if input::pressed_confirm() {
                 let action = &actions[selected_index];
-
-                let Range::SingleUnit {
-                    min_range,
-                    max_range,
-                } = action.range;
-
-                let targets = find_targets_in_range(game, min_range, max_range);
-
-                game.state = GameState::SelectingSingleUnitTarget {
-                    action: action.clone(),
-                    targets,
-                    selected_index: 0,
-                };
+                to_selecting_single_unit_target(game, action.clone());
             } else if input::pressed_cancel() {
                 game.state = GameState::EndingTurn;
             }
@@ -133,61 +126,27 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
             if input::pressed_confirm() {
                 if let Some(&target) = targets.get(selected_index) {
                     let effects = compile_actions(action, target);
-                    game.state = GameState::ExecutingEffects { effects };
+                    to_executing_effects(game, effects);
                 }
             } else if input::pressed_cancel() {
-                game.state = GameState::SelectingAction {
-                    actions: vec![basic_attack()],
-                    selected_index: 0,
-                };
+                to_selecting_action(game);
             }
         }
         GameState::NpcSelectingAction => {
-            game.state = GameState::ExecutingEffects {
-                effects: VecDeque::new(),
-            };
+            to_executing_effects(game, VecDeque::new());
         }
         GameState::ExecutingEffects { effects } => {
             for effect in effects {
                 execute_effect(game, effect);
             }
-            game.state = GameState::EndingTurn;
+            to_ending_turn(game);
         }
         GameState::EndingTurn => {
             game.next_turn();
-
-            game.state = GameState::StartingTurn {
-                time: TURN_START_DURATION,
-            };
+            to_starting_turn(game);
         }
     }
     Some(())
-}
-
-fn basic_attack() -> Action {
-    Action {
-        name: "Attack".to_string(),
-        range: Range::SingleUnit {
-            min_range: 1,
-            max_range: 1,
-        },
-        effect_templates: vec![EffectTemplate::Damage { min: 1, max: 4 }],
-    }
-}
-
-fn find_targets_in_range(game: &Game, min_range: u16, max_range: u16) -> Vec<UnitId> {
-    let unit = game.active_unit().unwrap();
-    let coord = unit.coord;
-
-    let is_valid_target = |c: Coord| {
-        let distance = coord.manhattan_distance(c);
-        game.player_can_see(unit.id, coord) && distance >= min_range && distance <= max_range
-    };
-
-    game.unit_iter()
-        .filter(|u| !u.is_player && is_valid_target(u.coord))
-        .map(|u| u.id)
-        .collect()
 }
 
 fn compile_actions(action: Action, target: UnitId) -> VecDeque<Effect> {
