@@ -20,11 +20,16 @@ pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
         (player.coord.manhattan_distance(unit.coord) <= 1).then_some(())?;
 
         let mut effects = VecDeque::new();
+
+        effects.push_back(Effect::QueueAnimation {
+            animation: action_name_animation(unit, "Bonk"),
+        });
         effects.push_back(Effect::Damage {
             min: 0,
             max: 3,
             target: player.id,
         });
+
         Some(effects)
     };
 
@@ -59,5 +64,17 @@ pub fn make_player(id: UnitId, coord: Coord) -> Unit {
         hp: 10,
         light: None,
         npc_behavior: None,
+    }
+}
+
+fn action_name_animation(unit: &Unit, name: &str) -> Animation {
+    Animation {
+        elapsed: 0.0,
+        duration: 0.5,
+        kind: AnimationKind::PanelMessage {
+            coord: unit.coord,
+            title: unit.name.clone(),
+            text: name.to_string(),
+        },
     }
 }

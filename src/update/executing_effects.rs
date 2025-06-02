@@ -55,6 +55,9 @@ fn execute_effect(
         Effect::Kill { target } => {
             game.remove_unit(target);
         }
+        Effect::QueueAnimation { animation } => {
+            animations.push_back(animation);
+        }
     }
     Some((effects, animations))
 }

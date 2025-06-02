@@ -24,6 +24,9 @@ pub fn draw_animation(game: &Game, animation: &Animation) {
         AnimationKind::Message { coord, text, color } => {
             draw_message(*coord, text, *color, progress)
         }
+        AnimationKind::PanelMessage { coord, title, text } => {
+            draw_panel_message(*coord, title, text);
+        }
     }
 }
 
@@ -51,8 +54,7 @@ pub fn draw_meter(coord: Coord, label: &str, value: u16, max_value: u16, color: 
         .short_meter(label, WHITE, value, max_value, color)
         .build();
 
-    let x = ORIGIN.x + coord.x as f32 * TILE_SIZE + TILE_SIZE / 2.0 - panel.get_width() / 2.0;
-    let y = ORIGIN.y + coord.y as f32 * TILE_SIZE + TILE_SIZE / 2.0 - panel.get_height() / 2.0;
+    let (x, y) = panel_pos(coord, &panel);
 
     panel.draw(x, y);
 }
@@ -74,6 +76,13 @@ pub fn draw_message(coord: Coord, text: &str, color: Color, progress: f32) {
     );
 }
 
+pub fn draw_panel_message(coord: Coord, title: &str, text: &str) {
+    let panel = Panel::builder(title, WHITE).line(text, WHITE).build();
+    let (x, y) = panel_pos(coord, &panel);
+
+    panel.draw(x, y);
+}
+
 fn text_pos(coord: Coord, text: &str, size: u16, y_offset: f32) -> (f32, f32) {
     let size = measure_text(text, UI_FONT.get(), size, 1.0);
     let x = ORIGIN.x + coord.x as f32 * TILE_SIZE + TILE_SIZE / 2.0 - size.width / 2.0;
@@ -82,5 +91,11 @@ fn text_pos(coord: Coord, text: &str, size: u16, y_offset: f32) -> (f32, f32) {
         - size.height / 2.0
         + y_offset;
 
+    (x, y)
+}
+
+fn panel_pos(coord: Coord, panel: &Panel) -> (f32, f32) {
+    let x = ORIGIN.x + coord.x as f32 * TILE_SIZE + TILE_SIZE / 2.0 - panel.get_width() / 2.0;
+    let y = ORIGIN.y + coord.y as f32 * TILE_SIZE + TILE_SIZE / 2.0 - panel.get_height() / 2.0;
     (x, y)
 }

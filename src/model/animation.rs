@@ -26,4 +26,9 @@ pub enum AnimationKind {
         text: String,
         color: Color,
     },
+    PanelMessage {
+        coord: Coord,
+        title: String,
+        text: String,
+    },
 }
