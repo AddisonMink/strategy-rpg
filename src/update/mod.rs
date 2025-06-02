@@ -34,7 +34,7 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
         GameState::NpcExecutingMove { .. } => update_npc_executing_move(game, delta_time),
         GameState::SelectingAction { .. } => update_selecting_action(game),
         GameState::SelectingSingleUnitTarget { .. } => update_selecting_single_unit_target(game),
-        GameState::NpcSelectingAction => to_executing_effects(game, VecDeque::new()),
+        GameState::NpcSelectingAction => update_npc_selecting_action(game),
         GameState::ExecutingEffects { .. } => update_executing_effects(game),
         GameState::ShowingAnimations { .. } => update_showing_animations(game, delta_time),
         GameState::EndingTurn => update_ending_turn(game),

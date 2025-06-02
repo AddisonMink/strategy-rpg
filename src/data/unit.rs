@@ -15,6 +15,19 @@ pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
         Some(path)
     };
 
+    let select_action = |unit: &Unit, game: &Game| -> Option<VecDeque<Effect>> {
+        let player = find_nearest_visible_player(game, unit.coord, unit.vision)?;
+        (player.coord.manhattan_distance(unit.coord) <= 1).then_some(())?;
+
+        let mut effects = VecDeque::new();
+        effects.push_back(Effect::Damage {
+            min: 0,
+            max: 3,
+            target: player.id,
+        });
+        Some(effects)
+    };
+
     Unit {
         id,
         is_player: false,
@@ -26,7 +39,10 @@ pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
         coord,
         hp: hp_max,
         light: None,
-        npc_behavior: Some(NpcBehavior { select_move }),
+        npc_behavior: Some(NpcBehavior {
+            select_move,
+            select_action,
+        }),
     }
 }
 
