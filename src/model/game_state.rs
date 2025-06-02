@@ -34,5 +34,9 @@ pub enum GameState {
     ExecutingEffects {
         effects: VecDeque<Effect>,
     },
+    ShowingAnimations {
+        animations: VecDeque<Animation>,
+        effects: VecDeque<Effect>,
+    },
     EndingTurn,
 }

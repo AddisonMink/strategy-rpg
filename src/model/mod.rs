@@ -1,4 +1,5 @@
 pub mod action;
+pub mod animation;
 pub mod effect;
 pub mod effect_template;
 pub mod game;
@@ -12,6 +13,7 @@ pub mod tile;
 pub mod unit;
 
 pub use action::Action;
+pub use animation::*;
 pub use effect::Effect;
 pub use effect_template::EffectTemplate;
 pub use game::Game;

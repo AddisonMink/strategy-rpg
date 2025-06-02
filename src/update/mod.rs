@@ -8,6 +8,7 @@ use npc_selecting_move::*;
 use selecting_action::*;
 use selecting_move::*;
 use selecting_single_unit_target::*;
+use showing_animations::*;
 use starting_turn::*;
 use std::collections::VecDeque;
 
@@ -20,6 +21,7 @@ mod npc_selecting_move;
 mod selecting_action;
 mod selecting_move;
 mod selecting_single_unit_target;
+mod showing_animations;
 mod starting_turn;
 
 pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
@@ -34,6 +36,7 @@ pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
         GameState::SelectingSingleUnitTarget { .. } => update_selecting_single_unit_target(game),
         GameState::NpcSelectingAction => to_executing_effects(game, VecDeque::new()),
         GameState::ExecutingEffects { .. } => update_executing_effects(game),
+        GameState::ShowingAnimations { .. } => update_showing_animations(game, delta_time),
         GameState::EndingTurn => update_ending_turn(game),
     }
     Some(())
