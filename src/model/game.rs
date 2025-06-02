@@ -44,6 +44,11 @@ impl Game {
         id
     }
 
+    pub fn remove_unit(&mut self, id: UnitId) -> Option<Unit> {
+        self.turn_queue.retain(|&unit_id| unit_id != id);
+        self.units.remove(&id)
+    }
+
     pub fn unit(&self, id: UnitId) -> Option<&Unit> {
         self.units.get(&id)
     }

@@ -21,4 +21,9 @@ pub enum AnimationKind {
         max_value: u16,
         color: Color,
     },
+    Message {
+        coord: Coord,
+        text: String,
+        color: Color,
+    },
 }
