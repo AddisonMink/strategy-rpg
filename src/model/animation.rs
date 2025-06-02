@@ -1,17 +1,24 @@
 use crate::prelude::*;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Animation {
     pub kind: AnimationKind,
     pub duration: f32,
     pub elapsed: f32,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum AnimationKind {
     Number {
         coord: Coord,
         value: i32,
+        color: Color,
+    },
+    Meter {
+        coord: Coord,
+        label: String,
+        value: u16,
+        max_value: u16,
         color: Color,
     },
 }

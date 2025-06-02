@@ -5,6 +5,7 @@ use crate::prelude::*;
 use super::showing_animations::to_showing_animations;
 
 const NUMBER_ANIMATION_DURATION: f32 = 0.5;
+const METER_ANIMATION_DURATION: f32 = 0.5;
 
 pub fn to_executing_effects(game: &mut Game, effects: VecDeque<Effect>) {
     game.state = GameState::ExecutingEffects { effects };
@@ -37,6 +38,7 @@ fn execute_effect(game: &mut Game, effect: Effect) -> Option<VecDeque<Animation>
             let amount = roll(min, max);
             unit.hp = unit.hp.saturating_sub(amount);
             animations.push_back(number_animation(unit.coord, -(amount as i32), RED));
+            animations.push_back(hp_meter_animation(unit));
         }
     }
     Some(animations)
@@ -56,6 +58,20 @@ fn number_animation(coord: Coord, number: i32, color: Color) -> Animation {
             coord,
             value: number,
             color,
+        },
+    }
+}
+
+fn hp_meter_animation(unit: &Unit) -> Animation {
+    Animation {
+        elapsed: 0.0,
+        duration: METER_ANIMATION_DURATION,
+        kind: AnimationKind::Meter {
+            coord: unit.coord,
+            label: unit.name.clone(),
+            value: unit.hp,
+            max_value: unit.hp_max,
+            color: RED,
         },
     }
 }
