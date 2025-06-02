@@ -1,9 +1,11 @@
+mod animation;
 mod draw_grid;
 mod draw_map;
 mod panel;
 
 use crate::prelude::*;
-use draw_map::draw_map;
+use animation::*;
+use draw_map::*;
 use panel::*;
 
 const INFO_PANEL_X: f32 = 552.0;
@@ -74,6 +76,11 @@ pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
 
                 draw_grid::draw_square(selected_unit.coord, WHITE.with_alpha(0.5));
                 unit_description_panel.draw(INFO_PANEL_X, next_panel_y);
+            }
+        }
+        GameState::ShowingAnimations { animations, .. } => {
+            if let Some(animation) = animations.front() {
+                draw_animation(game, animation);
             }
         }
         _ => {}

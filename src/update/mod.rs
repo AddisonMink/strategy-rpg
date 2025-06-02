@@ -25,6 +25,7 @@ mod showing_animations;
 mod starting_turn;
 
 pub fn update_game(game: &mut Game, delta_time: f32) -> Option<()> {
+    trace!("{:?}", game.state);
     match game.state.clone() {
         GameState::Start => to_starting_turn(game),
         GameState::StartingTurn { .. } => update_starting_turn(game, delta_time),

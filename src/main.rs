@@ -17,7 +17,7 @@ async fn main() {
     let player_id = game.add_unit(Coord::new(14, 1), data::unit::make_player);
     let player = game.unit_mut(player_id).unwrap();
     player.light = Some(Light::new(5, ORANGE));
-    game.add_unit(Coord::new(1, 1), data::unit::make_goon);
+    game.add_unit(Coord::new(13, 1), data::unit::make_goon);
     game.add_point_light(make_point_light);
     game.light_grid = LightGrid::new(&game);
     game.next_turn();

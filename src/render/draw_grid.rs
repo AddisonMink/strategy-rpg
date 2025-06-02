@@ -1,7 +1,8 @@
 use crate::prelude::*;
 
+pub const TILE_SIZE: f32 = 32.0;
+
 const ORIGIN: Vec2 = Vec2::new(20.0, 20.0);
-const TILE_SIZE: f32 = 32.0;
 const FRAME_WIDTH: f32 = 532.0;
 const FRAME_HEIGHT: f32 = 244.0;
 
