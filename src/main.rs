@@ -30,7 +30,7 @@ async fn main() {
         update::update_game(&mut game, delta_time);
         clear_background(BLACK);
         render::draw_game(&game, flicker);
-        draw_text("0.0.3", 10.0, 274.0, 16.0, WHITE);
+        draw_text("0.0.4", 10.0, 274.0, 16.0, WHITE);
         next_frame().await;
     }
 }
