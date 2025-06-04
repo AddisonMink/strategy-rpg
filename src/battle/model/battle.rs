@@ -26,6 +26,10 @@ impl Battle {
         self.turn_queue.front().and_then(|id| self.units.get(id))
     }
 
+    pub fn active_unit_mut(&mut self) -> Option<&mut Unit> {
+        self.turn_queue.front().and_then(|id| self.units.get_mut(id))
+    }
+
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {
         self.units.values().find(|unit| unit.coord == coord)
     }

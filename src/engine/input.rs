@@ -1,6 +1,10 @@
 use super::direction::Direction;
 use macroquad::prelude::*;
 
+pub fn mouse_clicked() -> bool {
+    is_mouse_button_pressed(MouseButton::Left)
+}
+
 pub fn pressed_confirm() -> bool {
     is_key_pressed(KeyCode::J)
 }

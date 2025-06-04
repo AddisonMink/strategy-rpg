@@ -73,9 +73,14 @@ fn make_tile_description_panel(tile: &Tile) -> Panel {
 
 fn draw_state(battle: &Battle) {
     match &battle.state {
-        BattleState::SelectingMove { valid_moves } => {
+        BattleState::SelectingMove { valid_moves, path } => {
             for coord in valid_moves {
                 grid::draw_square(*coord, WHITE.with_alpha(0.5));
+            }
+            if let Some(path) = path {
+                for coord in path {
+                    grid::draw_glyph(*coord, Glyph::new('o', WHITE));
+                }
             }
         }
         _ => {}
