@@ -1,5 +1,5 @@
 use super::model::*;
-use super::selecting_move;
+use super::selecting_action;
 use crate::engine::*;
 use std::collections::VecDeque;
 
@@ -16,7 +16,7 @@ pub fn update(battle: &mut Battle, delta_time: f32) {
     };
 
     if path.is_empty() {
-        selecting_move::transition(battle);
+        selecting_action::transition(battle);
     } else {
         timer.update(delta_time);
         if timer.is_finished() {

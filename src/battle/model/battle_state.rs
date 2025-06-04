@@ -1,4 +1,4 @@
-use crate::engine::*;
+use crate::{battle::model::Action, engine::*};
 use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug, Clone)]
@@ -11,5 +11,8 @@ pub enum BattleState {
     ExecutingMove {
         path: VecDeque<Coord>,
         timer: Timer,
+    },
+    SelectingAction {
+        valid_actions: Vec<Action>,
     },
 }

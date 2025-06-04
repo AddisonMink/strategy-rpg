@@ -4,6 +4,7 @@ use super::Range;
 use crate::battle::model::UnitId;
 use crate::engine::*;
 
+#[derive(Debug, Clone, Copy)]
 pub struct Action {
     pub name: ShortString,
     pub range: Range,
