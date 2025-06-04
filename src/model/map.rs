@@ -1,5 +1,5 @@
 use super::*;
-use crate::util::*;
+use crate::engine::*;
 
 pub struct Map {
     tiles: Vec<Tile>,

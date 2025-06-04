@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 use super::*;
-use crate::util::*;
+use crate::engine::*;
 
 #[derive(Debug, Clone)]
 pub enum GameState {

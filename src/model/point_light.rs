@@ -1,5 +1,5 @@
 use super::light::Light;
-use crate::util::Coord;
+use crate::engine::Coord;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct PointLightId(pub u16);

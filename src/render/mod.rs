@@ -1,5 +1,4 @@
 mod animation;
-mod draw_grid;
 mod draw_map;
 mod panel;
 
@@ -12,7 +11,7 @@ const INFO_PANEL_X: f32 = 552.0;
 const INFO_PANEL_Y: f32 = 10.0;
 
 pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
-    draw_grid::draw_frame_panel();
+    grid::draw_frame("MAP");
     draw_map(game, flicker);
 
     match &game.state {
@@ -28,10 +27,7 @@ pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
 
             let str = format!("{}'s Turn", name);
 
-            let panel = &Panel::builder("INFO", WHITE).line(&str, color).build();
-
             draw_map(game, flicker);
-            draw_grid::draw_panel_centered(panel);
         }
         GameState::SelectingMove { moves_left } => {
             let unit = game.active_unit()?;
@@ -71,10 +67,10 @@ pub fn draw_game(game: &Game, flicker: f32) -> Option<()> {
 
                 for target_id in targets.iter() {
                     let coord = game.unit(*target_id).unwrap().coord;
-                    draw_grid::draw_square(coord, WHITE.with_alpha(0.25));
+                    grid::draw_square(coord, WHITE.with_alpha(0.25));
                 }
 
-                draw_grid::draw_square(selected_unit.coord, WHITE.with_alpha(0.5));
+                grid::draw_square(selected_unit.coord, WHITE.with_alpha(0.5));
                 unit_description_panel.draw(INFO_PANEL_X, next_panel_y);
             }
         }

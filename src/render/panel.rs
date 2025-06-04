@@ -2,21 +2,18 @@ use crate::prelude::*;
 
 pub fn make_unit_description_panel(unit: &Unit) -> Panel {
     Panel::builder(&unit.name.to_uppercase(), unit.glyph.color)
-        .big_glyph(unit.glyph, 4.0)
         .meter("HP ", WHITE, unit.hp, unit.hp_max, RED)
         .build()
 }
 
 pub fn make_movement_panel(unit: &Unit, moves_left: u16) -> Panel {
     Panel::builder(&unit.name.to_uppercase(), unit.glyph.color)
-        .big_glyph(unit.glyph, 4.0)
         .line(&format!("Movement: {}", moves_left), WHITE)
         .build()
 }
 
 pub fn make_action_menu_panel(unit: &Unit, actions: &Vec<Action>, selected_index: usize) -> Panel {
     let mut panel = Panel::builder(&unit.name.to_uppercase(), unit.glyph.color)
-        .big_glyph(unit.glyph, 4.0)
         .line("Actions:", WHITE);
 
     for (i, action) in actions.iter().enumerate() {

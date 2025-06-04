@@ -12,7 +12,7 @@ pub fn draw_map(game: &Game, flicker: f32) {
                 let tile = game.map.tile(coord);
 
                 if let Some(bg_color) = tile.background {
-                    draw_grid::draw_square(coord, color::mix_color(bg_color, light_color, 0.5));
+                    grid::draw_square(coord, color::mix_color(bg_color, light_color, 0.5));
                 }
 
                 if let Some(unit) = game.unit_at(coord) {
@@ -20,17 +20,17 @@ pub fn draw_map(game: &Game, flicker: f32) {
                         symbol: unit.glyph.symbol,
                         color: color::mix_color(unit.glyph.color, light_color, 0.5),
                     };
-                    draw_grid::draw_glyph(coord, glyph);
+                    grid::draw_glyph(coord, glyph);
                 } else {
                     let glyph = Glyph {
                         symbol: tile.glyph.symbol,
                         color: color::mix_color(tile.glyph.color, light_color, 0.5),
                     };
-                    draw_grid::draw_glyph(coord, glyph);
+                    grid::draw_glyph(coord, glyph);
                 }
 
                 if distance_from_light > 0 {
-                    draw_grid::draw_square(coord, BLACK.with_alpha(0.5));
+                    grid::draw_square(coord, BLACK.with_alpha(0.5));
                 }
             }
         }

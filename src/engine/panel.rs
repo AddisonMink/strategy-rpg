@@ -1,4 +1,4 @@
-use crate::util::*;
+use crate::engine::*;
 use macroquad::prelude::*;
 
 const PADDING: f32 = 10.0;
@@ -20,10 +20,6 @@ enum Content {
         meter_color: Color,
         width: f32,
     },
-    BigGlyph {
-        glyph: Glyph,
-        size: f32,
-    },
 }
 
 pub struct Panel {
@@ -31,6 +27,7 @@ pub struct Panel {
     title_color: Color,
     width: f32,
     height: f32,
+    min_width: f32,
     lines: Vec<Content>,
 }
 
@@ -38,6 +35,7 @@ pub struct PanelBuilder {
     title: String,
     title_color: Color,
     lines: Vec<Content>,
+    min_width: f32,
 }
 
 impl PanelBuilder {
@@ -46,7 +44,13 @@ impl PanelBuilder {
             title: title.into(),
             title_color,
             lines: Vec::new(),
+            min_width: 0.0,
         }
+    }
+
+    pub fn min_width(mut self, min_width: f32) -> Self {
+        self.min_width = min_width;
+        self
     }
 
     pub fn line(mut self, text: impl Into<String>, color: Color) -> Self {
@@ -95,11 +99,6 @@ impl PanelBuilder {
         self
     }
 
-    pub fn big_glyph(mut self, glyph: Glyph, size: f32) -> Self {
-        self.lines.push(Content::BigGlyph { glyph, size });
-        self
-    }
-
     pub fn build(self) -> Panel {
         let title_size = text_size(&self.title);
         let inter_line_padding = (self.lines.len() as f32 - 1.0).max(0.0) * PADDING + PADDING / 2.0;
@@ -119,20 +118,17 @@ impl PanelBuilder {
                     height += label_size.height;
                     total_width = total_width.max(label_size.width + *width + PADDING);
                 }
-                Content::BigGlyph { glyph, size } => {
-                    let glyph_size = text_size(&glyph.symbol.to_string());
-                    height += glyph_size.height * size;
-                    total_width = total_width.max(glyph_size.width * size);
-                }
             }
         }
         total_width += PADDING * 2.0;
         height += inter_line_padding + PADDING * 2.0;
+        let width = total_width.max(self.min_width);
         Panel {
             title: self.title,
             title_color: self.title_color,
-            width: total_width,
+            width,
             height,
+            min_width: self.min_width,
             lines: self.lines,
         }
     }
@@ -145,6 +141,7 @@ impl Panel {
             title_color,
             width,
             height,
+            min_width: 0.0,
             lines: Vec::new(),
         }
     }
@@ -192,26 +189,6 @@ impl Panel {
                     draw_text_line(x + PADDING, current_y, label, *label_color);
                     draw_meter(meter_x, current_y, *width, *value, *max, *meter_color);
                     current_y += label_size.height + PADDING;
-                }
-                Content::BigGlyph { glyph, size } => {
-                    let glyph_size = text_size(&glyph.symbol.to_string());
-                    let scaled_width = glyph_size.width * size;
-                    let scaled_height = glyph_size.height * size;
-                    let glyph_x = x + ((self.width + PADDING * 2.0) - scaled_width) / 2.0;
-                    let glyph_y = current_y;
-
-                    draw_text_ex(
-                        &glyph.symbol.to_string(),
-                        glyph_x,
-                        glyph_y + glyph_size.offset_y * size,
-                        TextParams {
-                            font: asset::MAP_FONT.get(),
-                            font_size: (TITLE_FONT_SIZE as f32 * size) as u16,
-                            color: glyph.color,
-                            ..Default::default()
-                        },
-                    );
-                    current_y += scaled_height + PADDING;
                 }
             }
         }

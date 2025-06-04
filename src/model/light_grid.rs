@@ -1,5 +1,5 @@
 use super::*;
-use crate::util::*;
+use crate::engine::*;
 use macroquad::prelude::*;
 
 /// A grid that holds light values for each coordinate in the map.
