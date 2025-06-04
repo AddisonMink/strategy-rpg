@@ -22,6 +22,7 @@ async fn main() {
         id,
         name: ShortString::new("Hero"),
         glyph: Glyph::new('@', WHITE),
+        movement: 3,
         coord,
     });
 
@@ -29,6 +30,7 @@ async fn main() {
         id,
         name: ShortString::new("Mr. A"),
         glyph: Glyph::new('A', RED),
+        movement: 3,
         coord,
     });
 

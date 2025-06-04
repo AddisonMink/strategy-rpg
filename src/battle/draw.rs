@@ -1,4 +1,4 @@
-use macroquad::prelude::trace;
+use macroquad::prelude::{camera::mouse, trace};
 
 use super::model::*;
 use crate::engine::*;
@@ -8,13 +8,11 @@ const DESCRIPTION_X: f32 = 360.0;
 pub fn draw_battle(battle: &Battle) {
     let mouse_coord_opt = grid::mouse_coord();
     draw_map(battle);
-    draw_state(battle);
+    draw_state(battle, mouse_coord_opt);
 
     if let Some(coord) = mouse_coord_opt {
         grid::draw_square(coord, WHITE.with_alpha(0.25));
     }
-
-    draw_description_panels(battle, mouse_coord_opt);
 }
 
 fn draw_map(battle: &Battle) {
@@ -41,7 +39,11 @@ fn draw_map(battle: &Battle) {
     }
 }
 
-fn draw_description_panels(battle: &Battle, mouse_coord_opt: Option<Coord>) {
+fn draw_description_panels(
+    battle: &Battle,
+    mouse_coord_opt: Option<Coord>,
+    action_preview_origin: Option<Coord>,
+) {
     let Some(coord) = mouse_coord_opt else {
         return;
     };
@@ -56,7 +58,14 @@ fn draw_description_panels(battle: &Battle, mouse_coord_opt: Option<Coord>) {
         unit_panel.draw(DESCRIPTION_X, y);
         y += unit_panel.get_height() + 10.0;
     }
+
     tile_panel.draw(DESCRIPTION_X, y);
+    y += tile_panel.get_height() + 10.0;
+
+    if let Some(action_preview_origin) = action_preview_origin {
+        let action_preview_panel = make_action_preview_panel(battle, action_preview_origin);
+        action_preview_panel.draw(DESCRIPTION_X, y);
+    }
 }
 
 fn make_unit_description_panel(unit: &Unit) -> Panel {
@@ -71,7 +80,24 @@ fn make_tile_description_panel(tile: &Tile) -> Panel {
         .build()
 }
 
-fn draw_state(battle: &Battle) {
+fn make_action_preview_panel(battle: &Battle, origin: Coord) -> Panel {
+    let unit = battle.active_unit().expect("No active unit");
+    let actions = unit.actions();
+
+    let mut panel = Panel::builder("ACTION", WHITE).min_width(200.0);
+    for action in actions {
+        let alpha = if action.has_valid_targets(battle, unit.id, origin) {
+            1.0
+        } else {
+            0.5
+        };
+        panel = panel.line(action.name.to_string(), WHITE.with_alpha(alpha));
+    }
+
+    panel.build()
+}
+
+fn draw_state(battle: &Battle, mouse_coord_opt: Option<Coord>) {
     match &battle.state {
         BattleState::SelectingMove { valid_moves, path } => {
             for coord in valid_moves {
@@ -81,8 +107,10 @@ fn draw_state(battle: &Battle) {
                 for coord in path {
                     grid::draw_glyph(*coord, Glyph::new('o', WHITE));
                 }
+                let action_preview_origin = path.back().copied();
+                draw_description_panels(battle, mouse_coord_opt, action_preview_origin);
             }
         }
-        _ => {}
+        _ => draw_description_panels(battle, mouse_coord_opt, None),
     };
 }

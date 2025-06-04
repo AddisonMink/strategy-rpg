@@ -7,13 +7,15 @@ pub mod glyph;
 pub mod grid;
 pub mod input;
 pub mod panel;
+pub mod short_list;
 pub mod short_string;
-mod timer;
+pub mod timer;
 
 pub use coord::Coord;
 pub use direction::Direction;
 pub use glyph::Glyph;
 pub use macroquad::color::*;
 pub use panel::Panel;
+pub use short_list::ShortList;
 pub use short_string::ShortString;
 pub use timer::Timer;

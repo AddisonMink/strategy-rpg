@@ -22,16 +22,26 @@ impl Battle {
         }
     }
 
+    pub fn unit(&self, id: UnitId) -> Option<&Unit> {
+        self.units.get(&id)
+    }
+
     pub fn active_unit(&self) -> Option<&Unit> {
         self.turn_queue.front().and_then(|id| self.units.get(id))
     }
 
     pub fn active_unit_mut(&mut self) -> Option<&mut Unit> {
-        self.turn_queue.front().and_then(|id| self.units.get_mut(id))
+        self.turn_queue
+            .front()
+            .and_then(|id| self.units.get_mut(id))
     }
 
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {
         self.units.values().find(|unit| unit.coord == coord)
+    }
+
+    pub fn unit_iter(&self) -> impl Iterator<Item = &Unit> {
+        self.units.values()
     }
 
     pub fn add_unit<F>(&mut self, coord: Coord, f: F) -> UnitId

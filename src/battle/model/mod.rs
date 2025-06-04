@@ -1,11 +1,17 @@
+pub mod action;
 pub mod battle;
 pub mod battle_state;
+pub mod effect_template;
 pub mod map;
+pub mod range;
 pub mod tile;
 pub mod unit;
 
+pub use action::Action;
 pub use battle::Battle;
 pub use battle_state::BattleState;
+pub use effect_template::EffectTemplate;
 pub use map::Map;
+pub use range::Range;
 pub use tile::Tile;
 pub use unit::{Unit, UnitId};

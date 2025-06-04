@@ -6,7 +6,7 @@ use std::collections::{HashSet, VecDeque};
 pub fn transition(battle: &mut Battle) {
     let unit = battle.active_unit().expect("No active unit.");
     let accept = |coord: Coord| battle.map.tile(coord).walkable && battle.unit_at(coord).is_none();
-    let mut valid_moves = algorithm::flood_fill(unit.coord, 3, accept);
+    let mut valid_moves = algorithm::flood_fill(unit.coord, unit.movement, accept);
     valid_moves.remove(&unit.coord);
     battle.state = BattleState::SelectingMove {
         valid_moves,
@@ -16,13 +16,18 @@ pub fn transition(battle: &mut Battle) {
 
 pub fn update(battle: &mut Battle) {
     let origin = battle.active_unit().expect("No active unit.").coord;
+    let valid_moves = get_valid_moves(battle);
 
     let Some(end) = grid::mouse_coord() else {
         set_path(battle, VecDeque::new());
         return;
     };
 
-    let valid_moves = get_valid_moves(battle);
+    if !valid_moves.contains(&end) {
+        set_path(battle, VecDeque::new());
+        return;
+    }
+
     let accept = |coord: Coord| valid_moves.contains(&coord);
     let goal = |coord: Coord| coord == end;
     let new_path = algorithm::breadth_first_search(origin, accept, goal);
