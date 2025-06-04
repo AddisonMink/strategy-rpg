@@ -8,6 +8,7 @@ mod update;
 
 use battle::draw::*;
 use battle::model::*;
+use battle::update::*;
 use engine::*;
 use macroquad::prelude::*;
 
@@ -32,6 +33,8 @@ async fn main() {
     });
 
     loop {
+        let delta_time = get_frame_time();
+        update_battle(&mut battle, delta_time);
         clear_background(BLACK);
         draw_battle(&battle);
         next_frame().await;

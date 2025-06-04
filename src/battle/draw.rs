@@ -1,4 +1,4 @@
-use macroquad::prelude::camera::mouse;
+use macroquad::prelude::trace;
 
 use super::model::*;
 use crate::engine::*;
@@ -7,11 +7,17 @@ const DESCRIPTION_X: f32 = 360.0;
 
 pub fn draw_battle(battle: &Battle) {
     let mouse_coord_opt = grid::mouse_coord();
-    draw_map(battle, mouse_coord_opt);
+    draw_map(battle);
+    draw_state(battle);
+
+    if let Some(coord) = mouse_coord_opt {
+        grid::draw_square(coord, WHITE.with_alpha(0.25));
+    }
+
     draw_description_panels(battle, mouse_coord_opt);
 }
 
-fn draw_map(battle: &Battle, mouse_coord_opt: Option<Coord>) {
+fn draw_map(battle: &Battle) {
     grid::draw_frame("MAP");
 
     for y in 0..Map::HEIGHT {
@@ -32,10 +38,6 @@ fn draw_map(battle: &Battle, mouse_coord_opt: Option<Coord>) {
 
             grid::draw_glyph(coord, glyph);
         }
-    }
-
-    if let Some(coord) = mouse_coord_opt {
-        grid::draw_square(coord, WHITE.with_alpha(0.25));
     }
 }
 
@@ -67,4 +69,15 @@ fn make_tile_description_panel(tile: &Tile) -> Panel {
     Panel::builder(tile.name.to_string().to_uppercase(), tile.glyph.color)
         .min_width(200.0)
         .build()
+}
+
+fn draw_state(battle: &Battle) {
+    match &battle.state {
+        BattleState::SelectingMove { valid_moves } => {
+            for coord in valid_moves {
+                grid::draw_square(*coord, WHITE.with_alpha(0.5));
+            }
+        }
+        _ => {}
+    };
 }

@@ -1,5 +1,36 @@
 use super::{Direction, coord::Coord};
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
+
+pub fn flood_fill<F>(from: Coord, range: u16, accept: F) -> HashSet<Coord>
+where
+    F: Fn(Coord) -> bool,
+{
+    let mut visited = HashSet::new();
+    let mut queue = VecDeque::new();
+
+    queue.push_back(from);
+    visited.insert(from);
+
+    while let Some(coord) = queue.pop_front() {
+        for dir in [
+            Direction::Up,
+            Direction::Down,
+            Direction::Left,
+            Direction::Right,
+        ] {
+            let next_coord = coord.shift(dir);
+            if next_coord.manhattan_distance(from) <= range
+                && !visited.contains(&next_coord)
+                && accept(next_coord)
+            {
+                queue.push_back(next_coord);
+                visited.insert(next_coord);
+            }
+        }
+    }
+
+    visited
+}
 
 pub fn check_bresenhem_line<F>(from: Coord, to: Coord, accept: F) -> bool
 where

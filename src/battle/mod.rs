@@ -1,2 +1,3 @@
-pub mod model;
 pub mod draw;
+pub mod model;
+pub mod update;

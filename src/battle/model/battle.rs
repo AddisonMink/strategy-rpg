@@ -1,12 +1,14 @@
 use super::Map;
 use super::*;
 use crate::engine::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 
 pub struct Battle {
     pub map: Map,
     units: HashMap<UnitId, Unit>,
     next_id: UnitId,
+    turn_queue: VecDeque<UnitId>,
+    pub state: BattleState,
 }
 
 impl Battle {
@@ -15,7 +17,13 @@ impl Battle {
             map,
             units: HashMap::new(),
             next_id: UnitId(0),
+            turn_queue: VecDeque::new(),
+            state: BattleState::Starting,
         }
+    }
+
+    pub fn active_unit(&self) -> Option<&Unit> {
+        self.turn_queue.front().and_then(|id| self.units.get(id))
     }
 
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {
@@ -30,6 +38,7 @@ impl Battle {
         let unit = f(id, coord);
         self.next_id.0 += 1;
         self.units.insert(id, unit);
+        self.turn_queue.push_back(id);
         id
     }
 }
