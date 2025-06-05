@@ -83,6 +83,8 @@ fn draw_state(battle: &Battle, mouse_coord_opt: Option<Coord>) {
                 }
                 let action_preview_origin = path.back().copied();
                 draw_description_panels(battle, mouse_coord_opt, action_preview_origin);
+            } else {
+                draw_description_panels(battle, mouse_coord_opt, None);
             }
         }
         BattleState::SelectingAction {

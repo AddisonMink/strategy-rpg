@@ -16,43 +16,35 @@ pub fn transition(battle: &mut Battle) {
 
 pub fn update(battle: &mut Battle) {
     let origin = battle.active_unit().expect("No active unit.").coord;
-    let valid_moves = get_valid_moves(battle);
+    let mouse_coord_opt = grid::mouse_coord();
+    let (valid_moves, path) = unpack(battle);
 
-    let Some(end) = grid::mouse_coord() else {
-        set_path(battle, VecDeque::new());
-        return;
-    };
-
-    if !valid_moves.contains(&end) {
-        set_path(battle, VecDeque::new());
-        return;
+    // If mouse is clicked on the origin, skip move.
+    if input::mouse_clicked() && mouse_coord_opt == Some(origin) || input::cancel_pressed() {
+        executing_move::transition(battle, VecDeque::new());
     }
-
-    let accept = |coord: Coord| valid_moves.contains(&coord);
-    let goal = |coord: Coord| coord == end;
-    let new_path = algorithm::breadth_first_search(origin, accept, goal);
-
-    if !new_path.is_empty() {
-        if input::mouse_clicked() {
-            executing_move::transition(battle, new_path.clone());
-        } else {
-            set_path(battle, new_path);
-        }
+    // If mouse is clicked on a valid move, execute the move.
+    else if input::mouse_clicked() && path.is_some() {
+        let final_path = path.as_ref().unwrap().clone();
+        executing_move::transition(battle, final_path);
     }
-}
-
-pub fn get_valid_moves(battle: &Battle) -> &HashSet<Coord> {
-    if let BattleState::SelectingMove { valid_moves, .. } = &battle.state {
-        valid_moves
-    } else {
-        panic!("Cannot get valid moves in current state.");
+    // If mouse is hovering over a valid move, update the path.
+    else if mouse_coord_opt.is_some() && valid_moves.contains(&mouse_coord_opt.unwrap()) {
+        let accept = |coord: Coord| valid_moves.contains(&coord);
+        let goal = |coord: Coord| coord == mouse_coord_opt.unwrap();
+        let new_path = algorithm::breadth_first_search(origin, accept, goal);
+        *path = Some(new_path);
+    }
+    // If mouse is not hovering over a valid move, clear the path.
+    else if mouse_coord_opt.is_none() || !valid_moves.contains(&mouse_coord_opt.unwrap()) {
+        *path = None;
     }
 }
 
-pub fn set_path(battle: &mut Battle, path: VecDeque<Coord>) {
-    if let BattleState::SelectingMove { path: p, .. } = &mut battle.state {
-        *p = Some(path);
+fn unpack(battle: &mut Battle) -> (&HashSet<Coord>, &mut Option<VecDeque<Coord>>) {
+    if let BattleState::SelectingMove { valid_moves, path } = &mut battle.state {
+        (valid_moves, path)
     } else {
-        panic!("Cannot set path in current state.");
+        panic!("Cannot unpack in current state.");
     }
 }

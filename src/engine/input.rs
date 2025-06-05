@@ -5,6 +5,10 @@ pub fn mouse_clicked() -> bool {
     is_mouse_button_pressed(MouseButton::Left)
 }
 
+pub fn cancel_pressed() -> bool {
+    is_key_pressed(KeyCode::Escape)
+}
+
 pub fn number_pressed() -> Option<usize> {
     if is_key_pressed(KeyCode::Key1) {
         Some(1)
