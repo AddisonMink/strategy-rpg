@@ -15,6 +15,7 @@ pub use coord::Coord;
 pub use direction::Direction;
 pub use glyph::Glyph;
 pub use macroquad::color::*;
+pub use macroquad::rand::gen_range;
 pub use panel::Panel;
 pub use short_list::ShortList;
 pub use short_string::ShortString;

@@ -26,6 +26,10 @@ impl Battle {
         self.units.get(&id)
     }
 
+    pub fn unit_mut(&mut self, id: UnitId) -> Option<&mut Unit> {
+        self.units.get_mut(&id)
+    }
+
     pub fn active_unit(&self) -> Option<&Unit> {
         self.turn_queue.front().and_then(|id| self.units.get(id))
     }
