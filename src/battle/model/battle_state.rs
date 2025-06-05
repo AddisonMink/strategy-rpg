@@ -1,4 +1,7 @@
-use crate::{battle::model::Action, engine::*};
+use crate::{
+    battle::model::{Action, UnitId},
+    engine::*,
+};
 use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug, Clone)]
@@ -13,6 +16,12 @@ pub enum BattleState {
         timer: Timer,
     },
     SelectingAction {
-        valid_actions: Vec<Action>,
+        actions: Vec<Action>,
+        selected_index: Option<usize>,
+        panel: Panel,
+    },
+    SelectingSingleUnitTarget {
+        action: Action,
+        targets: HashSet<UnitId>,
     },
 }

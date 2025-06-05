@@ -1,7 +1,8 @@
-use macroquad::prelude::{camera::mouse, trace};
+mod panel;
 
 use super::model::*;
 use crate::engine::*;
+use panel::*;
 
 const DESCRIPTION_X: f32 = 360.0;
 
@@ -68,35 +69,6 @@ fn draw_description_panels(
     }
 }
 
-fn make_unit_description_panel(unit: &Unit) -> Panel {
-    Panel::builder(unit.name.to_string().to_uppercase(), unit.glyph.color)
-        .min_width(200.0)
-        .build()
-}
-
-fn make_tile_description_panel(tile: &Tile) -> Panel {
-    Panel::builder(tile.name.to_string().to_uppercase(), tile.glyph.color)
-        .min_width(200.0)
-        .build()
-}
-
-fn make_action_preview_panel(battle: &Battle, origin: Coord) -> Panel {
-    let unit = battle.active_unit().expect("No active unit");
-    let actions = unit.actions();
-
-    let mut panel = Panel::builder("ACTION", WHITE).min_width(200.0);
-    for action in actions {
-        let alpha = if action.has_valid_targets(battle, unit.id, origin) {
-            1.0
-        } else {
-            0.5
-        };
-        panel = panel.line(action.name.to_string(), WHITE.with_alpha(alpha));
-    }
-
-    panel.build()
-}
-
 fn draw_state(battle: &Battle, mouse_coord_opt: Option<Coord>) {
     match &battle.state {
         BattleState::SelectingMove { valid_moves, path } => {
@@ -109,6 +81,31 @@ fn draw_state(battle: &Battle, mouse_coord_opt: Option<Coord>) {
                 }
                 let action_preview_origin = path.back().copied();
                 draw_description_panels(battle, mouse_coord_opt, action_preview_origin);
+            }
+        }
+        BattleState::SelectingAction {
+            actions: valid_actions,
+            panel,
+            selected_index,
+        } => {
+            let unit = battle.active_unit().expect("No active unit");
+            let selected_action_opt = selected_index.and_then(|i| valid_actions.get(i));
+
+            let coords_in_ragne = selected_action_opt
+                .map(|action| action.range.coords_in_range(battle, unit.coord))
+                .unwrap_or_default();
+
+            let mut y = 10.0;
+            panel.draw(DESCRIPTION_X, y);
+            y += panel.get_height() + 10.0;
+
+            if let Some(action) = selected_action_opt {
+                let action_panel = make_action_description_panel(action);
+                action_panel.draw(DESCRIPTION_X, y);
+            }
+
+            for coord in coords_in_ragne {
+                grid::draw_square(coord, WHITE.with_alpha(0.5));
             }
         }
         _ => draw_description_panels(battle, mouse_coord_opt, None),

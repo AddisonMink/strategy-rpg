@@ -5,6 +5,30 @@ pub fn mouse_clicked() -> bool {
     is_mouse_button_pressed(MouseButton::Left)
 }
 
+pub fn number_pressed() -> Option<usize> {
+    if is_key_pressed(KeyCode::Key1) {
+        Some(1)
+    } else if is_key_pressed(KeyCode::Key2) {
+        Some(2)
+    } else if is_key_pressed(KeyCode::Key3) {
+        Some(3)
+    } else if is_key_pressed(KeyCode::Key4) {
+        Some(4)
+    } else if is_key_pressed(KeyCode::Key5) {
+        Some(5)
+    } else if is_key_pressed(KeyCode::Key6) {
+        Some(6)
+    } else if is_key_pressed(KeyCode::Key7) {
+        Some(7)
+    } else if is_key_pressed(KeyCode::Key8) {
+        Some(8)
+    } else if is_key_pressed(KeyCode::Key9) {
+        Some(9)
+    } else {
+        None
+    }
+}
+
 pub fn pressed_confirm() -> bool {
     is_key_pressed(KeyCode::J)
 }

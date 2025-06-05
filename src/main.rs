@@ -26,7 +26,7 @@ async fn main() {
         coord,
     });
 
-    battle.add_unit(Coord::new(8, 8), |id, coord| Unit {
+    battle.add_unit(Coord::new(4, 1), |id, coord| Unit {
         id,
         name: ShortString::new("Mr. A"),
         glyph: Glyph::new('A', RED),

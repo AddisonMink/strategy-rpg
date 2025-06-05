@@ -7,6 +7,7 @@ const METER_WIDTH: f32 = 100.0;
 const METER_SPACING: f32 = 2.0;
 const NINE_SLICE_TILE_SIZE: f32 = 16.0 / 3.0;
 
+#[derive(Debug, Clone)]
 enum Content {
     Text {
         text: String,
@@ -22,6 +23,7 @@ enum Content {
     },
 }
 
+#[derive(Debug, Clone)]
 pub struct Panel {
     title: String,
     title_color: Color,
@@ -156,6 +158,23 @@ impl Panel {
 
     pub fn get_height(&self) -> f32 {
         self.height
+    }
+
+    pub fn get_selected_line(&self, relative_mouse_pos: (f32, f32)) -> Option<usize> {
+        let (mouse_x, mouse_y) = relative_mouse_pos;
+
+        if mouse_x < 0.0 || mouse_x > self.width {
+            return None;
+        }
+
+        let mut y = PADDING * 1.5;
+        for (i, _) in self.lines.iter().enumerate() {
+            if mouse_y >= y && mouse_y <= y + TITLE_FONT_SIZE as f32 {
+                return Some(i);
+            }
+            y += TITLE_FONT_SIZE as f32 + PADDING;
+        }
+        None
     }
 
     pub fn draw(&self, x: f32, y: f32) {
