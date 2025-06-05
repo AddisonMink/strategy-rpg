@@ -18,4 +18,4 @@ pub use effect_template::EffectTemplate;
 pub use map::Map;
 pub use range::Range;
 pub use tile::Tile;
-pub use unit::{Unit, UnitId};
+pub use unit::{Side, Unit, UnitId, UnitData};

@@ -1,6 +1,7 @@
 use super::model;
 use super::model::*;
 
+mod ending_turn;
 mod executing_effects;
 mod executing_move;
 mod selecting_action;
@@ -15,5 +16,6 @@ pub fn update_battle(battle: &mut Battle, delta_time: f32) {
         BattleState::SelectingAction { .. } => selecting_action::update(battle),
         BattleState::SelectingSingleUnitTarget { .. } => selecting_target::update(battle),
         BattleState::ExecutingEffects { .. } => executing_effects::update(battle, delta_time),
+        BattleState::EndingTurn => ending_turn::update(battle),
     }
 }

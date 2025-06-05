@@ -16,27 +16,29 @@ use macroquad::prelude::*;
 async fn main() {
     asset::load_assets().await;
 
-    let mut battle = Battle::new(Map::new());
-
-    battle.add_unit(Coord::new(1, 1), |id, coord| Unit {
-        id,
+    let player_data = UnitData {
         name: ShortString::new("Hero"),
         glyph: Glyph::new('@', WHITE),
+        side: Side::Player,
         movement: 3,
         hp_max: 5,
-        coord,
-        hp: 5,
-    });
+    };
 
-    battle.add_unit(Coord::new(4, 1), |id, coord| Unit {
-        id,
+    let npc_data = UnitData {
         name: ShortString::new("Mr. A"),
         glyph: Glyph::new('A', WHITE),
+        side: Side::NPC,
         movement: 3,
         hp_max: 5,
-        coord,
-        hp: 5,
+    };
+
+    let mut battle = Battle::new(Map::new());
+
+    battle.add_unit(Coord::new(1, 1), |id, coord| {
+        Unit::new(id, coord, player_data)
     });
+
+    battle.add_unit(Coord::new(4, 1), |id, coord| Unit::new(id, coord, npc_data));
 
     loop {
         let delta_time = get_frame_time();

@@ -1,6 +1,6 @@
+use super::ending_turn;
 use super::model::*;
-use super::selecting_move;
-use crate::battle::update::selecting_target;
+use super::selecting_target;
 use crate::engine::*;
 
 // There's BAD stuff in here that violates the separation of concerns!
@@ -19,7 +19,7 @@ pub fn transition(battle: &mut Battle) {
         .collect();
 
     if valid_actions.is_empty() {
-        selecting_move::transition(battle);
+        ending_turn::transition(battle);
     } else {
         let panel = build_panel(&valid_actions, None);
         battle.state = BattleState::SelectingAction {

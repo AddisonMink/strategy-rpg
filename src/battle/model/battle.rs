@@ -1,3 +1,5 @@
+use macroquad::prelude::trace;
+
 use super::Map;
 use super::*;
 use crate::engine::*;
@@ -58,5 +60,12 @@ impl Battle {
         self.units.insert(id, unit);
         self.turn_queue.push_back(id);
         id
+    }
+
+    pub fn next_turn(&mut self) {
+        if self.turn_queue.len() > 1 {
+            let id = self.turn_queue.pop_front().unwrap();
+            self.turn_queue.push_back(id);
+        }
     }
 }

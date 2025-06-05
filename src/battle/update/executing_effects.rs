@@ -1,5 +1,5 @@
+use super::ending_turn;
 use super::model::*;
-use super::selecting_move;
 use crate::engine::*;
 use std::collections::VecDeque;
 
@@ -13,9 +13,9 @@ pub fn transition(battle: &mut Battle, effects: VecDeque<Effect>) {
 pub fn update(battle: &mut Battle, delta_time: f32) {
     let (effects, animations) = unpack(battle);
 
-    // No effects or animations left, transition to selecting move
+    // No effects or animations left, end turn.
     if effects.is_empty() && animations.is_empty() {
-        selecting_move::transition(battle);
+        ending_turn::transition(battle);
     }
     // Handle animations.
     else if let Some(animation) = animations.front_mut() {
