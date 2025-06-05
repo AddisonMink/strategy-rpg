@@ -1,7 +1,5 @@
-use crate::{
-    battle::model::{Action, UnitId},
-    engine::*,
-};
+use super::*;
+use crate::engine::*;
 use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug, Clone)]
@@ -24,5 +22,8 @@ pub enum BattleState {
         action: Action,
         targets: HashSet<UnitId>,
         selected_target: Option<UnitId>,
+    },
+    ExecutingEffects {
+        effects: VecDeque<Effect>,
     },
 }

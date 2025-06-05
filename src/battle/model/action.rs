@@ -1,7 +1,10 @@
+use std::collections::VecDeque;
+
 use super::Battle;
+use super::Effect;
 use super::EffectTemplate;
 use super::Range;
-use crate::battle::model::UnitId;
+use super::UnitId;
 use crate::engine::*;
 
 #[derive(Debug, Clone, Copy)]
@@ -25,5 +28,19 @@ impl Action {
                 distance >= min && distance <= max && unit.id != unit_id
             }),
         }
+    }
+
+    pub fn compile_single_unit_target_effects(&self, target: UnitId) -> VecDeque<Effect> {
+        self.effects
+            .as_slice()
+            .into_iter()
+            .map(|e| match e {
+                EffectTemplate::Damage { min, max } => Effect::Damage {
+                    min: *min,
+                    max: *max,
+                    target,
+                },
+            })
+            .collect()
     }
 }
