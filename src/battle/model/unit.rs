@@ -14,8 +14,10 @@ pub struct Unit {
     pub glyph: Glyph,
     // Attributes
     pub movement: u16,
+    pub hp_max: u16,
     // State
     pub coord: Coord,
+    pub hp: u16,
 }
 
 impl Unit {

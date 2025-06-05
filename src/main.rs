@@ -23,7 +23,9 @@ async fn main() {
         name: ShortString::new("Hero"),
         glyph: Glyph::new('@', WHITE),
         movement: 3,
+        hp_max: 5,
         coord,
+        hp: 5,
     });
 
     battle.add_unit(Coord::new(4, 1), |id, coord| Unit {
@@ -31,7 +33,9 @@ async fn main() {
         name: ShortString::new("Mr. A"),
         glyph: Glyph::new('A', RED),
         movement: 3,
+        hp_max: 5,
         coord,
+        hp: 5,
     });
 
     loop {

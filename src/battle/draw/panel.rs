@@ -3,6 +3,7 @@ use super::*;
 pub fn make_unit_description_panel(unit: &Unit) -> Panel {
     Panel::builder(unit.name.to_string().to_uppercase(), unit.glyph.color)
         .min_width(200.0)
+        .meter("HP ", WHITE, unit.hp, unit.hp_max, RED)
         .build()
 }
 
