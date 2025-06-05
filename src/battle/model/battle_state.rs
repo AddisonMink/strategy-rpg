@@ -23,5 +23,6 @@ pub enum BattleState {
     SelectingSingleUnitTarget {
         action: Action,
         targets: HashSet<UnitId>,
+        selected_target: Option<UnitId>,
     },
 }

@@ -12,6 +12,6 @@ pub fn update_battle(battle: &mut Battle, delta_time: f32) {
         BattleState::SelectingMove { .. } => selecting_move::update(battle),
         BattleState::ExecutingMove { .. } => executing_move::update(battle, delta_time),
         BattleState::SelectingAction { .. } => selecting_action::update(battle),
-        BattleState::SelectingSingleUnitTarget { .. } => {}
+        BattleState::SelectingSingleUnitTarget { .. } => selecting_target::update(battle),
     }
 }

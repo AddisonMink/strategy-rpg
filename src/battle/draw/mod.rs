@@ -108,6 +108,34 @@ fn draw_state(battle: &Battle, mouse_coord_opt: Option<Coord>) {
                 grid::draw_square(coord, WHITE.with_alpha(0.5));
             }
         }
+        BattleState::SelectingSingleUnitTarget {
+            action,
+            targets,
+            selected_target,
+        } => {
+            let target_opt = selected_target.and_then(|id| battle.unit(id));
+            let action_panel_y = 10.0;
+            let action_panel = make_action_description_panel(action);
+            action_panel.draw(DESCRIPTION_X, action_panel_y);
+
+            if let Some(target) = target_opt {
+                let unit_panel_y = action_panel_y + action_panel.get_height() + 10.0;
+                let unit_panel = make_unit_description_panel(target);
+                unit_panel.draw(DESCRIPTION_X, unit_panel_y);
+            }
+
+            for id in targets.iter() {
+                if let Some(unit) = battle.unit(*id) {
+                    let coord = unit.coord;
+                    let alpha = if selected_target.is_some_and(|i| i == *id) {
+                        0.5
+                    } else {
+                        0.25
+                    };
+                    grid::draw_square(coord, WHITE.with_alpha(alpha));
+                }
+            }
+        }
         _ => draw_description_panels(battle, mouse_coord_opt, None),
     };
 }
