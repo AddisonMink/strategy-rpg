@@ -31,7 +31,7 @@ async fn main() {
     battle.add_unit(Coord::new(4, 1), |id, coord| Unit {
         id,
         name: ShortString::new("Mr. A"),
-        glyph: Glyph::new('A', RED),
+        glyph: Glyph::new('A', WHITE),
         movement: 3,
         hp_max: 5,
         coord,

@@ -1,4 +1,5 @@
 pub mod action;
+pub mod animation;
 pub mod battle;
 pub mod battle_state;
 pub mod effect;
@@ -9,6 +10,7 @@ pub mod tile;
 pub mod unit;
 
 pub use action::Action;
+pub use animation::{Animation, AnimationKind};
 pub use battle::Battle;
 pub use battle_state::BattleState;
 pub use effect::Effect;

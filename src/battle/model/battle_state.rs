@@ -25,5 +25,6 @@ pub enum BattleState {
     },
     ExecutingEffects {
         effects: VecDeque<Effect>,
+        animations: VecDeque<Animation>,
     },
 }

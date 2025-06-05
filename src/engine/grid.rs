@@ -4,11 +4,11 @@ use crate::engine::{Coord, Glyph, Panel, asset};
 
 pub const WIDTH: u16 = 10;
 pub const HEIGHT: u16 = 10;
+pub const TILE_SIZE: f32 = 32.0;
 
 const GRID_FRAME_ORIGIN: Vec2 = Vec2::new(10.0, 10.0);
 const GRID_ORIGIN: Vec2 = Vec2::new(20.0, 20.0);
-const TILE_SIZE: f32 = 32.0;
-const TEXT_SIZE: u16 = 16;
+const TEXT_SIZE: u16 = 32;
 
 pub fn mouse_coord() -> Option<Coord> {
     let (x, y) = mouse_position();
@@ -51,10 +51,14 @@ pub fn draw_glyph(coord: Coord, glyph: Glyph) {
 }
 
 pub fn draw_text(coord: Coord, text: &str, color: Color) {
+    draw_text_with_offset(coord, text, color, (0.0, 0.0));
+}
+
+pub fn draw_text_with_offset(coord: Coord, text: &str, color: Color, offset: (f32, f32)) {
     let (cx, cy) = coord_to_pos(coord);
     let size = measure_text(text, asset::UI_FONT.get(), TEXT_SIZE, 1.0);
-    let x = cx + (TILE_SIZE - size.width) / 2.0;
-    let y = cy + (TILE_SIZE - size.height) / 2.0 + size.offset_y;
+    let x = cx + (TILE_SIZE - size.width) / 2.0 + offset.0;
+    let y = cy + (TILE_SIZE - size.height) / 2.0 + size.offset_y + offset.1;
 
     draw_text_ex(
         text,
