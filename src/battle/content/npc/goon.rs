@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use super::*;
 
 const DATA: UnitData = UnitData {
@@ -14,6 +16,13 @@ pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
         coord,
         DATA,
         behavior::chase_nearest_player,
-        behavior::select_action_noop,
+        select_action,
     )
+}
+
+fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
+    let player_id = behavior::nearest_player(battle, unit)?;
+    let player = battle.unit(player_id)?;
+    let effects = VecDeque::from_iter([Effect::damage(1, 2, player.id)]);
+    Some(effects)
 }

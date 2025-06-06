@@ -50,6 +50,10 @@ impl Battle {
         self.units.values()
     }
 
+    pub fn unit_player_iter(&self) -> impl Iterator<Item = &Unit> {
+        self.units.values().filter(|unit| unit.side == Side::Player)
+    }
+
     pub fn add_unit<F>(&mut self, coord: Coord, f: F) -> UnitId
     where
         F: FnOnce(UnitId, Coord) -> Unit,

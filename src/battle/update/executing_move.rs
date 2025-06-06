@@ -1,3 +1,4 @@
+use super::executing_effects;
 use super::model::*;
 use super::selecting_action;
 use crate::engine::*;
@@ -16,7 +17,14 @@ pub fn update(battle: &mut Battle, delta_time: f32) {
     };
 
     if path.is_empty() {
-        selecting_action::transition(battle);
+        let unit = battle.active_unit().expect("No active unit.");
+        match unit.side {
+            Side::Player => selecting_action::transition(battle),
+            Side::NPC => {
+                let effects = unit.npc_select_action(battle).unwrap_or_default();
+                executing_effects::transition(battle, effects);
+            }
+        }
     } else {
         timer.update(delta_time);
         if timer.is_finished() {

@@ -7,8 +7,7 @@ pub fn select_action_noop(_battle: &Battle, _unit: &Unit) -> Option<VecDeque<Eff
 
 pub fn nearest_player(battle: &Battle, unit: &Unit) -> Option<UnitId> {
     battle
-        .unit_iter()
-        .filter(|u| u.side == Side::Player)
+        .unit_player_iter()
         .min_by_key(|&player_unit| unit.coord.manhattan_distance(player_unit.coord))
         .map(|player_unit| player_unit.id)
 }
