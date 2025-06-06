@@ -24,21 +24,13 @@ async fn main() {
         hp_max: 5,
     };
 
-    let npc_data = UnitData {
-        name: ShortString::new("Mr. A"),
-        glyph: Glyph::new('A', WHITE),
-        side: Side::NPC,
-        movement: 3,
-        hp_max: 5,
-    };
-
     let mut battle = Battle::new(Map::new());
 
     battle.add_unit(Coord::new(1, 1), |id, coord| {
         Unit::new(id, coord, player_data)
     });
 
-    battle.add_unit(Coord::new(4, 1), |id, coord| Unit::new(id, coord, npc_data));
+    battle.add_unit(Coord::new(4, 1), battle::content::npc::make_goon);
 
     loop {
         let delta_time = get_frame_time();

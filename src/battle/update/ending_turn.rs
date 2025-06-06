@@ -1,5 +1,4 @@
-use macroquad::prelude::trace;
-
+use super::executing_move;
 use super::model::*;
 use super::selecting_move;
 
@@ -8,7 +7,14 @@ pub fn transition(battle: &mut Battle) {
 }
 
 pub fn update(battle: &mut Battle) {
-    trace!("Ending turn update");
     battle.next_turn();
-    selecting_move::transition(battle);
+    let unit = battle.active_unit().expect("No active unit");
+
+    match unit.side {
+        Side::Player => selecting_move::transition(battle),
+        Side::NPC => {
+            let path = unit.npc_select_move(battle).unwrap_or_default();
+            executing_move::transition(battle, path);
+        }
+    }
 }

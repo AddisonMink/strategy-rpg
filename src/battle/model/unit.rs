@@ -22,8 +22,8 @@ pub struct Unit {
     // State
     pub coord: Coord,
     pub hp: u16,
-    select_move: Option<fn(&Battle, &Unit) -> VecDeque<Coord>>,
-    select_action: Option<fn(&Battle, &Unit) -> VecDeque<Effect>>,
+    select_move: Option<fn(&Battle, &Unit) -> Option<VecDeque<Coord>>>,
+    select_action: Option<fn(&Battle, &Unit) -> Option<VecDeque<Effect>>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,8 +60,8 @@ impl Unit {
         id: UnitId,
         coord: Coord,
         data: UnitData,
-        select_move: fn(&Battle, &Unit) -> VecDeque<Coord>,
-        select_action: fn(&Battle, &Unit) -> VecDeque<Effect>,
+        select_move: fn(&Battle, &Unit) -> Option<VecDeque<Coord>>,
+        select_action: fn(&Battle, &Unit) -> Option<VecDeque<Effect>>,
     ) -> Self {
         Self {
             id,
@@ -82,14 +82,10 @@ impl Unit {
     }
 
     pub fn npc_select_move(&self, battle: &Battle) -> Option<VecDeque<Coord>> {
-        self.select_move
-            .map(|f| f(battle, self))
-            .or_else(|| Some(VecDeque::new()))
+        self.select_move.and_then(|f| f(battle, self))
     }
 
     pub fn npc_select_action(&self, battle: &Battle) -> Option<VecDeque<Effect>> {
-        self.select_action
-            .map(|f| f(battle, self))
-            .or_else(|| Some(VecDeque::new()))
+        self.select_action.and_then(|f| f(battle, self))
     }
 }
