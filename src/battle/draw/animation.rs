@@ -46,5 +46,15 @@ pub fn draw_animation(battle: &Battle, animation: &Animation) {
 
             grid::draw_panel(&panel, coord);
         }
+        AnimationKind::Message { coord, text, color } => {
+            let offset_y = -(progress * grid::TILE_SIZE / 2.0);
+            let alpha = 1.0 - progress;
+            grid::draw_text_with_offset(
+                coord,
+                &text.to_string(),
+                color.with_alpha(alpha),
+                (0.0, offset_y),
+            );
+        }
     }
 }

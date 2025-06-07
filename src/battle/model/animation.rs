@@ -29,6 +29,11 @@ pub enum AnimationKind {
         message: ShortString,
         message_color: Color,
     },
+    Message {
+        coord: Coord,
+        text: ShortString,
+        color: Color,
+    },
 }
 
 impl Animation {
@@ -77,5 +82,12 @@ impl Animation {
             action_name,
             action_color,
         )
+    }
+
+    pub fn message(coord: Coord, text: ShortString, color: Color) -> Self {
+        Self {
+            timer: Timer::new(PANEL_MESSAGE_DURATION),
+            kind: AnimationKind::Message { coord, text, color },
+        }
     }
 }

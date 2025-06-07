@@ -66,6 +66,11 @@ impl Battle {
         id
     }
 
+    pub fn remove_unit(&mut self, id: UnitId) {
+        self.units.remove(&id);
+        self.turn_queue.retain(|&x| x != id);
+    }
+
     pub fn next_turn(&mut self) {
         if self.turn_queue.len() > 1 {
             let id = self.turn_queue.pop_front().unwrap();

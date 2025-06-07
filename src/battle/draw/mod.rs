@@ -146,6 +146,7 @@ fn draw_state(battle: &Battle, mouse_coord_opt: Option<Coord>) {
             if let Some(animation) = animations.front() {
                 animation::draw_animation(battle, animation);
             }
+            draw_description_panels(battle, mouse_coord_opt, None);
         }
         _ => draw_description_panels(battle, mouse_coord_opt, None),
     };

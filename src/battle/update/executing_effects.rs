@@ -32,6 +32,10 @@ pub fn update(battle: &mut Battle, delta_time: f32) {
                 animations.push_back(animation);
                 Some(())
             }
+            Effect::Kill { target } => {
+                battle.remove_unit(target);
+                Some(())
+            }
         };
     }
 }
@@ -41,9 +45,14 @@ fn exec_damage(battle: &mut Battle, min: u16, max: u16, target: UnitId) -> Optio
     let coord = unit.coord;
     let damage = roll(min, max);
     unit.hp = unit.hp.saturating_sub(damage);
+    let dead = unit.hp == 0;
 
-    let (_, animations) = unpack(battle);
+    let (effects, animations) = unpack(battle);
     animations.push_back(Animation::number(coord, -(damage as i32), RED));
+    if dead {
+        animations.push_back(Animation::message(coord, ShortString::new("DEATH"), RED));
+        effects.push_back(Effect::Kill { target });
+    }
     Some(())
 }
 
