@@ -19,6 +19,7 @@ pub struct Unit {
     // Attributes
     pub movement: u16,
     pub hp_max: u16,
+    pub vision: u16,
     // State
     pub coord: Coord,
     pub hp: u16,
@@ -37,6 +38,7 @@ pub struct UnitData {
     pub glyph: Glyph,
     pub side: Side,
     pub movement: u16,
+    pub vision: u16,
     pub hp_max: u16,
 }
 
@@ -48,6 +50,7 @@ impl Unit {
             glyph: data.glyph,
             side: data.side,
             movement: data.movement,
+            vision: data.vision,
             hp_max: data.hp_max,
             coord,
             hp: data.hp_max,
@@ -69,6 +72,7 @@ impl Unit {
             glyph: data.glyph,
             side: data.side,
             movement: data.movement,
+            vision: data.vision,
             hp_max: data.hp_max,
             coord,
             hp: data.hp_max,

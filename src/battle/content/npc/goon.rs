@@ -7,6 +7,7 @@ const DATA: UnitData = UnitData {
     glyph: Glyph::new('G', WHITE),
     side: Side::NPC,
     movement: 2,
+    vision: 2,
     hp_max: 5,
 };
 

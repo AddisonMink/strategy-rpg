@@ -52,4 +52,8 @@ impl Map {
             &Tile::WALL
         }
     }
+
+    pub fn check_line_of_sight(&self, from: Coord, to: Coord) -> bool {
+        algorithm::check_bresenhem_line(from, to, |coord| self.tile(coord).transparent)
+    }
 }

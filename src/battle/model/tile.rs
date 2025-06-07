@@ -6,6 +6,7 @@ pub struct Tile {
     pub glyph: Glyph,
     pub bg_color: Option<Color>,
     pub walkable: bool,
+    pub transparent: bool,
 }
 
 impl Tile {
@@ -14,6 +15,7 @@ impl Tile {
         glyph: Glyph::new('.', LIGHTGRAY),
         bg_color: None,
         walkable: true,
+        transparent: true,
     };
 
     pub const WALL: Self = Self {
@@ -21,5 +23,6 @@ impl Tile {
         glyph: Glyph::new('#', GRAY),
         bg_color: Some(DARKGRAY),
         walkable: false,
+        transparent: false,
     };
 }

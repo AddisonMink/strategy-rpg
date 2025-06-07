@@ -2,13 +2,13 @@ mod animation;
 mod panel;
 
 use super::model::*;
-use crate::engine::*;
+use crate::engine::{color::mix_color, *};
 use panel::*;
 
 const DESCRIPTION_X: f32 = 360.0;
 
 pub fn draw_battle(battle: &Battle) {
-    let mouse_coord_opt = grid::mouse_coord();
+    let mouse_coord_opt = grid::mouse_coord().filter(|c| battle.get_light_grid().visible(*c));
     draw_map(battle);
     draw_state(battle, mouse_coord_opt);
 
@@ -21,25 +21,35 @@ fn draw_map(battle: &Battle) {
     grid::draw_frame("MAP");
 
     let animating_unit_id = find_animating_unit_id(battle);
+    let light_grid = battle.get_light_grid();
 
     for y in 0..Map::HEIGHT {
         for x in 0..Map::WIDTH {
             let coord = Coord::new(x, y);
-            let tile = battle.map.tile(coord);
-            let draw_glyph = battle.unit_at(coord).is_none();
+            if light_grid.visible(coord) {
+                let tile = battle.map.tile(coord);
+                let light_color = light_grid.color_at(coord);
+                let unoccupied = battle.unit_at(coord).is_none();
 
-            if let Some(bg_color) = tile.bg_color {
-                grid::draw_square(coord, bg_color);
-            }
-            if draw_glyph {
-                grid::draw_glyph(coord, tile.glyph);
+                if let Some(bg_color) = tile.bg_color {
+                    let color = mix_color(bg_color, light_color, 0.5);
+                    grid::draw_square(coord, color);
+                }
+                if unoccupied {
+                    let color = mix_color(tile.glyph.color, light_color, 0.5);
+                    let glyph = Glyph::new(tile.glyph.symbol, color);
+                    grid::draw_glyph(coord, glyph);
+                }
             }
         }
     }
 
     for unit in battle.unit_iter() {
-        if !animating_unit_id.is_some_and(|id| id == unit.id) {
-            grid::draw_glyph(unit.coord, unit.glyph);
+        if !animating_unit_id.is_some_and(|id| id == unit.id) && light_grid.visible(unit.coord) {
+            let light_color = light_grid.color_at(unit.coord);
+            let color = mix_color(unit.glyph.color, light_color, 0.5);
+            let glyph = Glyph::new(unit.glyph.symbol, color);
+            grid::draw_glyph(unit.coord, glyph);
         }
     }
 }

@@ -8,8 +8,10 @@ use std::collections::{HashMap, VecDeque};
 pub struct Battle {
     pub map: Map,
     units: HashMap<UnitId, Unit>,
-    next_id: UnitId,
+    next_unit_id: UnitId,
     turn_queue: VecDeque<UnitId>,
+    point_lights: HashMap<Coord, Light>,
+    light_grid: LightGrid,
     pub state: BattleState,
 }
 
@@ -18,8 +20,10 @@ impl Battle {
         Battle {
             map,
             units: HashMap::new(),
-            next_id: UnitId(0),
+            next_unit_id: UnitId(0),
             turn_queue: VecDeque::new(),
+            point_lights: HashMap::new(),
+            light_grid: LightGrid::empty(),
             state: BattleState::Starting,
         }
     }
@@ -58,9 +62,9 @@ impl Battle {
     where
         F: FnOnce(UnitId, Coord) -> Unit,
     {
-        let id = self.next_id;
+        let id = self.next_unit_id;
         let unit = f(id, coord);
-        self.next_id.0 += 1;
+        self.next_unit_id.0 += 1;
         self.units.insert(id, unit);
         self.turn_queue.push_back(id);
         id
@@ -69,6 +73,26 @@ impl Battle {
     pub fn remove_unit(&mut self, id: UnitId) {
         self.units.remove(&id);
         self.turn_queue.retain(|&x| x != id);
+    }
+
+    pub fn lights_iter(&self) -> impl Iterator<Item = (&Coord, &Light)> {
+        self.point_lights.iter()
+    }
+
+    pub fn add_light(&mut self, coord: Coord, light: Light) {
+        self.point_lights.insert(coord, light);
+        self.update_light_grid();
+    }
+
+    pub fn get_light_grid(&self) -> &LightGrid {
+        &self.light_grid
+    }
+
+    pub fn update_light_grid(&mut self) {
+        let povs = self
+            .unit_player_iter()
+            .map(|unit| (unit.coord, unit.vision));
+        self.light_grid = LightGrid::new(&self, povs);
     }
 
     pub fn next_turn(&mut self) {
