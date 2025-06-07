@@ -24,6 +24,17 @@ fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
     let player_id = behavior::nearest_player(battle, unit)?;
     let player = battle.unit(player_id)?;
     (player.coord.manhattan_distance(unit.coord) <= 1).then_some(())?;
-    let effects = VecDeque::from_iter([Effect::damage(1, 2, player.id)]);
+    let direction = unit.coord.direction_to(player.coord)?;
+
+    let effects = VecDeque::from_iter([
+        Effect::QueueAnimation {
+            animation: Animation::attack(unit.id, direction),
+        },
+        Effect::Damage {
+            min: 0,
+            max: 3,
+            target: player_id,
+        },
+    ]);
     Some(effects)
 }

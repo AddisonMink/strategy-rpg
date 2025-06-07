@@ -36,4 +36,18 @@ impl Coord {
             },
         }
     }
+
+pub fn direction_to(&self, other: Coord) -> Option<Direction> {
+        if *self == other {
+            return None;
+        } else if self.x < other.x {
+            Some(Direction::Right)
+        } else if self.x > other.x {
+            Some(Direction::Left)
+        } else if self.y < other.y {
+            Some(Direction::Down)
+        } else {
+            Some(Direction::Up)
+        }
+    }
 }

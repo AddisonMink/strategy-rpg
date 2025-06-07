@@ -32,10 +32,14 @@ pub fn draw_square(coord: Coord, color: Color) {
 }
 
 pub fn draw_glyph(coord: Coord, glyph: Glyph) {
+    draw_glyph_with_offset(coord, glyph, (0.0, 0.0));
+}
+
+pub fn draw_glyph_with_offset(coord: Coord, glyph: Glyph, offset: (f32, f32)) {
     let str = glyph.symbol.to_string();
     let (cx, cy) = coord_to_pos(coord);
-    let x = cx + TILE_SIZE / 8.0;
-    let y = cy + TILE_SIZE - TILE_SIZE / 8.0;
+    let x = cx + TILE_SIZE / 8.0 + offset.0;
+    let y = cy + TILE_SIZE - TILE_SIZE / 8.0 + offset.1;
 
     draw_text_ex(
         &str,
@@ -82,11 +86,11 @@ pub fn draw_panel(panel: &Panel, coord: Coord) {
     panel.draw(x, y);
 }
 
-fn in_bounds(coord: Coord) -> bool {
+pub fn in_bounds(coord: Coord) -> bool {
     coord.x < WIDTH && coord.y < HEIGHT
 }
 
-fn coord_to_pos(coord: Coord) -> (f32, f32) {
+pub fn coord_to_pos(coord: Coord) -> (f32, f32) {
     let x = GRID_ORIGIN.x + coord.x as f32 * TILE_SIZE;
     let y = GRID_ORIGIN.y + coord.y as f32 * TILE_SIZE;
     (x, y)

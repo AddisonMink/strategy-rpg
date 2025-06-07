@@ -6,7 +6,7 @@ pub fn mouse_clicked() -> bool {
 }
 
 pub fn cancel_pressed() -> bool {
-    is_key_pressed(KeyCode::Escape)
+    is_key_pressed(KeyCode::Key0)
 }
 
 pub fn number_pressed() -> Option<usize> {

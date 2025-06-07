@@ -20,23 +20,26 @@ pub fn draw_battle(battle: &Battle) {
 fn draw_map(battle: &Battle) {
     grid::draw_frame("MAP");
 
+    let animating_unit_id = find_animating_unit_id(battle);
+
     for y in 0..Map::HEIGHT {
         for x in 0..Map::WIDTH {
             let coord = Coord::new(x, y);
             let tile = battle.map.tile(coord);
-            let unit_opt = battle.unit_at(coord);
-
-            let glyph = if let Some(unit) = unit_opt {
-                unit.glyph
-            } else {
-                tile.glyph
-            };
+            let draw_glyph = battle.unit_at(coord).is_none();
 
             if let Some(bg_color) = tile.bg_color {
                 grid::draw_square(coord, bg_color);
             }
+            if draw_glyph {
+                grid::draw_glyph(coord, tile.glyph);
+            }
+        }
+    }
 
-            grid::draw_glyph(coord, glyph);
+    for unit in battle.unit_iter() {
+        if !animating_unit_id.is_some_and(|id| id == unit.id) {
+            grid::draw_glyph(unit.coord, unit.glyph);
         }
     }
 }
@@ -146,4 +149,18 @@ fn draw_state(battle: &Battle, mouse_coord_opt: Option<Coord>) {
         }
         _ => draw_description_panels(battle, mouse_coord_opt, None),
     };
+}
+
+fn find_animating_unit_id(battle: &Battle) -> Option<UnitId> {
+    let BattleState::ExecutingEffects { animations, .. } = &battle.state else {
+        return None;
+    };
+
+    let animation = animations.front()?;
+
+    let AnimationKind::Attack { unit_id, .. } = animation.kind else {
+        return None;
+    };
+
+    Some(unit_id)
 }
