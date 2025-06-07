@@ -26,6 +26,7 @@ pub fn update(battle: &mut Battle, delta_time: f32) {
     // Handle effects.
     } else if let Some(effect) = effects.pop_front() {
         match effect {
+            Effect::Noop => Some(()),
             Effect::Damage { min, max, target } => exec_damage(battle, min, max, target),
             Effect::QueueAnimation { animation } => {
                 animations.push_back(animation);

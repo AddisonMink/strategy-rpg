@@ -28,6 +28,9 @@ fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
 
     let effects = VecDeque::from_iter([
         Effect::QueueAnimation {
+            animation: Animation::action_message(unit, ShortString::new("Bonk"), RED),
+        },
+        Effect::QueueAnimation {
             animation: Animation::attack(unit.id, direction),
         },
         Effect::Damage {

@@ -1,11 +1,7 @@
-use std::collections::VecDeque;
-
-use super::Battle;
-use super::Effect;
-use super::EffectTemplate;
-use super::Range;
-use super::UnitId;
+use super::*;
+use crate::battle::model::Animation;
 use crate::engine::*;
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Action {
@@ -18,7 +14,10 @@ impl Action {
     pub const ATTACK: Self = Self {
         name: ShortString::new("Attack"),
         range: Range::SingleUnit { min: 1, max: 1 },
-        effects: ShortList::new(&[EffectTemplate::Damage { min: 1, max: 5 }]),
+        effects: ShortList::new(&[
+            EffectTemplate::EnqueueAttackAnimation,
+            EffectTemplate::Damage { min: 1, max: 5 },
+        ]),
     };
 
     pub fn has_valid_targets(&self, battle: &Battle, unit_id: UnitId, origin: Coord) -> bool {
@@ -30,7 +29,15 @@ impl Action {
         }
     }
 
-    pub fn compile_single_unit_target_effects(&self, target: UnitId) -> VecDeque<Effect> {
+    pub fn compile_single_unit_target_effects(
+        &self,
+        battle: &Battle,
+        unit: UnitId,
+        target: UnitId,
+    ) -> VecDeque<Effect> {
+        let unit = battle.unit(unit).expect("Unit must exist");
+        let target_unit = battle.unit(target).expect("Target unit must exist");
+
         self.effects
             .as_slice()
             .into_iter()
@@ -40,6 +47,15 @@ impl Action {
                     max: *max,
                     target,
                 },
+                EffectTemplate::EnqueueAttackAnimation => {
+                    if let Some(direction) = unit.coord.direction_to(target_unit.coord) {
+                        Effect::QueueAnimation {
+                            animation: Animation::attack(unit.id, direction),
+                        }
+                    } else {
+                        Effect::Noop
+                    }
+                }
             })
             .collect()
     }

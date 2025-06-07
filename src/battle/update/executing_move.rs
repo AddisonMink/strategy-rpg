@@ -4,7 +4,7 @@ use super::selecting_action;
 use crate::engine::*;
 use std::collections::VecDeque;
 
-const MOVE_DURATION: f32 = 0.1;
+const MOVE_DURATION: f32 = 0.2;
 
 pub fn transition(battle: &mut Battle, path: VecDeque<Coord>) {
     let timer = Timer::new(0.0);

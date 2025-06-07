@@ -46,6 +46,7 @@ pub fn make_action_description_panel(action: &Action) -> Panel {
             EffectTemplate::Damage { min, max } => {
                 panel = panel.line(format!(" Damage {}-{}", min, max), WHITE);
             }
+            EffectTemplate::EnqueueAttackAnimation => {}
         }
     }
 

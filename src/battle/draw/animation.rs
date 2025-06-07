@@ -33,5 +33,18 @@ pub fn draw_animation(battle: &Battle, animation: &Animation) {
             let offset_y = (grid_y - origin.y as f32) * grid::TILE_SIZE;
             grid::draw_glyph_with_offset(unit.coord, unit.glyph, (offset_x, offset_y));
         }
+        AnimationKind::PanelMessage {
+            coord,
+            title,
+            title_color,
+            message,
+            message_color,
+        } => {
+            let panel = Panel::builder(title.to_string(), title_color)
+                .line(message.to_string(), message_color)
+                .build();
+
+            grid::draw_panel(&panel, coord);
+        }
     }
 }

@@ -13,7 +13,7 @@ pub fn transition(battle: &mut Battle, action: Action) {
 
     if targets.len() == 1 {
         let target_id = targets.iter().next().expect("No target found");
-        let effects = action.compile_single_unit_target_effects(*target_id);
+        let effects = action.compile_single_unit_target_effects(battle, unit.id, *target_id);
         executing_effects::transition(battle, effects);
         return;
     } else {
@@ -36,8 +36,9 @@ pub fn update(battle: &mut Battle) {
     };
 
     if input::mouse_clicked() && selected_target.is_some() {
+        let unit = battle.active_unit().expect("No active unit");
         let target_id = selected_target.unwrap();
-        let effects = action.compile_single_unit_target_effects(target_id);
+        let effects = action.compile_single_unit_target_effects(battle, unit.id, target_id);
         executing_effects::transition(battle, effects);
     } else {
         let target_opt = grid::mouse_coord()
