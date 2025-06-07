@@ -34,7 +34,11 @@ pub fn update(battle: &mut Battle, delta_time: f32) {
             *timer = Timer::new(MOVE_DURATION);
             let coord = path.pop_front().unwrap();
             let unit = battle.active_unit_mut().expect("No active unit.");
+            let player = unit.side == Side::Player;
             unit.coord = coord;
+            if player {
+                battle.update_light_grid();
+            }
         }
     }
 }
