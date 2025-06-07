@@ -3,7 +3,6 @@ mod panel;
 
 use super::model::*;
 use crate::engine::*;
-use animation::*;
 use panel::*;
 
 const DESCRIPTION_X: f32 = 360.0;
@@ -142,7 +141,7 @@ fn draw_state(battle: &Battle, mouse_coord_opt: Option<Coord>) {
         }
         BattleState::ExecutingEffects { animations, .. } => {
             if let Some(animation) = animations.front() {
-                draw_animation(battle, animation);
+                animation::draw_animation(battle, animation);
             }
         }
         _ => draw_description_panels(battle, mouse_coord_opt, None),

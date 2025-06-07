@@ -23,6 +23,7 @@ pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
 fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
     let player_id = behavior::nearest_player(battle, unit)?;
     let player = battle.unit(player_id)?;
+    (player.coord.manhattan_distance(unit.coord) <= 1).then_some(())?;
     let effects = VecDeque::from_iter([Effect::damage(1, 2, player.id)]);
     Some(effects)
 }
