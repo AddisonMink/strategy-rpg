@@ -1,15 +1,25 @@
 use super::*;
 use std::collections::VecDeque;
 
-pub fn select_action_noop(_battle: &Battle, _unit: &Unit) -> Option<VecDeque<Effect>> {
-    None
+pub fn find_visible_players(battle: &Battle, unit_id: UnitId) -> impl Iterator<Item = &Unit> {
+    let unit = battle.unit(unit_id).expect("Unit should exist");
+
+    battle.unit_player_iter().filter(|&player_unit| {
+        let distance = unit.coord.manhattan_distance(player_unit.coord);
+        let distance_from_light = battle
+            .get_light_grid()
+            .distance_from_light(player_unit.coord);
+        let line_of_sight = battle
+            .map
+            .check_line_of_sight(unit.coord, player_unit.coord);
+        line_of_sight && (distance <= unit.vision || distance_from_light <= unit.vision)
+    })
 }
 
-pub fn nearest_player(battle: &Battle, unit: &Unit) -> Option<UnitId> {
-    battle
-        .unit_player_iter()
+pub fn find_nearest_visible_player(battle: &Battle, unit_id: UnitId) -> Option<&Unit> {
+    let unit = battle.unit(unit_id)?;
+    find_visible_players(battle, unit_id)
         .min_by_key(|&player_unit| unit.coord.manhattan_distance(player_unit.coord))
-        .map(|player_unit| player_unit.id)
 }
 
 pub fn find_path_to_adjacent(battle: &Battle, unit: &Unit, target: Coord) -> VecDeque<Coord> {
@@ -18,11 +28,4 @@ pub fn find_path_to_adjacent(battle: &Battle, unit: &Unit, target: Coord) -> Vec
     let mut path = algorithm::breadth_first_search(unit.coord, accept, goal);
     path.truncate(unit.movement as usize);
     path
-}
-
-pub fn chase_nearest_player(battle: &Battle, unit: &Unit) -> Option<VecDeque<Coord>> {
-    let target_id = nearest_player(battle, unit)?;
-    let target = battle.unit(target_id)?;
-    let path = find_path_to_adjacent(battle, unit, target.coord);
-    if path.is_empty() { None } else { Some(path) }
 }

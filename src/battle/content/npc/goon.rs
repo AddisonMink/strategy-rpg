@@ -12,18 +12,17 @@ const DATA: UnitData = UnitData {
 };
 
 pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
-    Unit::new_npc(
-        id,
-        coord,
-        DATA,
-        behavior::chase_nearest_player,
-        select_action,
-    )
+    Unit::new_npc(id, coord, DATA, select_move, select_action)
+}
+
+fn select_move(battle: &Battle, unit: &Unit) -> Option<VecDeque<Coord>> {
+    let player = behavior::find_nearest_visible_player(battle, unit.id)?;
+    let path = behavior::find_path_to_adjacent(battle, unit, player.coord);
+    if path.is_empty() { None } else { Some(path) }
 }
 
 fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
-    let player_id = behavior::nearest_player(battle, unit)?;
-    let player = battle.unit(player_id)?;
+    let player = behavior::find_nearest_visible_player(battle, unit.id)?;
     (player.coord.manhattan_distance(unit.coord) <= 1).then_some(())?;
     let direction = unit.coord.direction_to(player.coord)?;
 
@@ -37,7 +36,7 @@ fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
         Effect::Damage {
             min: 0,
             max: 3,
-            target: player_id,
+            target: player.id,
         },
     ]);
     Some(effects)
