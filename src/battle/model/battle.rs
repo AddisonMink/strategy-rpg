@@ -50,12 +50,35 @@ impl Battle {
         self.units.values().find(|unit| unit.coord == coord)
     }
 
+    pub fn unit_can_see_unit(&self, from: UnitId, to: UnitId) -> bool {
+        let Some(from_unit) = self.unit(from) else {
+            return false;
+        };
+        let Some(to_unit) = self.unit(to) else {
+            return false;
+        };
+        let distance = from_unit.coord.manhattan_distance(to_unit.coord);
+        let distance_from_light = self.light_grid.distance_from_light(to_unit.coord);
+        self.map.check_line_of_sight(from_unit.coord, to_unit.coord)
+            && (distance <= from_unit.vision || distance_from_light <= from_unit.vision)
+    }
+
     pub fn unit_iter(&self) -> impl Iterator<Item = &Unit> {
         self.units.values()
     }
 
     pub fn unit_player_iter(&self) -> impl Iterator<Item = &Unit> {
         self.units.values().filter(|unit| unit.side == Side::Player)
+    }
+
+    pub fn unit_npc_iter(&self) -> impl Iterator<Item = &Unit> {
+        self.units.values().filter(|unit| unit.side == Side::NPC)
+    }
+
+    pub fn unit_npc_iter_mut(&mut self) -> impl Iterator<Item = &mut Unit> {
+        self.units
+            .values_mut()
+            .filter(|unit| unit.side == Side::NPC)
     }
 
     pub fn add_unit<F>(&mut self, coord: Coord, f: F) -> UnitId

@@ -22,6 +22,14 @@ pub fn find_nearest_visible_player(battle: &Battle, unit_id: UnitId) -> Option<&
         .min_by_key(|&player_unit| unit.coord.manhattan_distance(player_unit.coord))
 }
 
+pub fn find_path_to(battle: &Battle, unit: &Unit, target: Coord) -> VecDeque<Coord> {
+    let accept = |c: Coord| battle.map.tile(c).walkable && battle.unit_at(c).is_none();
+    let goal = |c: Coord| c == target;
+    let mut path = algorithm::breadth_first_search(unit.coord, accept, goal);
+    path.truncate(unit.movement as usize);
+    path
+}
+
 pub fn find_path_to_adjacent(battle: &Battle, unit: &Unit, target: Coord) -> VecDeque<Coord> {
     let accept = |c: Coord| battle.map.tile(c).walkable && battle.unit_at(c).is_none();
     let goal = |c: Coord| c.manhattan_distance(target) <= 1;

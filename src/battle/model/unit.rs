@@ -23,6 +23,8 @@ pub struct Unit {
     // State
     pub coord: Coord,
     pub hp: u16,
+    // NPC-Specific Fields
+    pub last_seen_player: Option<(UnitId, Coord)>,
     select_move: Option<fn(&Battle, &Unit) -> Option<VecDeque<Coord>>>,
     select_action: Option<fn(&Battle, &Unit) -> Option<VecDeque<Effect>>>,
 }
@@ -54,6 +56,7 @@ impl Unit {
             hp_max: data.hp_max,
             coord,
             hp: data.hp_max,
+            last_seen_player: None,
             select_move: None,
             select_action: None,
         }
@@ -76,6 +79,7 @@ impl Unit {
             hp_max: data.hp_max,
             coord,
             hp: data.hp_max,
+            last_seen_player: None,
             select_move: Some(select_move),
             select_action: Some(select_action),
         }
