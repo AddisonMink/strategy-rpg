@@ -45,7 +45,10 @@ fn draw_map(battle: &Battle) {
     }
 
     for unit in battle.unit_iter() {
-        if !animating_unit_id.is_some_and(|id| id == unit.id) && light_grid.visible(unit.coord) {
+        let visible = !animating_unit_id.is_some_and(|id| id == unit.id)
+            && (unit.side == Side::Player || light_grid.unit_visible(unit.id));
+
+        if visible {
             let light_color = light_grid.color_at(unit.coord);
             let color = mix_color(unit.glyph.color, light_color, 0.5);
             let glyph = Glyph::new(unit.glyph.symbol, color);
@@ -64,7 +67,9 @@ fn draw_description_panels(
     };
 
     let tile = battle.map.tile(coord);
-    let unit_opt = battle.unit_at(coord);
+    let unit_opt = battle
+        .unit_at(coord)
+        .filter(|u| u.side == Side::Player || battle.light_grid.unit_visible(u.id));
     let tile_panel = make_tile_description_panel(tile);
     let unit_panel_opt = unit_opt.map(make_unit_description_panel);
     let mut y = 10.0;

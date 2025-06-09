@@ -1,13 +1,16 @@
+use std::collections::HashSet;
+
 use super::*;
-use crate::engine::{algorithm::check_bresenhem_line, *};
+use crate::engine::*;
 use macroquad::prelude::*;
 
 /// A grid that holds light values for each coordinate in the map.
 /// Each light value is a u16 representing the distance of that coordinate from edge of the nearest light source.
 pub struct LightGrid {
-    pub lights: Vec<u16>,
-    pub colors: Vec<Color>,
-    pub visible: Vec<bool>,
+    lights: Vec<u16>,
+    colors: Vec<Color>,
+    visible: Vec<bool>,
+    visible_units: HashSet<UnitId>,
 }
 
 impl LightGrid {
@@ -16,13 +19,15 @@ impl LightGrid {
             lights: vec![u16::max_value(); (Map::WIDTH * Map::HEIGHT) as usize],
             colors: vec![BLACK; (Map::WIDTH * Map::HEIGHT) as usize],
             visible: vec![false; (Map::WIDTH * Map::HEIGHT) as usize],
+            visible_units: HashSet::new(),
         }
     }
 
-    pub fn new(battle: &Battle, povs: impl Iterator<Item = (Coord, u16)>) -> Self {
+    pub fn new(battle: &Battle) -> Self {
         let mut lights: Vec<u16> = vec![u16::max_value(); (Map::WIDTH * Map::HEIGHT) as usize];
         let mut colors: Vec<Color> = vec![BLACK; (Map::WIDTH * Map::HEIGHT) as usize];
         let mut visible: Vec<bool> = vec![false; (Map::WIDTH * Map::HEIGHT) as usize];
+        let mut visible_units = HashSet::new();
 
         for (center, light) in battle.lights_iter() {
             for x in 0..Map::WIDTH {
@@ -47,17 +52,17 @@ impl LightGrid {
             }
         }
 
-        for (coord, vision) in povs {
+        for player in battle.unit_player_iter() {
             for x in 0..Map::WIDTH {
                 for y in 0..Map::HEIGHT {
-                    let target_coord = Coord { x, y };
-                    if battle.map.check_line_of_sight(coord, target_coord) {
-                        let index = y as usize * Map::WIDTH as usize + x as usize;
-                        let distance_from_light = lights[index];
-                        let distance = coord.manhattan_distance(target_coord);
-                        visible[index] =
-                            visible[index] || distance_from_light <= vision || distance <= vision;
-                    }
+                    let index = y as usize * Map::WIDTH as usize + x as usize;
+                    visible[index] = battle.unit_can_see_tile(player.id, Coord::new(x, y));
+                }
+            }
+
+            for npc in battle.unit_npc_iter() {
+                if battle.unit_can_see_unit(player.id, npc.id) {
+                    visible_units.insert(npc.id);
                 }
             }
         }
@@ -70,6 +75,7 @@ impl LightGrid {
             lights,
             colors,
             visible,
+            visible_units,
         }
     }
 
@@ -86,5 +92,9 @@ impl LightGrid {
     pub fn visible(&self, coord: Coord) -> bool {
         let index = coord.y as usize * Map::WIDTH as usize + coord.x as usize;
         self.visible[index]
+    }
+
+    pub fn unit_visible(&self, unit_id: UnitId) -> bool {
+        self.visible_units.contains(&unit_id)
     }
 }

@@ -36,10 +36,11 @@ pub fn update(battle: &mut Battle, delta_time: f32) {
             let coord = path.pop_front().unwrap();
             let unit = battle.active_unit_mut().expect("No active unit.");
             let unit_id = unit.id;
+            let side = unit.side;
             unit.coord = coord;
-            match unit.side {
+            battle.light_grid = LightGrid::new(battle);
+            match side {
                 Side::Player => {
-                    battle.update_light_grid();
                     update_all_npc_views_of_player(battle, unit_id);
                 }
                 Side::NPC => {
@@ -82,14 +83,9 @@ pub fn update_last_seen(battle: &mut Battle, npc_id: UnitId, player_id: UnitId) 
         let old_dist = last_seen_coord.manhattan_distance(npc.coord);
         let new_dist = coord.manhattan_distance(npc.coord);
         if last_seen_id == player_id || new_dist < old_dist {
-            trace!(
-                "NPC {:?} updated last seen player to coord {:?}",
-                npc_id, coord
-            );
             npc.last_seen_player = Some((player_id, coord));
         }
     } else {
-        trace!("NPC {:?} set last seen player to coord {:?}", npc_id, coord);
         npc.last_seen_player = Some((player_id, coord));
     }
 }

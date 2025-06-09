@@ -27,7 +27,7 @@ async fn main() {
         Unit::new(id, coord, player_data, None, None)
     });
 
-    battle.add_unit(Coord::new(4, 1), battle::content::npc::make_goon);
+    //battle.add_unit(Coord::new(4, 1), battle::content::npc::make_goon);
     battle.add_unit(Coord::new(8, 3), battle::content::npc::make_shadow);
 
     battle.add_light(Coord::new(2, 4), Light::new(5, ORANGE));

@@ -1,5 +1,3 @@
-use macroquad::prelude::trace;
-
 use super::Map;
 use super::*;
 use crate::engine::*;
@@ -11,7 +9,7 @@ pub struct Battle {
     next_unit_id: UnitId,
     turn_queue: VecDeque<UnitId>,
     point_lights: HashMap<Coord, Light>,
-    light_grid: LightGrid,
+    pub light_grid: LightGrid,
     pub state: BattleState,
 }
 
@@ -50,6 +48,16 @@ impl Battle {
         self.units.values().find(|unit| unit.coord == coord)
     }
 
+    pub fn unit_can_see_tile(&self, from: UnitId, to: Coord) -> bool {
+        let Some(from_unit) = self.unit(from) else {
+            return false;
+        };
+        let distance = from_unit.coord.manhattan_distance(to);
+        let distance_from_light = self.light_grid.distance_from_light(to);
+        self.map.check_line_of_sight(from_unit.coord, to)
+            && (distance <= from_unit.vision || distance_from_light <= from_unit.vision)
+    }
+
     pub fn unit_can_see_unit(&self, from: UnitId, to: UnitId) -> bool {
         let Some(from_unit) = self.unit(from) else {
             return false;
@@ -59,8 +67,13 @@ impl Battle {
         };
         let distance = from_unit.coord.manhattan_distance(to_unit.coord);
         let distance_from_light = self.light_grid.distance_from_light(to_unit.coord);
-        self.map.check_line_of_sight(from_unit.coord, to_unit.coord)
-            && (distance <= from_unit.vision || distance_from_light <= from_unit.vision)
+
+        if distance_from_light > 1 && to_unit.tags.contains(&UnitTag::Lurker) {
+            return false; // Lurkers are hidden when not in light.
+        } else {
+            self.map.check_line_of_sight(from_unit.coord, to_unit.coord)
+                && (distance <= from_unit.vision || distance_from_light <= from_unit.vision)
+        }
     }
 
     pub fn unit_iter(&self) -> impl Iterator<Item = &Unit> {
@@ -73,12 +86,6 @@ impl Battle {
 
     pub fn unit_npc_iter(&self) -> impl Iterator<Item = &Unit> {
         self.units.values().filter(|unit| unit.side == Side::NPC)
-    }
-
-    pub fn unit_npc_iter_mut(&mut self) -> impl Iterator<Item = &mut Unit> {
-        self.units
-            .values_mut()
-            .filter(|unit| unit.side == Side::NPC)
     }
 
     pub fn add_unit<F>(&mut self, coord: Coord, f: F) -> UnitId
@@ -104,18 +111,11 @@ impl Battle {
 
     pub fn add_light(&mut self, coord: Coord, light: Light) {
         self.point_lights.insert(coord, light);
-        self.update_light_grid();
+        self.light_grid = LightGrid::new(&self);
     }
 
     pub fn get_light_grid(&self) -> &LightGrid {
         &self.light_grid
-    }
-
-    pub fn update_light_grid(&mut self) {
-        let povs = self
-            .unit_player_iter()
-            .map(|unit| (unit.coord, unit.vision));
-        self.light_grid = LightGrid::new(&self, povs);
     }
 
     pub fn next_turn(&mut self) {

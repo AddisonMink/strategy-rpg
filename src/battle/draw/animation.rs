@@ -24,6 +24,10 @@ pub fn draw_animation(battle: &Battle, animation: &Animation) {
                 return;
             };
 
+            if unit.side != Side::Player && !battle.light_grid.unit_visible(unit_id) {
+                return;
+            }
+
             let t = 0.25 * (std::f32::consts::PI * progress).sin();
             let origin = unit.coord;
             let target = unit.coord.shift(direction);
