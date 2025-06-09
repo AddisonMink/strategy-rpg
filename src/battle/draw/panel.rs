@@ -1,16 +1,26 @@
+use std::fmt::format;
+
 use super::*;
 
 pub fn make_unit_description_panel(unit: &Unit) -> Panel {
     Panel::builder(unit.name.to_string().to_uppercase(), unit.glyph.color)
         .min_width(200.0)
         .meter("HP ", WHITE, unit.hp, unit.hp_max, RED)
+        .line(format!("MOVE {}", unit.movement), WHITE)
+        .line(format!("VISION {}", unit.vision), WHITE)
         .build()
 }
 
 pub fn make_tile_description_panel(tile: &Tile) -> Panel {
-    Panel::builder(tile.name.to_string().to_uppercase(), tile.glyph.color)
-        .min_width(200.0)
-        .build()
+    let mut panel =
+        Panel::builder(tile.name.to_string().to_uppercase(), tile.glyph.color).min_width(200.0);
+    if !tile.walkable {
+        panel = panel.line("BLOCKING", WHITE);
+    }
+    if !tile.transparent {
+        panel = panel.line("OPAQUE", WHITE);
+    }
+    panel.build()
 }
 
 pub fn make_action_preview_panel(battle: &Battle, origin: Coord) -> Panel {

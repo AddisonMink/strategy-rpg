@@ -2,15 +2,15 @@ use super::*;
 use std::collections::VecDeque;
 
 const DATA: UnitData = UnitData {
-    name: ShortString::new("Goon"),
-    glyph: Glyph::new('G', WHITE),
+    name: ShortString::new("Shadow"),
+    glyph: Glyph::new('S', WHITE),
     side: Side::NPC,
-    movement: 2,
-    vision: 2,
-    hp_max: 5,
+    movement: 3,
+    vision: 99,
+    hp_max: 3,
 };
 
-pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
+pub fn make_shadow(id: UnitId, coord: Coord) -> Unit {
     Unit::new_npc(id, coord, DATA, behavior::standard_move, select_action)
 }
 
@@ -21,14 +21,14 @@ fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
 
     let effects = VecDeque::from_iter([
         Effect::QueueAnimation {
-            animation: Animation::action_message(unit, ShortString::new("Bonk"), RED),
+            animation: Animation::action_message(unit, ShortString::new("Consume"), RED),
         },
         Effect::QueueAnimation {
             animation: Animation::attack(unit.id, direction),
         },
         Effect::Damage {
-            min: 0,
-            max: 3,
+            min: 1,
+            max: 5,
             target: player.id,
         },
     ]);

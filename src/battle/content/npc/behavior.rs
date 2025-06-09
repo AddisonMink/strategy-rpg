@@ -37,3 +37,15 @@ pub fn find_path_to_adjacent(battle: &Battle, unit: &Unit, target: Coord) -> Vec
     path.truncate(unit.movement as usize);
     path
 }
+
+pub fn standard_move(battle: &Battle, unit: &Unit) -> Option<VecDeque<Coord>> {
+    if let Some(player) = behavior::find_nearest_visible_player(battle, unit.id) {
+        let path = behavior::find_path_to_adjacent(battle, unit, player.coord);
+        Some(path)
+    } else if let Some((_, coord)) = unit.last_seen_player {
+        let path = behavior::find_path_to(battle, unit, coord);
+        Some(path)
+    } else {
+        None
+    }
+}
