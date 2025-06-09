@@ -18,12 +18,13 @@ async fn main() {
         movement: 3,
         vision: 3,
         hp_max: 5,
+        tags: ShortList::empty(),
     };
 
     let mut battle = Battle::new(Map::new());
 
     battle.add_unit(Coord::new(1, 1), |id, coord| {
-        Unit::new(id, coord, player_data)
+        Unit::new(id, coord, player_data, None, None)
     });
 
     battle.add_unit(Coord::new(4, 1), battle::content::npc::make_goon);

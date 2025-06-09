@@ -25,7 +25,7 @@ pub fn update(battle: &mut Battle, delta_time: f32) {
                 selecting_action::transition(battle);
             }
             Side::NPC => {
-                let effects = unit.npc_select_action(battle).unwrap_or_default();
+                let effects = (unit.select_action)(battle);
                 executing_effects::transition(battle, effects);
             }
         }

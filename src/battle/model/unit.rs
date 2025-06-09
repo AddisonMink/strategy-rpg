@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::vec;
 
 use super::Action;
@@ -20,19 +21,25 @@ pub struct Unit {
     pub movement: u16,
     pub hp_max: u16,
     pub vision: u16,
+    pub tags: HashSet<UnitTag>,
     // State
     pub coord: Coord,
     pub hp: u16,
     // NPC-Specific Fields
     pub last_seen_player: Option<(UnitId, Coord)>,
-    select_move: Option<fn(&Battle, &Unit) -> Option<VecDeque<Coord>>>,
-    select_action: Option<fn(&Battle, &Unit) -> Option<VecDeque<Effect>>>,
+    pub select_move: fn(&Battle) -> VecDeque<Coord>,
+    pub select_action: fn(&Battle) -> VecDeque<Effect>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Side {
     Player,
     NPC,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum UnitTag {
+    Lurker,
 }
 
 pub struct UnitData {
@@ -42,32 +49,16 @@ pub struct UnitData {
     pub movement: u16,
     pub vision: u16,
     pub hp_max: u16,
+    pub tags: ShortList<UnitTag>,
 }
 
 impl Unit {
-    pub fn new(id: UnitId, coord: Coord, data: UnitData) -> Self {
-        Self {
-            id,
-            name: data.name,
-            glyph: data.glyph,
-            side: data.side,
-            movement: data.movement,
-            vision: data.vision,
-            hp_max: data.hp_max,
-            coord,
-            hp: data.hp_max,
-            last_seen_player: None,
-            select_move: None,
-            select_action: None,
-        }
-    }
-
-    pub fn new_npc(
+    pub fn new(
         id: UnitId,
         coord: Coord,
         data: UnitData,
-        select_move: fn(&Battle, &Unit) -> Option<VecDeque<Coord>>,
-        select_action: fn(&Battle, &Unit) -> Option<VecDeque<Effect>>,
+        select_move: Option<fn(&Battle) -> VecDeque<Coord>>,
+        select_action: Option<fn(&Battle) -> VecDeque<Effect>>,
     ) -> Self {
         Self {
             id,
@@ -77,23 +68,16 @@ impl Unit {
             movement: data.movement,
             vision: data.vision,
             hp_max: data.hp_max,
+            tags: HashSet::from_iter(data.tags.as_slice().iter().cloned()),
             coord,
             hp: data.hp_max,
             last_seen_player: None,
-            select_move: Some(select_move),
-            select_action: Some(select_action),
+            select_move: select_move.unwrap_or_else(|| |_: &Battle| VecDeque::new()),
+            select_action: select_action.unwrap_or_else(|| |_: &Battle| VecDeque::new()),
         }
     }
 
     pub fn actions(&self) -> Vec<Action> {
         vec![Action::ATTACK]
-    }
-
-    pub fn npc_select_move(&self, battle: &Battle) -> Option<VecDeque<Coord>> {
-        self.select_move.and_then(|f| f(battle, self))
-    }
-
-    pub fn npc_select_action(&self, battle: &Battle) -> Option<VecDeque<Effect>> {
-        self.select_action.and_then(|f| f(battle, self))
     }
 }

@@ -13,7 +13,7 @@ pub fn update(battle: &mut Battle) {
     match unit.side {
         Side::Player => selecting_move::transition(battle),
         Side::NPC => {
-            let path = unit.npc_select_move(battle).unwrap_or_default();
+            let path = (unit.select_move)(&battle);
             executing_move::transition(battle, path);
         }
     }

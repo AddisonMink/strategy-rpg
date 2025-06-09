@@ -22,16 +22,6 @@ impl ShortString {
         Self { value, len: i }
     }
 
-    pub const fn from_bytes(bytes: &[u8]) -> Self {
-        let mut value = [0u8; MAX_SHORT_STRING_SIZE];
-        let mut i = 0;
-        while i < bytes.len() && i < MAX_SHORT_STRING_SIZE {
-            value[i] = bytes[i];
-            i += 1;
-        }
-        Self { value, len: i }
-    }
-
     pub fn as_str(&self) -> &str {
         // SAFETY: value[0..len] is always valid UTF-8 if constructed from &str
         unsafe { std::str::from_utf8_unchecked(&self.value[..self.len]) }

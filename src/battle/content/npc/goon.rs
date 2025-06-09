@@ -8,18 +8,34 @@ const DATA: UnitData = UnitData {
     movement: 2,
     vision: 2,
     hp_max: 5,
+    tags: ShortList::empty(),
 };
 
 pub fn make_goon(id: UnitId, coord: Coord) -> Unit {
-    Unit::new_npc(id, coord, DATA, behavior::standard_move, select_action)
+    Unit::new(
+        id,
+        coord,
+        DATA,
+        Some(behavior::standard_move),
+        Some(select_action),
+    )
 }
 
-fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
-    let player = behavior::find_nearest_visible_player(battle, unit.id)?;
-    (player.coord.manhattan_distance(unit.coord) <= 1).then_some(())?;
-    let direction = unit.coord.direction_to(player.coord)?;
+fn select_action(battle: &Battle) -> VecDeque<Effect> {
+    let mut effects: VecDeque<Effect> = VecDeque::new();
+    let unit = battle.active_unit().expect("Active unit should exist");
 
-    let effects = VecDeque::from_iter([
+    let Some(player) = behavior::find_nearest_visible_player(battle, unit.id) else {
+        return effects;
+    };
+
+    if player.coord.manhattan_distance(unit.coord) > 1 {
+        return effects;
+    }
+
+    let direction = unit.coord.direction_to(player.coord).unwrap();
+
+    effects.extend([
         Effect::QueueAnimation {
             animation: Animation::action_message(unit, ShortString::new("Bonk"), RED),
         },
@@ -32,5 +48,6 @@ fn select_action(battle: &Battle, unit: &Unit) -> Option<VecDeque<Effect>> {
             target: player.id,
         },
     ]);
-    Some(effects)
+
+    effects
 }

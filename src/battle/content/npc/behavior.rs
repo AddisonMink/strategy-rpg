@@ -38,14 +38,14 @@ pub fn find_path_to_adjacent(battle: &Battle, unit: &Unit, target: Coord) -> Vec
     path
 }
 
-pub fn standard_move(battle: &Battle, unit: &Unit) -> Option<VecDeque<Coord>> {
+pub fn standard_move(battle: &Battle) -> VecDeque<Coord> {
+    let unit = battle.active_unit().expect("Active unit should exist");
+    
     if let Some(player) = behavior::find_nearest_visible_player(battle, unit.id) {
-        let path = behavior::find_path_to_adjacent(battle, unit, player.coord);
-        Some(path)
+        behavior::find_path_to_adjacent(battle, unit, player.coord)
     } else if let Some((_, coord)) = unit.last_seen_player {
-        let path = behavior::find_path_to(battle, unit, coord);
-        Some(path)
+        behavior::find_path_to(battle, unit, coord)
     } else {
-        None
+        VecDeque::new()
     }
 }

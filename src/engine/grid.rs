@@ -54,10 +54,6 @@ pub fn draw_glyph_with_offset(coord: Coord, glyph: Glyph, offset: (f32, f32)) {
     );
 }
 
-pub fn draw_text(coord: Coord, text: &str, color: Color) {
-    draw_text_with_offset(coord, text, color, (0.0, 0.0));
-}
-
 pub fn draw_text_with_offset(coord: Coord, text: &str, color: Color, offset: (f32, f32)) {
     let (cx, cy) = coord_to_pos(coord);
     let size = measure_text(text, asset::UI_FONT.get(), TEXT_SIZE, 1.0);
