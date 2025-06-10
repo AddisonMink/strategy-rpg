@@ -75,7 +75,7 @@ pub fn update_npc_view_of_all_players(battle: &mut Battle, npc_id: UnitId) {
     }
 }
 
-pub fn update_last_seen(battle: &mut Battle, npc_id: UnitId, player_id: UnitId) {
+fn update_last_seen(battle: &mut Battle, npc_id: UnitId, player_id: UnitId) {
     let coord = battle.unit(player_id).unwrap().coord;
     let npc = battle.unit_mut(npc_id).expect("NPC unit not found.");
 
@@ -89,3 +89,4 @@ pub fn update_last_seen(battle: &mut Battle, npc_id: UnitId, player_id: UnitId) 
         npc.last_seen_player = Some((player_id, coord));
     }
 }
+

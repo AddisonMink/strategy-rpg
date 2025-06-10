@@ -1,11 +1,11 @@
-use std::collections::HashSet;
-use std::vec;
-
 use super::Action;
 use super::Battle;
 use super::Effect;
 use crate::engine::*;
+use std::collections::HashMap;
+use std::collections::HashSet;
 use std::collections::VecDeque;
+use std::vec;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UnitId(pub u16);
@@ -27,6 +27,8 @@ pub struct Unit {
     pub hp: u16,
     // NPC-Specific Fields
     pub last_seen_player: Option<(UnitId, Coord)>,
+    pub player_memory: HashMap<UnitId, Coord>,
+    pub visible_player_units: HashSet<UnitId>,
     pub select_move: fn(&Battle) -> VecDeque<Coord>,
     pub select_action: fn(&Battle) -> VecDeque<Effect>,
 }
@@ -72,6 +74,8 @@ impl Unit {
             coord,
             hp: data.hp_max,
             last_seen_player: None,
+            player_memory: HashMap::new(),
+            visible_player_units: HashSet::new(),
             select_move: select_move.unwrap_or_else(|| |_: &Battle| VecDeque::new()),
             select_action: select_action.unwrap_or_else(|| |_: &Battle| VecDeque::new()),
         }
