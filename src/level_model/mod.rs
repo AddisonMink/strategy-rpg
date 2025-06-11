@@ -1,4 +1,5 @@
 mod effect;
+mod action;
 mod entity;
 mod level_state;
 mod light_grid;
@@ -9,6 +10,7 @@ use crate::engine::*;
 use std::collections::{HashMap, VecDeque};
 
 pub use effect::*;
+pub use action::*;
 pub use entity::*;
 pub use level_state::*;
 pub use light_grid::*;

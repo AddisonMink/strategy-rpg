@@ -1,3 +1,4 @@
+use super::action::Action;
 use crate::engine::*;
 use std::collections::{HashSet, VecDeque};
 
@@ -9,4 +10,10 @@ pub enum LevelState {
         path: Option<VecDeque<Coord>>,
     },
     ResolvingMove,
+    SelectingAction {
+        actions: Vec<Action>,
+        panel: Panel,
+        panel_origin: (f32, f32),
+        target_coords: Option<HashSet<Coord>>,
+    },
 }

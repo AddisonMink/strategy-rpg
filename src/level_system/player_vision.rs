@@ -4,6 +4,7 @@ use std::collections::HashSet;
 
 pub fn update_player_vision(level: &mut Level) {
     let mut tiles_visible = vec![false; (Map::WIDTH * Map::HEIGHT) as usize];
+    let mut units_visible = HashSet::new();
 
     let players = level
         .units
@@ -21,8 +22,15 @@ pub fn update_player_vision(level: &mut Level) {
         }
     }
 
+    for unit in level.units.values() {
+        let pos = level.positions.get(&unit.entity).unwrap();
+        if unit.side == Side::Player || level.unit_can_see_tile(unit.entity, pos.coord) {
+            units_visible.insert(unit.entity);
+        }
+    }
+
     level.player_vision = PlayerVision {
         tiles_visible,
-        units_visible: HashSet::new(),
+        units_visible,
     }
 }

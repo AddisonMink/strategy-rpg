@@ -1,11 +1,12 @@
 mod light_grid;
 mod player_vision;
+mod selecting_action;
 mod selecting_move;
+mod action;
 
 use crate::engine::*;
 use crate::level_model::*;
 use light_grid::update_light_grid;
-use macroquad::prelude::trace;
 use player_vision::update_player_vision;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -82,7 +83,8 @@ fn process_state(level: &mut Level) {
             selecting_move::transition(level);
         }
         LevelState::SelectingMove { .. } => selecting_move::update(level),
-        LevelState::ResolvingMove => selecting_move::transition(level),
+        LevelState::ResolvingMove => selecting_action::transition(level),
+        LevelState::SelectingAction { .. } => selecting_action::update(level),
         _ => {}
     }
 }

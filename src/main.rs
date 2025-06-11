@@ -18,6 +18,7 @@ async fn main() {
 
     let mut level = Level::empty();
     add_hero(&mut level, Coord::new(1, 1));
+    add_goon(&mut level, Coord::new(5, 1));
     add_point_light(&mut level, Coord::new(1, 1), 5, ORANGE);
 
     loop {

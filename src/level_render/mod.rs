@@ -67,6 +67,18 @@ fn draw_state(level: &Level) {
                 grid::draw_glyph(*c, Glyph::new('o', WHITE));
             }
         }
+        LevelState::SelectingAction {
+            panel,
+            panel_origin,
+            target_coords,
+            ..
+        } => {
+            panel.draw(panel_origin.0, panel_origin.1);
+
+            for coord in target_coords.iter().flatten() {
+                grid::draw_square(*coord, WHITE.with_alpha(0.5));
+            }
+        }
         _ => {}
     }
 }
