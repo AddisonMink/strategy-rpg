@@ -15,7 +15,7 @@ pub enum LevelState {
     SelectingAction {
         actions: Vec<Action>,
         panel: Panel,
-        panel_origin: (f32, f32),
+        selected_action: Option<Action>,
         target_coords: Option<HashSet<Coord>>,
     },
     CompilingAction {

@@ -3,8 +3,8 @@ use macroquad::prelude::trace;
 use super::action;
 use crate::engine::*;
 use crate::level_model::*;
-
-const PANEL_ORIGIN: (f32, f32) = (360.0, 10.0);
+use crate::level_render::INFO_PANEL_ORIGIN;
+use crate::level_render::INFO_PANEL_WIDTH;
 
 pub fn transition(level: &mut Level) {
     let actions = vec![Action::ATTACK, Action::WAIT];
@@ -12,24 +12,21 @@ pub fn transition(level: &mut Level) {
     level.state = LevelState::SelectingAction {
         actions: vec![Action::ATTACK, Action::WAIT],
         panel: make_action_list_panel(&actions, None),
-        panel_origin: PANEL_ORIGIN,
+        selected_action: None,
         target_coords: None,
     }
 }
 
 pub fn update(level: &mut Level) {
-    let LevelState::SelectingAction {
-        actions,
-        panel,
-        panel_origin,
-        ..
-    } = &level.state
-    else {
+    let LevelState::SelectingAction { actions, panel, .. } = &level.state else {
         return;
     };
 
     let mouse_pos = input::mouse_pos();
-    let relative_mouse_pos = (mouse_pos.0 - panel_origin.0, mouse_pos.1 - panel_origin.1);
+    let relative_mouse_pos = (
+        mouse_pos.0 - INFO_PANEL_ORIGIN.0,
+        mouse_pos.1 - INFO_PANEL_ORIGIN.1,
+    );
 
     if let Some(selected_line) = panel.get_selected_line(relative_mouse_pos) {
         let action = &actions[selected_line];
@@ -41,7 +38,7 @@ pub fn update(level: &mut Level) {
             level.state = LevelState::SelectingAction {
                 actions: actions.to_vec(),
                 panel: make_action_list_panel(actions, Some(selected_line)),
-                panel_origin: *panel_origin,
+                selected_action: Some(action.clone()),
                 target_coords: Some(new_target_coords),
             };
         }
@@ -49,14 +46,14 @@ pub fn update(level: &mut Level) {
         level.state = LevelState::SelectingAction {
             actions: actions.to_vec(),
             panel: make_action_list_panel(actions, None),
-            panel_origin: *panel_origin,
+            selected_action: None,
             target_coords: None,
         };
     }
 }
 
 fn make_action_list_panel(actions: &[Action], selected_index: Option<usize>) -> Panel {
-    let mut panel = Panel::builder("ACTIONS", WHITE);
+    let mut panel = Panel::builder("ACTIONS", WHITE).min_width(INFO_PANEL_WIDTH);
     for (i, action) in actions.iter().enumerate() {
         let selected = selected_index.map_or(false, |index| index == i);
         let color = if selected { WHITE } else { GRAY };
