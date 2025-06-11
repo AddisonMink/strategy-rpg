@@ -33,15 +33,18 @@ pub fn update(level: &mut Level) {
 
     if let Some(selected_line) = panel.get_selected_line(relative_mouse_pos) {
         let action = &actions[selected_line];
-        let entity = level.turn_queue.front().unwrap();
-        let origin = level.positions.get(entity).unwrap().coord;
-        let new_target_coords = action::find_target_coords(level, origin, action);
-        level.state = LevelState::SelectingAction {
-            actions: actions.to_vec(),
-            panel: make_action_list_panel(actions, Some(selected_line)),
-            panel_origin: *panel_origin,
-            target_coords: Some(new_target_coords),
-        };
+        if input::mouse_clicked() {
+        } else {
+            let entity = level.turn_queue.front().unwrap();
+            let origin = level.positions.get(entity).unwrap().coord;
+            let new_target_coords = action::find_target_coords(level, origin, action);
+            level.state = LevelState::SelectingAction {
+                actions: actions.to_vec(),
+                panel: make_action_list_panel(actions, Some(selected_line)),
+                panel_origin: *panel_origin,
+                target_coords: Some(new_target_coords),
+            };
+        }
     } else {
         level.state = LevelState::SelectingAction {
             actions: actions.to_vec(),

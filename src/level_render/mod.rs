@@ -2,6 +2,8 @@ use crate::engine::color::mix_color;
 use crate::engine::*;
 use crate::level_model::*;
 
+const INFO_PANEL_ORIGIN: (f32, f32) = (360.0, 10.0);
+
 pub fn render_level(level: &Level) {
     draw_map(level);
     draw_state(level);
@@ -59,13 +61,24 @@ fn draw_map(level: &Level) {
 
 fn draw_state(level: &Level) {
     match &level.state {
-        LevelState::SelectingMove { valid_moves, path } => {
+        LevelState::SelectingMove {
+            valid_moves,
+            path,
+            action_previews,
+        } => {
             for c in valid_moves.iter() {
                 grid::draw_square(*c, WHITE.with_alpha(0.5));
             }
             for c in path.iter().flatten() {
                 grid::draw_glyph(*c, Glyph::new('o', WHITE));
             }
+
+            let mut panel = Panel::builder("ACTIONS", WHITE);
+            for action in action_previews {
+                let color = if action.valid { WHITE } else { GRAY };
+                panel = panel.line(action.name.to_string(), color);
+            }
+            panel.build().draw(INFO_PANEL_ORIGIN.0, INFO_PANEL_ORIGIN.1);
         }
         LevelState::SelectingAction {
             panel,

@@ -1,5 +1,6 @@
 use macroquad::prelude::trace;
 
+use super::action;
 use crate::engine::*;
 use crate::level_model::*;
 use std::collections::VecDeque;
@@ -20,26 +21,37 @@ pub fn transition(level: &mut Level) {
         level.state = LevelState::SelectingMove {
             valid_moves,
             path: None,
+            action_previews: vec![],
         };
     }
 }
 
 pub fn update(level: &mut Level) {
-    let LevelState::SelectingMove { valid_moves, path } = &level.state else {
+    let LevelState::SelectingMove {
+        valid_moves, path, ..
+    } = &level.state
+    else {
         return;
     };
 
+    // If the mouse is clicked on a valid move, execute the move.
     if input::mouse_clicked() && path.is_some() {
         enqueue_moves(level, path.clone().unwrap());
         level.state = LevelState::ResolvingMove;
         return;
     }
 
+    // If the mouse is not hovering over a valid move, clear the path.
     let Some(mouse_coord) = grid::mouse_coord().filter(|c| valid_moves.contains(c)) else {
-        set_path(level, None);
+        level.state = LevelState::SelectingMove {
+            valid_moves: valid_moves.clone(),
+            path: None,
+            action_previews: vec![],
+        };
         return;
     };
 
+    // If the mouse has not moved since the last update, do nothing.
     let last_coord_opt = path.as_ref().and_then(|p| p.iter().last());
     if last_coord_opt.is_some_and(|last| last == &mouse_coord) {
         return;
@@ -49,7 +61,23 @@ pub fn update(level: &mut Level) {
     let accept = |c: Coord| level.map.tile(c).walkable && level.unit_at(c).is_none();
     let goal = |c: Coord| c == mouse_coord;
     let new_path = algorithm::breadth_first_search(pos.coord, accept, goal);
-    set_path(level, Some(new_path));
+
+    let action_previews: Vec<ActionPreview> = vec![Action::ATTACK]
+        .iter()
+        .map(|action| {
+            let valid = !action::find_target_coords(level, mouse_coord, action).is_empty();
+            ActionPreview {
+                name: action.name,
+                valid,
+            }
+        })
+        .collect();
+
+    level.state = LevelState::SelectingMove {
+        valid_moves: valid_moves.clone(),
+        path: Some(new_path),
+        action_previews,
+    };
 }
 
 fn set_path(level: &mut Level, new_path: Option<VecDeque<Coord>>) {
