@@ -5,10 +5,12 @@ mod level_state;
 mod light_grid;
 mod map;
 mod player_vision;
+mod animation;
 
 use crate::engine::*;
 use std::collections::{HashMap, VecDeque};
 
+pub use animation::*;
 pub use effect::*;
 pub use action::*;
 pub use entity::*;
@@ -34,6 +36,7 @@ pub struct Level {
     pub turn_queue: VecDeque<Entity>,
     pub effect_queue: VecDeque<Effect>,
     pub sleep_timer: Option<Timer>,
+    pub animation_queue: VecDeque<Animation>,
 }
 
 impl Level {
@@ -52,6 +55,7 @@ impl Level {
             turn_queue: VecDeque::new(),
             effect_queue: VecDeque::new(),
             sleep_timer: None,
+            animation_queue: VecDeque::new(),
         }
     }
 

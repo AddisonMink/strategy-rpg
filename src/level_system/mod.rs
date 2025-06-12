@@ -6,6 +6,7 @@ mod state;
 use crate::engine::*;
 use crate::level_model::*;
 use light_grid::update_light_grid;
+use macroquad::text;
 use player_vision::update_player_vision;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -20,16 +21,22 @@ pub fn update_level(level: &mut Level, delta_time: f32) -> UpdateResult {
         return UpdateResult::Stop;
     }
 
+    process_animations(level, delta_time);
+    if !level.animation_queue.is_empty() {
+        return UpdateResult::Stop;
+    }
+
     process_effects(level);
-    if !level.effect_queue.is_empty() {
+    if !level.animation_queue.is_empty() || level.sleep_timer.is_some() {
         return UpdateResult::Stop;
     }
 
     state::process_state(level);
-    if level.effect_queue.is_empty() {
-        UpdateResult::Stop
-    } else {
-        UpdateResult::Continue
+    match &level.state {
+        LevelState::SelectingMove { .. } => UpdateResult::Stop,
+        LevelState::SelectingAction { .. } => UpdateResult::Stop,
+        LevelState::SelectingSingleUnitTarget { .. } => UpdateResult::Stop,
+        _ => UpdateResult::Continue,
     }
 }
 
@@ -40,6 +47,17 @@ fn process_timer(level: &mut Level, delta_time: f32) {
     sleep_timer.update(delta_time);
     if sleep_timer.is_finished() {
         level.sleep_timer = None;
+    }
+}
+
+fn process_animations(level: &mut Level, delta_time: f32) {
+    while let Some(animation) = level.animation_queue.front_mut() {
+        animation.timer.update(delta_time);
+        if animation.timer.is_finished() {
+            level.animation_queue.pop_front();
+        } else {
+            break;
+        }
     }
 }
 
@@ -79,6 +97,12 @@ fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
         return;
     };
 
+    let coord = level.positions.get(&entity).unwrap().coord;
     let damage = max;
+    let text = (-(damage as i32)).to_string();
+
     unit.hp = unit.hp.saturating_sub(damage);
+    level
+        .animation_queue
+        .push_back(Animation::text(coord, text, RED));
 }
