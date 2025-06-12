@@ -1,10 +1,7 @@
 mod action;
 mod light_grid;
 mod player_vision;
-mod selecting_action;
-mod selecting_move;
-mod selecting_single_unit_target;
-mod selecting_target;
+mod state;
 
 use crate::engine::*;
 use crate::level_model::*;
@@ -28,7 +25,7 @@ pub fn update_level(level: &mut Level, delta_time: f32) -> UpdateResult {
         return UpdateResult::Stop;
     }
 
-    process_state(level);
+    state::process_state(level);
     if level.effect_queue.is_empty() {
         UpdateResult::Stop
     } else {
@@ -53,7 +50,7 @@ fn process_effects(level: &mut Level) {
             Effect::UpdateVisionGrid => update_player_vision(level),
             Effect::Move { entity, coord } => execute_move(level, entity, coord),
             Effect::Sleep { duration } => level.sleep_timer = Some(Timer::new(duration)),
-            _ => {}
+            Effect::Damage { entity, min, max } => execute_damage(level, entity, min, max),
         }
         if level.sleep_timer.is_some() {
             break;
@@ -77,17 +74,11 @@ fn execute_move(level: &mut Level, entity: Entity, coord: Coord) {
     }
 }
 
-fn process_state(level: &mut Level) {
-    match level.state {
-        LevelState::Starting => {
-            level.effect_queue.push_back(Effect::UpdateLightGrid);
-            level.effect_queue.push_back(Effect::UpdateVisionGrid);
-            selecting_move::transition(level);
-        }
-        LevelState::SelectingMove { .. } => selecting_move::update(level),
-        LevelState::ResolvingMove => selecting_action::transition(level),
-        LevelState::SelectingAction { .. } => selecting_action::update(level),
-        LevelState::SelectingSingleUnitTarget { .. } => selecting_single_unit_target::update(level),
-        _ => {}
-    }
+fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
+    let Some(unit) = level.units.get_mut(&entity) else {
+        return;
+    };
+
+    let damage = max;
+    unit.hp = unit.hp.saturating_sub(damage);
 }

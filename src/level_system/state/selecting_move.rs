@@ -1,8 +1,7 @@
 use macroquad::prelude::trace;
 
 use super::action;
-use crate::engine::*;
-use crate::level_model::*;
+use super::*;
 use std::collections::VecDeque;
 
 const MOVE_DELAY: f32 = 0.25;

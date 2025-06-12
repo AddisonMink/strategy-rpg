@@ -1,9 +1,7 @@
 use macroquad::prelude::trace;
 
 use super::action;
-use super::selecting_target;
-use crate::engine::*;
-use crate::level_model::*;
+use super::*;
 use crate::level_render::INFO_PANEL_ORIGIN;
 use crate::level_render::INFO_PANEL_WIDTH;
 
@@ -53,7 +51,7 @@ pub fn update(level: &mut Level) {
         let entity = level.turn_queue.front().unwrap();
         let origin = level.positions.get(entity).unwrap().coord;
         let new_target_coords = action::find_target_coords(level, *entity, origin, action);
-        
+
         level.state = LevelState::SelectingAction {
             actions: actions.to_vec(),
             panel: make_action_list_panel(actions, Some(selected_line)),
@@ -74,13 +72,13 @@ pub fn update(level: &mut Level) {
 
 fn make_action_list_panel(actions: &[Action], selected_index: Option<usize>) -> Panel {
     let mut panel = Panel::builder("ACTIONS", WHITE).min_width(INFO_PANEL_WIDTH);
-    
+
     for (i, action) in actions.iter().enumerate() {
         let selected = selected_index.map_or(false, |index| index == i);
         let color = if selected { WHITE } else { GRAY };
         let text = format!("{}: {}", i + 1, action.name);
         panel = panel.line(text, color);
     }
-    
+
     panel.build()
 }

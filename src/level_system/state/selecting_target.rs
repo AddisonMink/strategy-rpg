@@ -2,8 +2,7 @@ use std::collections::HashMap;
 
 use macroquad::prelude::trace;
 
-use super::action;
-use crate::level_model::*;
+use super::*;
 
 pub fn transition(level: &mut Level, action: Action) {
     match action.range {

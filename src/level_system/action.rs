@@ -1,6 +1,8 @@
 use crate::engine::*;
 use crate::level_model::*;
 use std::collections::HashSet;
+use std::collections::VecDeque;
+use std::f32::consts::E;
 
 pub fn find_target_coords(
     level: &Level,
@@ -47,4 +49,21 @@ pub fn single_unit_range_targets(
         }
     }
     coords
+}
+
+pub fn compile_single_unit_action(action: &Action, target: Entity) -> Vec<Effect> {
+    let mut effects = Vec::new();
+    for effect in action.effects.as_slice() {
+        match effect {
+            EffectTemplate::Damage { min, max } => {
+                let effect = Effect::Damage {
+                    entity: target,
+                    min: *min,
+                    max: *max,
+                };
+                effects.push(effect);
+            }
+        }
+    }
+    effects
 }
