@@ -11,7 +11,10 @@ impl Action {
     pub const ATTACK: Action = Action {
         name: ShortString::new("Attack"),
         range: Range::SingleUnit { min: 1, max: 1 },
-        effects: ShortList::new(&[EffectTemplate::Damage { min: 1, max: 3 }]),
+        effects: ShortList::new(&[
+            EffectTemplate::AttackAnimation,
+            EffectTemplate::Damage { min: 1, max: 3 },
+        ]),
     };
 
     pub const WAIT: Action = Action {
@@ -29,5 +32,6 @@ pub enum Range {
 
 #[derive(Debug, Clone, Copy)]
 pub enum EffectTemplate {
+    AttackAnimation,
     Damage { min: u16, max: u16 },
 }

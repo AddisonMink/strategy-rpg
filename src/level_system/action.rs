@@ -51,19 +51,39 @@ pub fn single_unit_range_targets(
     coords
 }
 
-pub fn compile_single_unit_action(action: &Action, target: Entity) -> Vec<Effect> {
-    let mut effects = Vec::new();
+pub fn compile_single_unit_action(
+    level: &Level,
+    action: &Action,
+    actor: Entity,
+    target: Entity,
+) -> VecDeque<Effect> {
+    let mut effect_queue = VecDeque::new();
+
     for effect in action.effects.as_slice() {
         match effect {
+            EffectTemplate::AttackAnimation => {
+                let Some(actor_pos) = level.positions.get(&actor) else {
+                    continue;
+                };
+                let Some(target_pos) = level.positions.get(&target) else {
+                    continue;
+                };
+                let Some(direction) = actor_pos.coord.direction_to(target_pos.coord) else {
+                    continue;
+                };
+                effect_queue.push_back(Effect::Animation {
+                    animation: Animation::attack(actor, direction),
+                });
+            }
             EffectTemplate::Damage { min, max } => {
-                let effect = Effect::Damage {
+                effect_queue.push_back(Effect::Damage {
                     entity: target,
                     min: *min,
                     max: *max,
-                };
-                effects.push(effect);
+                });
             }
         }
     }
-    effects
+
+    effect_queue
 }

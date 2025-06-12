@@ -1,6 +1,5 @@
 use super::INFO_PANEL_ORIGIN;
 use super::INFO_PANEL_WIDTH;
-use crate::battle::draw;
 use crate::engine::*;
 use crate::level_model::*;
 
@@ -141,10 +140,12 @@ fn action_description_panel(action: &Action) -> Panel {
 
     panel = panel.line("EFFECTS", WHITE);
     for effect in action.effects.as_slice() {
-        let (text, color) = match effect {
-            EffectTemplate::Damage { min, max } => (format!("DAMAGE {}-{}", min, max), RED),
+        match effect {
+            EffectTemplate::Damage { min, max } => {
+                panel = panel.line(format!(" DAMAGE {}-{}", min, max), WHITE)
+            }
+            _ => {}
         };
-        panel = panel.line(format!(" {}", text), color);
     }
 
     panel.build()

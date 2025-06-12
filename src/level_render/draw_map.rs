@@ -32,9 +32,15 @@ pub fn draw_map(level: &Level) {
         }
     }
 
+    let animating_entitiy = level
+        .animation_queue
+        .front()
+        .and_then(|a| a.animating_entity());
+
     level
         .positions
         .values()
+        .filter(|p| animating_entitiy.is_none() || p.entity != animating_entitiy.unwrap())
         .filter(|p| level.player_vision.tile_visible(p.coord))
         .filter_map(|p| level.units.get(&p.entity).map(|unit| (p, unit)))
         .for_each(|(pos, unit)| {

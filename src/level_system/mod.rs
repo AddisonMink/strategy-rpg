@@ -2,12 +2,10 @@ mod action;
 mod light_grid;
 mod player_vision;
 mod state;
+mod effect;
 
-use crate::engine::*;
 use crate::level_model::*;
-use light_grid::update_light_grid;
-use macroquad::text;
-use player_vision::update_player_vision;
+use effect::process_effects;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UpdateResult {
@@ -59,50 +57,4 @@ fn process_animations(level: &mut Level, delta_time: f32) {
             break;
         }
     }
-}
-
-fn process_effects(level: &mut Level) {
-    while let Some(effect) = level.effect_queue.pop_front() {
-        match effect {
-            Effect::UpdateLightGrid => update_light_grid(level),
-            Effect::UpdateVisionGrid => update_player_vision(level),
-            Effect::Move { entity, coord } => execute_move(level, entity, coord),
-            Effect::Sleep { duration } => level.sleep_timer = Some(Timer::new(duration)),
-            Effect::Damage { entity, min, max } => execute_damage(level, entity, min, max),
-        }
-        if level.sleep_timer.is_some() {
-            break;
-        }
-    }
-}
-
-fn execute_move(level: &mut Level, entity: Entity, coord: Coord) {
-    let Some(pos) = level.positions.get_mut(&entity) else {
-        return;
-    };
-
-    let is_player = level
-        .units
-        .get(&entity)
-        .map_or(false, |unit| unit.side == Side::Player);
-
-    pos.coord = coord;
-    if is_player {
-        level.effect_queue.push_front(Effect::UpdateVisionGrid);
-    }
-}
-
-fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
-    let Some(unit) = level.units.get_mut(&entity) else {
-        return;
-    };
-
-    let coord = level.positions.get(&entity).unwrap().coord;
-    let damage = max;
-    let text = (-(damage as i32)).to_string();
-
-    unit.hp = unit.hp.saturating_sub(damage);
-    level
-        .animation_queue
-        .push_back(Animation::text(coord, text, RED));
 }
