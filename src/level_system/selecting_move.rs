@@ -58,6 +58,7 @@ pub fn update(level: &mut Level) {
     }
 
     let (pos, _) = level.active_unit_with_position().unwrap();
+    let entity = level.turn_queue.front().unwrap();
     let accept = |c: Coord| level.map.tile(c).walkable && level.unit_at(c).is_none();
     let goal = |c: Coord| c == mouse_coord;
     let new_path = algorithm::breadth_first_search(pos.coord, accept, goal);
@@ -65,7 +66,7 @@ pub fn update(level: &mut Level) {
     let action_previews: Vec<ActionPreview> = vec![Action::ATTACK]
         .iter()
         .map(|action| {
-            let valid = !action::find_target_coords(level, mouse_coord, action).is_empty();
+            let valid = !action::find_target_coords(level, *entity, mouse_coord, action).is_empty();
             ActionPreview {
                 name: action.name,
                 valid,

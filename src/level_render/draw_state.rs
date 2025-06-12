@@ -48,6 +48,27 @@ pub fn draw_state(level: &Level) {
                 grid::draw_square(*coord, WHITE.with_alpha(0.5));
             }
         }
+        LevelState::SelectingSingleUnitTarget {
+            action,
+            targets,
+            selected_target,
+        } => {
+            let mut y = INFO_PANEL_ORIGIN.1;
+
+            let panel = action_description_panel(action);
+            panel.draw(INFO_PANEL_ORIGIN.0, y);
+            y += panel.get_height() + PADDING;
+
+            for (coord, _) in targets.iter() {
+                grid::draw_square(*coord, WHITE.with_alpha(0.5));
+            }
+
+            if let Some(target) = selected_target {
+                grid::draw_square(*target, WHITE.with_alpha(0.5));
+            }
+
+            draw_description_panels(level, y);
+        }
         _ => draw_description_panels(level, INFO_PANEL_ORIGIN.1),
     }
 }

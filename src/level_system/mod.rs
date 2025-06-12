@@ -1,8 +1,10 @@
+mod action;
 mod light_grid;
 mod player_vision;
 mod selecting_action;
 mod selecting_move;
-mod action;
+mod selecting_single_unit_target;
+mod selecting_target;
 
 use crate::engine::*;
 use crate::level_model::*;
@@ -85,6 +87,7 @@ fn process_state(level: &mut Level) {
         LevelState::SelectingMove { .. } => selecting_move::update(level),
         LevelState::ResolvingMove => selecting_action::transition(level),
         LevelState::SelectingAction { .. } => selecting_action::update(level),
+        LevelState::SelectingSingleUnitTarget { .. } => selecting_single_unit_target::update(level),
         _ => {}
     }
 }

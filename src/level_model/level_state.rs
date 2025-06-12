@@ -18,12 +18,10 @@ pub enum LevelState {
         selected_action: Option<Action>,
         target_coords: Option<HashSet<Coord>>,
     },
-    CompilingAction {
-        action: Action,
-    },
     SelectingSingleUnitTarget {
         action: Action,
         targets: HashMap<Coord, Entity>,
+        selected_target: Option<Coord>,
     },
     ResolvingAction,
     EndingTurn,
