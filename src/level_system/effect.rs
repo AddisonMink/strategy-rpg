@@ -1,3 +1,5 @@
+use macroquad::prelude::animation;
+
 use super::light_grid::update_light_grid;
 use super::player_vision::update_player_vision;
 use crate::engine::*;
@@ -12,8 +14,9 @@ pub fn process_effects(level: &mut Level) {
             Effect::Sleep { duration } => level.sleep_timer = Some(Timer::new(duration)),
             Effect::Damage { entity, min, max } => execute_damage(level, entity, min, max),
             Effect::Animation { animation } => level.animation_queue.push_back(animation),
+            Effect::Death { entity } => execute_death(level, entity),
         }
-        if level.sleep_timer.is_some() {
+        if level.sleep_timer.is_some() || level.animation_queue.len() > 0 {
             break;
         }
     }
@@ -48,4 +51,20 @@ fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
     level
         .animation_queue
         .push_back(Animation::text(coord, text, RED));
+
+    if unit.hp == 0 {
+        level
+            .animation_queue
+            .push_back(Animation::text(coord, "DEATH".to_string(), GRAY));
+        level.animation_queue.push_back(Animation::death(entity));
+        level.effect_queue.push_front(Effect::Death { entity });
+    }
+}
+
+fn execute_death(level: &mut Level, entity: Entity) {
+    let has_light = level.lights.contains_key(&entity);
+    level.delete(entity);
+    if has_light {
+        level.effect_queue.push_front(Effect::UpdateLightGrid);
+    }
 }

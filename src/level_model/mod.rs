@@ -1,18 +1,18 @@
-mod effect;
 mod action;
+mod animation;
+mod effect;
 mod entity;
 mod level_state;
 mod light_grid;
 mod map;
 mod player_vision;
-mod animation;
 
 use crate::engine::*;
 use std::collections::{HashMap, VecDeque};
 
+pub use action::*;
 pub use animation::*;
 pub use effect::*;
-pub use action::*;
 pub use entity::*;
 pub use level_state::*;
 pub use light_grid::*;
@@ -57,6 +57,19 @@ impl Level {
             sleep_timer: None,
             animation_queue: VecDeque::new(),
         }
+    }
+
+    pub fn delete(&mut self, entity: Entity) {
+        self.positions.remove(&entity);
+        self.tags.remove(&entity);
+        self.vision_memory.remove(&entity);
+        self.lights.remove(&entity);
+        self.units.remove(&entity);
+        self.turn_queue.retain(|id| *id != entity);
+        self.effect_queue.retain(|effect| match effect {
+            Effect::Move { entity: e, .. } => *e != entity,
+            _ => true,
+        });
     }
 
     pub fn active_unit(&self) -> Option<&Unit> {

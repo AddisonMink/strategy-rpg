@@ -1,6 +1,7 @@
 use crate::{engine::*, level_model::Entity};
 
 const ATTACK_DURATION: f32 = 0.1;
+const DEATH_DURATION: f32 = 0.5;
 const TEXT_DURATION: f32 = 0.5;
 
 #[derive(Debug, Clone)]
@@ -28,6 +29,7 @@ pub struct EntityAnimation {
 #[derive(Debug, Clone, Copy)]
 pub enum EntityAnimationKind {
     Attack { direction: Direction },
+    Death,
 }
 
 impl Animation {
@@ -44,6 +46,16 @@ impl Animation {
             kind: AnimationKind::Entity(EntityAnimation {
                 entity,
                 kind: EntityAnimationKind::Attack { direction },
+            }),
+        }
+    }
+
+    pub fn death(entity: Entity) -> Self {
+        Animation {
+            timer: Timer::new(DEATH_DURATION),
+            kind: AnimationKind::Entity(EntityAnimation {
+                entity,
+                kind: EntityAnimationKind::Death,
             }),
         }
     }

@@ -50,5 +50,11 @@ fn draw_entity_animation(level: &Level, entity: Entity, kind: EntityAnimationKin
             };
             grid::draw_glyph_with_offset(coord, glyph, offset);
         }
+        EntityAnimationKind::Death => {
+            let alpha = 1.0 - progress;
+            let color = color.with_alpha(alpha);
+            let glyph = Glyph::new(unit.glyph.symbol, color);
+            grid::draw_glyph(coord, glyph);
+        }
     }
 }

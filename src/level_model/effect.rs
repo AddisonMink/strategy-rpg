@@ -7,5 +7,6 @@ pub enum Effect {
     Move { entity: Entity, coord: Coord },
     Sleep { duration: f32 },
     Damage { entity: Entity, min: u16, max: u16 },
+    Death { entity: Entity },
     Animation { animation: Animation },
 }
