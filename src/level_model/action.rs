@@ -16,12 +16,6 @@ impl Action {
             EffectTemplate::Damage { min: 1, max: 3 },
         ]),
     };
-
-    pub const WAIT: Action = Action {
-        name: ShortString::new("Wait"),
-        range: Range::SelfRange,
-        effects: ShortList::empty(),
-    };
 }
 
 #[derive(Debug, Clone, Copy)]

@@ -33,6 +33,11 @@ pub fn update(level: &mut Level) {
         return;
     };
 
+    if (input::mouse_clicked() && path.is_none()) || input::cancel_pressed() {
+        level.state = LevelState::ResolvingMove;
+        return;
+    }
+
     // If the mouse is clicked on a valid move, execute the move.
     if input::mouse_clicked() && path.is_some() {
         enqueue_moves(level, path.clone().unwrap());

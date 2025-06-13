@@ -6,10 +6,10 @@ use crate::level_render::INFO_PANEL_ORIGIN;
 use crate::level_render::INFO_PANEL_WIDTH;
 
 pub fn transition(level: &mut Level) {
-    let actions = vec![Action::ATTACK, Action::WAIT];
+    let actions = vec![Action::ATTACK];
 
     level.state = LevelState::SelectingAction {
-        actions: vec![Action::ATTACK, Action::WAIT],
+        actions: vec![Action::ATTACK],
         panel: make_action_list_panel(&actions, None),
         selected_action: None,
         target_coords: None,
@@ -34,8 +34,12 @@ pub fn update(level: &mut Level) {
         .map(|n| n - 1)
         .filter(|n| *n < actions.len());
 
+    // if mouse is clicked and no action is selected, or cancel is pressed, skip action.
+    if (input::mouse_clicked() && selected_line_opt.is_none()) || input::cancel_pressed() {
+        level.state = LevelState::ResolvingAction;
+    }
     // if number is pressed, select the corresponding action
-    if let Some(selected_index) = number {
+    else if let Some(selected_index) = number {
         let action = &actions[selected_index];
         selecting_target::transition(level, action.clone());
     }
