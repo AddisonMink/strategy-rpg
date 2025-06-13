@@ -4,12 +4,17 @@ use super::light_grid::update_light_grid;
 use super::player_vision::update_player_vision;
 use crate::engine::*;
 use crate::level_model::*;
+use crate::level_system::npc_vision;
 
 pub fn process_effects(level: &mut Level) {
     while let Some(effect) = level.effect_queue.pop_front() {
         match effect {
             Effect::UpdateLightGrid => update_light_grid(level),
             Effect::UpdateVisionGrid => update_player_vision(level),
+            Effect::UpdateAllNpcVision => npc_vision::update_all_npc_vision(level),
+            Effect::UpdateNpcVisionOfPlayer { player } => {
+                npc_vision::update_npc_vision_of_player(level, player)
+            }
             Effect::Move { entity, coord } => execute_move(level, entity, coord),
             Effect::Sleep { duration } => level.sleep_timer = Some(Timer::new(duration)),
             Effect::Damage { entity, min, max } => execute_damage(level, entity, min, max),
@@ -23,19 +28,22 @@ pub fn process_effects(level: &mut Level) {
 }
 
 fn execute_move(level: &mut Level, entity: Entity, coord: Coord) {
+    let Some(unit) = level.units.get(&entity) else {
+        return;
+    };
+
     let Some(pos) = level.positions.get_mut(&entity) else {
         return;
     };
 
-    let is_player = level
-        .units
-        .get(&entity)
-        .map_or(false, |unit| unit.side == Side::Player);
-
     pos.coord = coord;
-    if is_player {
-        level.effect_queue.push_front(Effect::UpdateVisionGrid);
+
+    if unit.side == Side::Player {
+        level
+            .effect_queue
+            .push_front(Effect::UpdateNpcVisionOfPlayer { player: entity });
     }
+    level.effect_queue.push_front(Effect::UpdateVisionGrid);
 }
 
 fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {

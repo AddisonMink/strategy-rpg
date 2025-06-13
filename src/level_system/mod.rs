@@ -1,8 +1,9 @@
 mod action;
+mod effect;
 mod light_grid;
+mod npc_vision;
 mod player_vision;
 mod state;
-mod effect;
 
 use crate::level_model::*;
 use effect::process_effects;

@@ -12,6 +12,7 @@ pub fn process_state(level: &mut Level) {
         LevelState::Starting => {
             level.effect_queue.push_back(Effect::UpdateLightGrid);
             level.effect_queue.push_back(Effect::UpdateVisionGrid);
+            level.effect_queue.push_back(Effect::UpdateAllNpcVision);
             selecting_move::transition(level);
         }
         LevelState::SelectingMove { .. } => selecting_move::update(level),

@@ -126,13 +126,13 @@ impl Component for Light {
 }
 
 #[derive(Debug, Clone)]
-pub struct VisonMemory {
+pub struct VisionMemory {
     pub entity: Entity,
     pub visible_players: HashSet<Entity>,
     pub last_seen_player: Option<(Entity, Coord)>,
 }
 
-impl VisonMemory {
+impl VisionMemory {
     pub fn new(entity: Entity) -> Self {
         Self {
             entity,
@@ -142,7 +142,7 @@ impl VisonMemory {
     }
 }
 
-impl Component for VisonMemory {
+impl Component for VisionMemory {
     fn get_entity(&self) -> Entity {
         self.entity
     }

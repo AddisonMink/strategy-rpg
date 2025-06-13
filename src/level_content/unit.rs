@@ -1,5 +1,6 @@
 use crate::engine::*;
 use crate::level_model::*;
+use std::collections::HashSet;
 
 pub fn add_goon(level: &mut Level, coord: Coord) {
     let entity = level.next_id;
@@ -19,6 +20,15 @@ pub fn add_goon(level: &mut Level, coord: Coord) {
             2, // movement
             5, // hp_max
         ),
+    );
+
+    level.vision_memory.insert(
+        entity,
+        VisionMemory {
+            entity,
+            last_seen_player: None,
+            visible_players: HashSet::new(),
+        },
     );
 }
 

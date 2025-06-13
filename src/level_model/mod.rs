@@ -27,7 +27,7 @@ pub struct Level {
     // Entities
     pub positions: HashMap<Entity, Position>,
     pub tags: HashMap<Entity, Tags>,
-    pub vision_memory: HashMap<Entity, VisonMemory>,
+    pub vision_memory: HashMap<Entity, VisionMemory>,
     pub lights: HashMap<Entity, Light>,
     pub units: HashMap<Entity, Unit>,
     pub next_id: Entity,
