@@ -12,12 +12,7 @@ pub fn standard_move(level: &Level) -> VecDeque<Coord> {
     let pos = level.positions.get(&me).unwrap();
     let unit = level.units.get(&me).unwrap();
     let memory = level.vision_memory.get(&me).unwrap();
-
-    let nearest_visible_player = memory
-        .visible_players
-        .iter()
-        .filter_map(|e| level.positions.get(e))
-        .min_by_key(|p| p.coord.manhattan_distance(pos.coord));
+    let nearest_visible_player = find_nearest_visible_player(level);
 
     let mut path = if let Some(target) = nearest_visible_player {
         find_path_to_adjacent(level, pos.coord, target.coord)
@@ -32,7 +27,39 @@ pub fn standard_move(level: &Level) -> VecDeque<Coord> {
 }
 
 pub fn standard_action(level: &Level) -> VecDeque<Effect> {
-    VecDeque::new() // Default action is no action
+    let mut effects = VecDeque::new();
+    let entity = level.turn_queue.front().cloned().unwrap();
+    let pos = level.positions.get(&entity).unwrap();
+
+    let player_opt =
+        find_nearest_visible_player(level).filter(|p| p.coord.manhattan_distance(pos.coord) == 1);
+
+    if let Some(player_pos) = player_opt {
+        let direction = pos.coord.direction_to(player_pos.coord).unwrap();
+        let entity = level.turn_queue.front().cloned().unwrap();
+        effects.push_back(Effect::Animation {
+            animation: Animation::attack(entity, direction),
+        });
+        effects.push_back(Effect::Damage {
+            entity: player_pos.entity,
+            min: 0,
+            max: 3,
+        });
+    }
+
+    effects
+}
+
+pub fn find_nearest_visible_player(level: &Level) -> Option<&Position> {
+    let entity = level.turn_queue.front().cloned().unwrap();
+    let memory = level.vision_memory.get(&entity).unwrap();
+    let pos = level.positions.get(&entity).unwrap();
+
+    memory
+        .visible_players
+        .iter()
+        .filter_map(|e| level.positions.get(e))
+        .min_by_key(|p| p.coord.manhattan_distance(pos.coord))
 }
 
 pub fn find_path_to_adjacent(level: &Level, from: Coord, to: Coord) -> VecDeque<Coord> {
