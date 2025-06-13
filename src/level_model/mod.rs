@@ -30,6 +30,7 @@ pub struct Level {
     pub vision_memory: HashMap<Entity, VisionMemory>,
     pub lights: HashMap<Entity, Light>,
     pub units: HashMap<Entity, Unit>,
+    pub behaviors: HashMap<Entity, Behavior>,
     pub next_id: Entity,
     // State
     pub state: LevelState,
@@ -50,6 +51,7 @@ impl Level {
             vision_memory: HashMap::new(),
             lights: HashMap::new(),
             units: HashMap::new(),
+            behaviors: HashMap::new(),
             next_id: Entity(0),
             state: LevelState::Starting,
             turn_queue: VecDeque::new(),

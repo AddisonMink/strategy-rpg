@@ -1,7 +1,10 @@
-pub mod selecting_action;
-pub mod selecting_move;
-pub mod selecting_single_unit_target;
-pub mod selecting_target;
+mod ending_turn;
+mod selecting_action;
+mod selecting_move;
+mod selecting_single_unit_target;
+mod selecting_target;
+
+use macroquad::prelude::trace;
 
 use super::action;
 use crate::engine::*;
@@ -19,7 +22,7 @@ pub fn process_state(level: &mut Level) {
         LevelState::ResolvingMove => selecting_action::transition(level),
         LevelState::SelectingAction { .. } => selecting_action::update(level),
         LevelState::SelectingSingleUnitTarget { .. } => selecting_single_unit_target::update(level),
-        LevelState::ResolvingAction => selecting_move::transition(level),
-        _ => {}
+        LevelState::ResolvingAction => ending_turn::transition(level),
+        LevelState::EndingTurn => ending_turn::update(level),
     }
 }

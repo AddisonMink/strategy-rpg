@@ -1,3 +1,4 @@
+use super::behavior;
 use crate::engine::*;
 use crate::level_model::*;
 use std::collections::HashSet;
@@ -28,6 +29,15 @@ pub fn add_goon(level: &mut Level, coord: Coord) {
             entity,
             last_seen_player: None,
             visible_players: HashSet::new(),
+        },
+    );
+
+    level.behaviors.insert(
+        entity,
+        Behavior {
+            entity,
+            select_move: behavior::standard_move,
+            select_action: behavior::standard_action,
         },
     );
 }

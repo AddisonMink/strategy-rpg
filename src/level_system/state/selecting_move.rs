@@ -1,5 +1,3 @@
-use macroquad::prelude::trace;
-
 use super::action;
 use super::*;
 use std::collections::VecDeque;
@@ -9,19 +7,30 @@ const MOVE_DELAY: f32 = 0.25;
 pub fn transition(level: &mut Level) {
     let entity = level.turn_queue.front().unwrap();
     let unit = level.units.get(entity).unwrap();
-    let pos = level.positions.get(entity).unwrap();
-    let accept = |c: Coord| level.map.tile(c).walkable && level.unit_at(c).is_none();
-    let mut valid_moves = algorithm::flood_fill(pos.coord, unit.movement, accept);
-    valid_moves.remove(&pos.coord);
 
-    if valid_moves.is_empty() {
-        level.state = LevelState::ResolvingMove;
-    } else {
-        level.state = LevelState::SelectingMove {
-            valid_moves,
-            path: None,
-            action_previews: vec![],
-        };
+    match unit.side {
+        Side::Player => {
+            let pos = level.positions.get(entity).unwrap();
+            let accept = |c: Coord| level.map.tile(c).walkable && level.unit_at(c).is_none();
+            let mut valid_moves = algorithm::flood_fill(pos.coord, unit.movement, accept);
+            valid_moves.remove(&pos.coord);
+
+            if valid_moves.is_empty() {
+                level.state = LevelState::ResolvingMove;
+            } else {
+                level.state = LevelState::SelectingMove {
+                    valid_moves,
+                    path: None,
+                    action_previews: vec![],
+                };
+            }
+        }
+        Side::NPC => {
+            let behavior = level.behaviors.get(entity).unwrap();
+            let path = (behavior.select_move)(&level);
+            enqueue_moves(level, path);
+            level.state = LevelState::ResolvingMove;
+        }
     }
 }
 
@@ -83,13 +92,6 @@ pub fn update(level: &mut Level) {
         path: Some(new_path),
         action_previews,
     };
-}
-
-fn set_path(level: &mut Level, new_path: Option<VecDeque<Coord>>) {
-    let LevelState::SelectingMove { path, .. } = &mut level.state else {
-        return;
-    };
-    *path = new_path;
 }
 
 fn enqueue_moves(level: &mut Level, path: VecDeque<Coord>) {

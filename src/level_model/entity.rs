@@ -1,12 +1,10 @@
+use super::Effect;
+use super::Level;
 use crate::engine::*;
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Entity(pub u16);
-
-pub trait Component {
-    fn get_entity(&self) -> Entity;
-}
 
 #[derive(Debug, Clone, Copy)]
 pub struct Position {
@@ -17,12 +15,6 @@ pub struct Position {
 impl Position {
     pub fn new(entity: Entity, coord: Coord) -> Self {
         Self { entity, coord }
-    }
-}
-
-impl Component for Position {
-    fn get_entity(&self) -> Entity {
-        self.entity
     }
 }
 
@@ -38,12 +30,6 @@ impl Tags {
             entity,
             tags: HashSet::new(),
         }
-    }
-}
-
-impl Component for Tags {
-    fn get_entity(&self) -> Entity {
-        self.entity
     }
 }
 
@@ -90,12 +76,6 @@ impl Unit {
     }
 }
 
-impl Component for Unit {
-    fn get_entity(&self) -> Entity {
-        self.entity
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Side {
     Player,
@@ -119,12 +99,6 @@ impl Light {
     }
 }
 
-impl Component for Light {
-    fn get_entity(&self) -> Entity {
-        self.entity
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct VisionMemory {
     pub entity: Entity,
@@ -142,8 +116,8 @@ impl VisionMemory {
     }
 }
 
-impl Component for VisionMemory {
-    fn get_entity(&self) -> Entity {
-        self.entity
-    }
+pub struct Behavior {
+    pub entity: Entity,
+    pub select_move: fn(&Level) -> VecDeque<Coord>,
+    pub select_action: fn(&Level) -> VecDeque<Effect>,
 }
