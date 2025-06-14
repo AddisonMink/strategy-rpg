@@ -1,5 +1,6 @@
 use super::behavior;
 use crate::engine::*;
+use crate::level_content::behavior::find_nearest_visible_player;
 use crate::level_model::*;
 use std::collections::HashSet;
 
@@ -32,12 +33,18 @@ pub fn add_goon(level: &mut Level, coord: Coord) {
         },
     );
 
+    let select_action = |level: &Level| {
+        let (_, _, pos, memory) = behavior::unpack_npc(level)?;
+        let player = behavior::find_nearest_visible_player(level, pos, memory)?;
+        behavior::basic_attack("bonk".to_string(), pos, player)
+    };
+
     level.behaviors.insert(
         entity,
         Behavior {
             entity,
             select_move: behavior::standard_move,
-            select_action: behavior::standard_action,
+            select_action,
         },
     );
 }
@@ -56,7 +63,7 @@ pub fn add_hero(level: &mut Level, coord: Coord) {
             ShortString::new("Hero"),
             Glyph::new('@', WHITE),
             Side::Player,
-            5,  // vision
+            3,  // vision
             3,  // movement
             10, // hp_max
         ),

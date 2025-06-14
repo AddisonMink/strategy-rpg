@@ -118,6 +118,6 @@ impl VisionMemory {
 
 pub struct Behavior {
     pub entity: Entity,
-    pub select_move: fn(&Level) -> VecDeque<Coord>,
-    pub select_action: fn(&Level) -> VecDeque<Effect>,
+    pub select_move: fn(&Level) -> Option<VecDeque<Coord>>,
+    pub select_action: fn(&Level) -> Option<VecDeque<Effect>>,
 }

@@ -27,7 +27,7 @@ pub fn transition(level: &mut Level) {
         }
         Side::NPC => {
             let behavior = level.behaviors.get(entity).unwrap();
-            let path = (behavior.select_move)(&level);
+            let path = (behavior.select_move)(&level).unwrap_or_default();
             enqueue_moves(level, path);
             level.state = LevelState::ResolvingMove;
         }

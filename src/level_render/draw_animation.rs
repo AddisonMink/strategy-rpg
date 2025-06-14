@@ -16,6 +16,10 @@ pub fn draw_animation(level: &Level) {
             let color = color.with_alpha(alpha);
             grid::draw_text_with_offset(*coord, text, color, (0.0, offset_y));
         }
+        AnimationKind::PanelText { coord, text } => {
+            let panel = Panel::builder("", WHITE).line(text, WHITE).build();
+            grid::draw_panel(&panel, *coord);
+        }
         AnimationKind::Entity(entity_animation) => draw_entity_animation(
             level,
             entity_animation.entity,

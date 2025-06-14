@@ -16,6 +16,7 @@ pub use effect::*;
 pub use entity::*;
 pub use level_state::*;
 pub use light_grid::*;
+use macroquad::prelude::trace;
 pub use map::*;
 pub use player_vision::*;
 

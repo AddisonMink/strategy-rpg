@@ -8,21 +8,32 @@ use crate::level_render::INFO_PANEL_WIDTH;
 pub fn transition(level: &mut Level) {
     let entity = level.turn_queue.front().unwrap();
     let unit = level.units.get(entity).unwrap();
+    let pos = level.positions.get(entity).unwrap();
 
     match unit.side {
         Side::Player => {
-            let actions = vec![Action::ATTACK];
+            let actions: Vec<Action> = vec![Action::ATTACK]
+                .iter()
+                .filter(|a| !action::find_target_coords(level, *entity, pos.coord, a).is_empty())
+                .cloned()
+                .collect();
 
-            level.state = LevelState::SelectingAction {
-                actions: vec![Action::ATTACK],
-                panel: make_action_list_panel(&actions, None),
-                selected_action: None,
-                target_coords: None,
+            if actions.is_empty() {
+                level.state = LevelState::ResolvingAction;
+            } else {
+                let panel = make_action_list_panel(&actions, None);
+
+                level.state = LevelState::SelectingAction {
+                    actions,
+                    panel,
+                    selected_action: None,
+                    target_coords: None,
+                }
             }
         }
         Side::NPC => {
             let behavior = level.behaviors.get(entity).unwrap();
-            let effects = (behavior.select_action)(&level);
+            let effects = (behavior.select_action)(&level).unwrap_or_default();
             level.effect_queue.extend(effects);
             level.state = LevelState::ResolvingAction;
         }

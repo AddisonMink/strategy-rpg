@@ -3,6 +3,7 @@ use crate::{engine::*, level_model::Entity};
 const ATTACK_DURATION: f32 = 0.1;
 const DEATH_DURATION: f32 = 0.5;
 const TEXT_DURATION: f32 = 0.5;
+const PANEL_TEXT_DURATION: f32 = 0.5;
 
 #[derive(Debug, Clone)]
 pub struct Animation {
@@ -16,6 +17,10 @@ pub enum AnimationKind {
         coord: Coord,
         text: String,
         color: Color,
+    },
+    PanelText {
+        coord: Coord,
+        text: String,
     },
     Entity(EntityAnimation),
 }
@@ -37,6 +42,13 @@ impl Animation {
         Animation {
             timer: Timer::new(TEXT_DURATION),
             kind: AnimationKind::Text { coord, text, color },
+        }
+    }
+
+    pub fn panel_text(coord: Coord, text: String) -> Self {
+        Animation {
+            timer: Timer::new(PANEL_TEXT_DURATION),
+            kind: AnimationKind::PanelText { coord, text },
         }
     }
 

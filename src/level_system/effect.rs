@@ -12,8 +12,11 @@ pub fn process_effects(level: &mut Level) {
             Effect::UpdateLightGrid => update_light_grid(level),
             Effect::UpdateVisionGrid => update_player_vision(level),
             Effect::UpdateAllNpcVision => npc_vision::update_all_npc_vision(level),
-            Effect::UpdateNpcVisionOfPlayer { player } => {
-                npc_vision::update_npc_vision_of_player(level, player)
+            Effect::UpdateAllNpcVisionOfPlayer { player } => {
+                npc_vision::update_all_npc_vision_of_player(level, player)
+            }
+            Effect::UpdateNpcVisionOfAllPlayers { npc } => {
+                npc_vision::update_npc_vision_of_all_players(level, npc)
             }
             Effect::Move { entity, coord } => execute_move(level, entity, coord),
             Effect::Sleep { duration } => level.sleep_timer = Some(Timer::new(duration)),
@@ -41,7 +44,11 @@ fn execute_move(level: &mut Level, entity: Entity, coord: Coord) {
     if unit.side == Side::Player {
         level
             .effect_queue
-            .push_front(Effect::UpdateNpcVisionOfPlayer { player: entity });
+            .push_front(Effect::UpdateAllNpcVisionOfPlayer { player: entity });
+    } else {
+        level
+            .effect_queue
+            .push_front(Effect::UpdateNpcVisionOfAllPlayers { npc: entity });
     }
     level.effect_queue.push_front(Effect::UpdateVisionGrid);
 }
