@@ -1,4 +1,3 @@
-mod battle;
 mod engine;
 mod level_content;
 mod level_model;
