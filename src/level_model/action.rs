@@ -1,6 +1,6 @@
 use crate::engine::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Action {
     pub name: ShortString,
     pub range: Range,

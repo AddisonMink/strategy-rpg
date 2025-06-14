@@ -2,6 +2,7 @@ mod action;
 mod animation;
 mod effect;
 mod entity;
+mod item;
 mod level_state;
 mod light_grid;
 mod map;
@@ -10,6 +11,7 @@ mod player_vision;
 use crate::engine::*;
 use std::collections::{HashMap, VecDeque};
 
+pub use item::*;
 pub use action::*;
 pub use animation::*;
 pub use effect::*;
@@ -32,6 +34,7 @@ pub struct Level {
     pub lights: HashMap<Entity, Light>,
     pub units: HashMap<Entity, Unit>,
     pub behaviors: HashMap<Entity, Behavior>,
+    pub inventories: HashMap<Entity, Inventory>,
     pub next_id: Entity,
     // State
     pub state: LevelState,
@@ -53,6 +56,7 @@ impl Level {
             lights: HashMap::new(),
             units: HashMap::new(),
             behaviors: HashMap::new(),
+            inventories: HashMap::new(),
             next_id: Entity(0),
             state: LevelState::Starting,
             turn_queue: VecDeque::new(),

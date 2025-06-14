@@ -1,6 +1,8 @@
 use super::Effect;
 use super::Level;
+use super::item::*;
 use crate::engine::*;
+use std::collections::HashMap;
 use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -120,4 +122,19 @@ pub struct Behavior {
     pub entity: Entity,
     pub select_move: fn(&Level) -> Option<VecDeque<Coord>>,
     pub select_action: fn(&Level) -> Option<VecDeque<Effect>>,
+}
+
+pub struct Inventory {
+    pub entity: Entity,
+    pub items: HashMap<ItemId, Item>,
+}
+
+impl Inventory {
+    pub fn new<I>(entity: Entity, items: I) -> Self
+    where
+        I: IntoIterator<Item = Item>,
+    {
+        let items = items.into_iter().map(|item| (item.id, item)).collect();
+        Self { entity, items }
+    }
 }

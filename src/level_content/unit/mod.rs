@@ -3,6 +3,7 @@ mod goon;
 mod shadow;
 
 use crate::engine::*;
+use crate::level_content::item;
 use crate::level_model::*;
 use std::collections::HashSet;
 
@@ -28,4 +29,8 @@ pub fn add_hero(level: &mut Level, coord: Coord) {
             10, // hp_max
         ),
     );
+
+    level
+        .inventories
+        .insert(entity, Inventory::new(entity, [item::SWORD]));
 }
