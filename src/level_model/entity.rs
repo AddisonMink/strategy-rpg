@@ -25,15 +25,15 @@ pub struct Tags {
 }
 
 impl Tags {
-    pub fn new(entity: Entity) -> Self {
+    pub fn new(entity: Entity, tags: &ShortList<EntityTag>) -> Self {
         Self {
             entity,
-            tags: HashSet::new(),
+            tags: tags.as_slice().iter().cloned().collect(),
         }
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EntityTag {
     Lurker,
 }

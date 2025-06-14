@@ -114,4 +114,34 @@ impl Level {
         let distance_from_light = self.light_grid.distance_from_light(coord);
         distance <= unit.vision || distance_from_light <= unit.vision
     }
+
+    pub fn unit_can_see_unit(&self, from: Entity, to: Entity) -> bool {
+        let Some(from_pos) = self.positions.get(&from) else {
+            return false;
+        };
+        let Some(from_unit) = self.units.get(&from) else {
+            return false;
+        };
+        let Some(to_pos) = self.positions.get(&to) else {
+            return false;
+        };
+
+        let lurker = if let Some(tags) = self.tags.get(&to) {
+            tags.tags.contains(&EntityTag::Lurker)
+        } else {
+            false
+        };
+
+        if !self.map.check_line_of_sight(from_pos.coord, to_pos.coord) {
+            return false;
+        }
+
+        let distance = from_pos.coord.manhattan_distance(to_pos.coord);
+        let distance_from_light = self.light_grid.distance_from_light(to_pos.coord);
+
+        if distance_from_light > 0 && lurker {
+            return false; // Lurkers are hidden when not in light.
+        }
+        distance <= from_unit.vision || distance_from_light <= from_unit.vision
+    }
 }

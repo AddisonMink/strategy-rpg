@@ -1,11 +1,13 @@
 mod behavior;
 mod goon;
+mod shadow;
 
 use crate::engine::*;
 use crate::level_model::*;
 use std::collections::HashSet;
 
 pub use goon::add_goon;
+pub use shadow::add_shadow;
 
 pub fn add_hero(level: &mut Level, coord: Coord) {
     let entity = level.next_id;

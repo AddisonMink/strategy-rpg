@@ -59,7 +59,7 @@ fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
     };
 
     let coord = level.positions.get(&entity).unwrap().coord;
-    let damage = max;
+    let damage = roll(min, max);
     let text = (-(damage as i32)).to_string();
 
     unit.hp = unit.hp.saturating_sub(damage);
@@ -82,4 +82,11 @@ fn execute_death(level: &mut Level, entity: Entity) {
     if has_light {
         level.effect_queue.push_front(Effect::UpdateLightGrid);
     }
+}
+
+fn roll(low: u16, high: u16) -> u16 {
+    let roll1 = gen_range(low, high + 1) as f32;
+    let roll2 = gen_range(low, high + 1) as f32;
+    let roll = (roll1 + roll2) / 2.0;
+    roll.round() as u16
 }

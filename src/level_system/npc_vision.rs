@@ -54,7 +54,7 @@ pub fn update_npc_vision_of_all_players(level: &mut Level, npc: Entity) {
 fn update_npc_vision_of_player(level: &mut Level, npc: Entity, player: Entity) -> Option<()> {
     let player_coord = level.positions.get(&player).map(|p| p.coord)?;
     let coord = level.positions.get(&npc).map(|p| p.coord)?;
-    let visible = level.unit_can_see_tile(npc, player_coord);
+    let visible = level.unit_can_see_unit(npc, player);
     let memory = level.vision_memory.get_mut(&npc)?;
     let player_seen = visible && !memory.visible_players.contains(&player);
     let player_lost = !visible && memory.visible_players.contains(&player);

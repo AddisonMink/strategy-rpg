@@ -25,6 +25,8 @@ pub fn standard_move(level: &Level) -> Option<VecDeque<Coord>> {
 
 pub fn basic_attack(
     attack_name: String,
+    min_damage: u16,
+    max_damage: u16,
     attacker: &Position,
     defender: &Position,
 ) -> Option<VecDeque<Effect>> {
@@ -45,8 +47,8 @@ pub fn basic_attack(
 
     effects.push_back(Effect::Damage {
         entity: defender.entity,
-        min: 0,
-        max: 3,
+        min: min_damage,
+        max: max_damage,
     });
 
     Some(effects)

@@ -41,7 +41,7 @@ pub fn draw_map(level: &Level) {
         .positions
         .values()
         .filter(|p| animating_entitiy.is_none() || p.entity != animating_entitiy.unwrap())
-        .filter(|p| level.player_vision.tile_visible(p.coord))
+        .filter(|p| level.player_vision.entity_visible(p.entity))
         .filter_map(|p| level.units.get(&p.entity).map(|unit| (p, unit)))
         .for_each(|(pos, unit)| {
             let distance_from_light = level.light_grid.distance_from_light(pos.coord);
