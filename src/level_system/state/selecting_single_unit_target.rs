@@ -14,7 +14,7 @@ pub fn update(level: &mut Level) {
         let entity = level.turn_queue.front().cloned().unwrap();
         let coord = mouse_coord.unwrap();
         let target = targets.get(&coord).cloned().unwrap();
-        let effects = action::compile_single_unit_action(level, &action.action, entity, target);
+        let effects = action::compile_single_unit_action(level, action, entity, target);
         level.effect_queue.extend(effects);
         level.state = LevelState::ResolvingAction;
     } else if let Some(coord) = mouse_coord {

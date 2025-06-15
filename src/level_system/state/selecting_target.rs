@@ -20,7 +20,7 @@ fn single_unit_action(level: &mut Level, action: ItemAction, min: u16, max: u16)
     // If there is only 1 target, select it automatically.
     else if targets.iter().count() == 1 {
         let target = targets.iter().next().unwrap();
-        let effects = action::compile_single_unit_action(level, &action.action, *entity, *target);
+        let effects = action::compile_single_unit_action(level, &action, *entity, *target);
         level.effect_queue.extend(effects);
         level.state = LevelState::ResolvingAction;
     } else {

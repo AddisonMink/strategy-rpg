@@ -92,13 +92,13 @@ pub fn single_unit_range_targets(
 
 pub fn compile_single_unit_action(
     level: &Level,
-    action: &Action,
+    action: &ItemAction,
     actor: Entity,
     target: Entity,
 ) -> VecDeque<Effect> {
     let mut effect_queue = VecDeque::new();
 
-    for effect in action.effects.as_slice() {
+    for effect in action.action.effects.as_slice() {
         match effect {
             EffectTemplate::AttackAnimation => {
                 let Some(actor_pos) = level.positions.get(&actor) else {
@@ -123,6 +123,12 @@ pub fn compile_single_unit_action(
             }
         }
     }
+
+    effect_queue.push_back(Effect::UseItem {
+        entity: actor,
+        item: action.item_id,
+        amount: action.action.cost,
+    });
 
     effect_queue
 }
