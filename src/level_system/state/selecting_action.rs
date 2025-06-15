@@ -6,29 +6,10 @@ use crate::level_render::INFO_PANEL_WIDTH;
 pub fn transition(level: &mut Level) {
     let entity = level.turn_queue.front().unwrap();
     let unit = level.units.get(entity).unwrap();
-    let pos = level.positions.get(entity).unwrap();
 
     match unit.side {
         Side::Player => {
-            let inventory = level.inventories.get(entity).unwrap();
-
-            let actions: Vec<ItemAction> = inventory
-                .items
-                .values()
-                .flat_map(|item| {
-                    item.actions.as_slice().iter().filter_map(|action| {
-                        let valid = action::has_valid_targets(level, *entity, pos.coord, action);
-                        valid.then_some(ItemAction {
-                            item_id: item.id,
-                            item_name: item.name,
-                            item_color: item.color,
-                            uses_max: item.uses_max,
-                            uses: item.uses,
-                            action: *action,
-                        })
-                    })
-                })
-                .collect();
+            let actions = action::valid_player_actions(&level);
 
             if actions.is_empty() {
                 level.state = LevelState::ResolvingAction;

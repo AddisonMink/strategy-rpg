@@ -8,18 +8,6 @@ pub struct Action {
     pub effects: ShortList<EffectTemplate>,
 }
 
-impl Action {
-    pub const ATTACK: Action = Action {
-        name: ShortString::new("Attack"),
-        range: Range::SingleUnit { min: 1, max: 1 },
-        cost: 1,
-        effects: ShortList::new(&[
-            EffectTemplate::AttackAnimation,
-            EffectTemplate::Damage { min: 1, max: 3 },
-        ]),
-    };
-}
-
 #[derive(Debug, Clone, Copy)]
 pub enum Range {
     SelfRange,

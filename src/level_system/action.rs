@@ -2,7 +2,41 @@ use crate::engine::*;
 use crate::level_model::*;
 use std::collections::HashSet;
 use std::collections::VecDeque;
-use std::f32::consts::E;
+
+pub fn valid_player_actions(level: &Level) -> Vec<ItemAction> {
+    let entity = level.turn_queue.front().unwrap();
+    let origin = level.positions.get(entity).unwrap().coord;
+    let actions = player_actions(level, origin);
+    actions
+        .into_iter()
+        .filter_map(|(action, valid)| if valid { Some(action) } else { None })
+        .collect()
+}
+
+pub fn player_actions(level: &Level, origin: Coord) -> Vec<(ItemAction, bool)> {
+    let entity = level.turn_queue.front().unwrap();
+    let inventory = level.inventories.get(entity).unwrap();
+    let mut actions = Vec::new();
+
+    for item in inventory.items.values() {
+        for action in item.actions.as_slice() {
+            if action.cost <= item.uses {
+                let item_action = ItemAction {
+                    item_id: item.id,
+                    item_name: item.name.clone(),
+                    item_color: item.color,
+                    uses_max: item.uses_max,
+                    uses: item.uses,
+                    action: action.clone(),
+                };
+                let valid = has_valid_targets(level, *entity, origin, &item_action.action);
+                actions.push((item_action, valid));
+            }
+        }
+    }
+
+    actions
+}
 
 pub fn has_valid_targets(level: &Level, entity: Entity, origin: Coord, action: &Action) -> bool {
     let target_coords = find_target_coords(level, entity, origin, action);

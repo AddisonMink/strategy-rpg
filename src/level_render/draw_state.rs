@@ -93,12 +93,13 @@ fn draw_description_panels(level: &Level, mut y: f32) {
     }
 }
 
-fn action_preview_panel(actions: &Vec<ActionPreview>) -> Panel {
+fn action_preview_panel(actions: &Vec<(ItemAction, bool)>) -> Panel {
     let mut panel = Panel::builder("ACTIONS", WHITE).min_width(INFO_PANEL_WIDTH);
 
-    for action in actions {
-        let color = if action.valid { WHITE } else { GRAY };
-        panel = panel.line(action.name.to_string(), color);
+    for (action, valid) in actions {
+        let alpha = if *valid { 1.0 } else { 0.25 };
+        let color = action.item_color.with_alpha(alpha);
+        panel = panel.line(action.action.name.to_string(), color);
     }
 
     panel.build()

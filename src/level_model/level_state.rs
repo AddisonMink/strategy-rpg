@@ -9,7 +9,7 @@ pub enum LevelState {
     SelectingMove {
         valid_moves: HashSet<Coord>,
         path: Option<VecDeque<Coord>>,
-        action_previews: Vec<ActionPreview>,
+        action_previews: Vec<(ItemAction, bool)>,
     },
     ResolvingMove,
     SelectingAction {
@@ -25,12 +25,6 @@ pub enum LevelState {
     },
     ResolvingAction,
     EndingTurn,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct ActionPreview {
-    pub name: ShortString,
-    pub valid: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
