@@ -19,7 +19,7 @@ async fn main() {
     add_hero(&mut level, Coord::new(1, 1));
     add_goon(&mut level, Coord::new(5, 1));
     add_shadow(&mut level, Coord::new(8, 4));
-    add_point_light(&mut level, Coord::new(1, 1), 3, ORANGE);
+    add_point_light(&mut level, Coord::new(1, 1), 3, BLUE);
 
     loop {
         let delta_time = get_frame_time();
