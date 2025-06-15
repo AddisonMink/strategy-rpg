@@ -2,14 +2,14 @@ use super::*;
 use macroquad::prelude::trace;
 use std::collections::HashMap;
 
-pub fn transition(level: &mut Level, action: Action) {
-    match action.range {
+pub fn transition(level: &mut Level, action: ItemAction) {
+    match action.action.range {
         Range::SelfRange => {}
         Range::SingleUnit { min, max } => single_unit_action(level, action, min, max),
     }
 }
 
-fn single_unit_action(level: &mut Level, action: Action, min: u16, max: u16) {
+fn single_unit_action(level: &mut Level, action: ItemAction, min: u16, max: u16) {
     let entity = level.turn_queue.front().unwrap();
     let origin = level.positions.get(entity).unwrap().coord;
     let targets = action::single_unit_range_targets(level, *entity, origin, min, max);
@@ -20,7 +20,7 @@ fn single_unit_action(level: &mut Level, action: Action, min: u16, max: u16) {
     // If there is only 1 target, select it automatically.
     else if targets.iter().count() == 1 {
         let target = targets.iter().next().unwrap();
-        let effects = action::compile_single_unit_action(level, &action, *entity, *target);
+        let effects = action::compile_single_unit_action(level, &action.action, *entity, *target);
         level.effect_queue.extend(effects);
         level.state = LevelState::ResolvingAction;
     } else {

@@ -1,5 +1,3 @@
-use macroquad::prelude::trace;
-
 use super::action;
 use super::*;
 use crate::level_render::INFO_PANEL_ORIGIN;
@@ -12,10 +10,22 @@ pub fn transition(level: &mut Level) {
 
     match unit.side {
         Side::Player => {
-            let actions: Vec<Action> = vec![Action::ATTACK]
-                .iter()
-                .filter(|a| !action::find_target_coords(level, *entity, pos.coord, a).is_empty())
-                .cloned()
+            let inventory = level.inventories.get(entity).unwrap();
+
+            let actions: Vec<ItemAction> = inventory
+                .items
+                .values()
+                .flat_map(|item| {
+                    item.actions.as_slice().iter().filter_map(|action| {
+                        let valid = action::has_valid_targets(level, *entity, pos.coord, action);
+                        valid.then_some(ItemAction {
+                            item_id: item.id,
+                            item_name: item.name,
+                            item_color: item.color,
+                            action: *action,
+                        })
+                    })
+                })
                 .collect();
 
             if actions.is_empty() {
@@ -78,7 +88,7 @@ pub fn update(level: &mut Level) {
         let action = &actions[selected_line];
         let entity = level.turn_queue.front().unwrap();
         let origin = level.positions.get(entity).unwrap().coord;
-        let new_target_coords = action::find_target_coords(level, *entity, origin, action);
+        let new_target_coords = action::find_target_coords(level, *entity, origin, &action.action);
 
         level.state = LevelState::SelectingAction {
             actions: actions.to_vec(),
@@ -98,13 +108,14 @@ pub fn update(level: &mut Level) {
     }
 }
 
-fn make_action_list_panel(actions: &[Action], selected_index: Option<usize>) -> Panel {
+fn make_action_list_panel(actions: &Vec<ItemAction>, selected_index: Option<usize>) -> Panel {
     let mut panel = Panel::builder("ACTIONS", WHITE).min_width(INFO_PANEL_WIDTH);
 
     for (i, action) in actions.iter().enumerate() {
         let selected = selected_index.map_or(false, |index| index == i);
-        let color = if selected { WHITE } else { GRAY };
-        let text = format!("{}: {}", i + 1, action.name);
+        let alpha = if selected { 1.0 } else { 0.5 };
+        let color = action.item_color.with_alpha(alpha);
+        let text = format!("{}: {}", i + 1, action.action.name);
         panel = panel.line(text, color);
     }
 

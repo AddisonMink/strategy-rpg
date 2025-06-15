@@ -1,6 +1,6 @@
 use super::action::Action;
 use super::entity::Entity;
-use crate::engine::*;
+use crate::{engine::*, level_model::ItemId};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Debug, Clone)]
@@ -13,13 +13,13 @@ pub enum LevelState {
     },
     ResolvingMove,
     SelectingAction {
-        actions: Vec<Action>,
+        actions: Vec<ItemAction>,
         panel: Panel,
-        selected_action: Option<Action>,
+        selected_action: Option<ItemAction>,
         target_coords: Option<HashSet<Coord>>,
     },
     SelectingSingleUnitTarget {
-        action: Action,
+        action: ItemAction,
         targets: HashMap<Coord, Entity>,
         selected_target: Option<Coord>,
     },
@@ -31,4 +31,12 @@ pub enum LevelState {
 pub struct ActionPreview {
     pub name: ShortString,
     pub valid: bool,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct ItemAction {
+    pub item_id: ItemId,
+    pub item_name: ShortString,
+    pub item_color: Color,
+    pub action: Action,
 }

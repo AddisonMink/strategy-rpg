@@ -128,25 +128,34 @@ fn unit_description_panel(unit: &Unit) -> Panel {
         .build()
 }
 
-fn action_description_panel(action: &Action) -> Panel {
-    let mut panel =
-        Panel::builder(action.name.to_string().to_uppercase(), WHITE).min_width(INFO_PANEL_WIDTH);
+fn action_description_panel(action: &ItemAction) -> Panel {
+    let title = action.action.name.to_string().to_uppercase();
+    let title_color = action.item_color;
 
-    let range_text = match action.range {
+    let range_text = match action.action.range {
         Range::SelfRange => "SELF".to_string(),
         Range::SingleUnit { min, max } => format!("UNIT {}-{}", min, max),
     };
-    panel = panel.line(range_text, WHITE);
 
-    panel = panel.line("EFFECTS", WHITE);
-    for effect in action.effects.as_slice() {
-        match effect {
-            EffectTemplate::Damage { min, max } => {
-                panel = panel.line(format!(" DAMAGE {}-{}", min, max), WHITE)
-            }
-            _ => {}
-        };
+    let mut panel = Panel::builder(title, title_color)
+        .min_width(INFO_PANEL_WIDTH)
+        .line(action.item_name.as_str(), title_color)
+        .line(range_text, WHITE)
+        .line("EFFECTS", WHITE);
+
+    for effect in action.action.effects.as_slice() {
+        if let Some((desc, color)) = effect_template_desc(effect) {
+            let text = format!(" {}", desc);
+            panel = panel.line(text, color);
+        }
     }
 
     panel.build()
+}
+
+fn effect_template_desc(effect: &EffectTemplate) -> Option<(String, Color)> {
+    match effect {
+        EffectTemplate::Damage { min, max } => Some((format!("DAMAGE {}-{}", min, max), RED)),
+        _ => None,
+    }
 }

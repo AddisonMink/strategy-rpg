@@ -4,6 +4,11 @@ use std::collections::HashSet;
 use std::collections::VecDeque;
 use std::f32::consts::E;
 
+pub fn has_valid_targets(level: &Level, entity: Entity, origin: Coord, action: &Action) -> bool {
+    let target_coords = find_target_coords(level, entity, origin, action);
+    !target_coords.is_empty()
+}
+
 pub fn find_target_coords(
     level: &Level,
     entity: Entity,
