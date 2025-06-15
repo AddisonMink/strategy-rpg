@@ -1,4 +1,4 @@
-use crate::engine::*;
+use crate::engine::{color::mix_color, *};
 use macroquad::prelude::*;
 
 const PADDING: f32 = 10.0;
@@ -18,6 +18,7 @@ enum Content {
         label_color: Color,
         value: u16,
         max: u16,
+        diff: u16,
         meter_color: Color,
         width: f32,
     },
@@ -76,17 +77,19 @@ impl PanelBuilder {
             label_color,
             value,
             max,
+            diff: 0,
             meter_color,
             width: METER_WIDTH,
         });
         self
     }
 
-    pub fn short_meter(
+    pub fn meter_diff(
         mut self,
         label: impl Into<String>,
         label_color: Color,
         value: u16,
+        diff: u16,
         max: u16,
         meter_color: Color,
     ) -> Self {
@@ -95,8 +98,9 @@ impl PanelBuilder {
             label_color,
             value,
             max,
+            diff,
             meter_color,
-            width: METER_WIDTH / 2.0,
+            width: METER_WIDTH,
         });
         self
     }
@@ -200,13 +204,22 @@ impl Panel {
                     label_color,
                     value,
                     max,
+                    diff,
                     meter_color,
                     width,
                 } => {
                     let label_size = text_size(&label);
                     let meter_x = x + label_size.width + PADDING;
                     draw_text_line(x + PADDING, current_y, label, *label_color);
-                    draw_meter(meter_x, current_y, *width, *value, *max, *meter_color);
+                    draw_meter_diff(
+                        meter_x,
+                        current_y,
+                        *width,
+                        *value,
+                        *diff,
+                        *max,
+                        *meter_color,
+                    );
                     current_y += label_size.height + PADDING;
                 }
             }
@@ -233,15 +246,18 @@ fn draw_text_line(x: f32, y: f32, text: &str, color: Color) {
     );
 }
 
-fn draw_meter(x: f32, y: f32, width: f32, value: u16, max: u16, color: Color) {
+fn draw_meter_diff(x: f32, y: f32, width: f32, value: u16, diff: u16, max: u16, color: Color) {
     let total_spacing = (max - 1) as f32 * METER_SPACING;
     let pip_width = (width - total_spacing) / max as f32;
     let meter_height = TITLE_FONT_SIZE as f32 * 0.80;
+    let diff_threshold = value.saturating_sub(diff);
 
     let mut pip_x = x;
     for i in 0..max {
-        let color = if i < value {
+        let color = if i < diff_threshold {
             color
+        } else if i < value {
+            mix_color(color, WHITE, 0.75)
         } else {
             color.with_alpha(0.5)
         };

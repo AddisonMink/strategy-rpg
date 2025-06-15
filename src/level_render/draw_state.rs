@@ -142,10 +142,11 @@ fn action_description_panel(action: &ItemAction) -> Panel {
 
     let mut panel = Panel::builder(title, title_color)
         .min_width(INFO_PANEL_WIDTH)
-        .meter(
+        .meter_diff(
             meter_label,
             title_color,
             meter_value,
+            action.action.cost,
             meter_max,
             title_color,
         )

@@ -4,6 +4,7 @@ use crate::engine::*;
 pub struct Action {
     pub name: ShortString,
     pub range: Range,
+    pub cost: u16,
     pub effects: ShortList<EffectTemplate>,
 }
 
@@ -11,6 +12,7 @@ impl Action {
     pub const ATTACK: Action = Action {
         name: ShortString::new("Attack"),
         range: Range::SingleUnit { min: 1, max: 1 },
+        cost: 1,
         effects: ShortList::new(&[
             EffectTemplate::AttackAnimation,
             EffectTemplate::Damage { min: 1, max: 3 },
