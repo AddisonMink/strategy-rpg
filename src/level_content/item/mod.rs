@@ -14,8 +14,8 @@ pub const TORCH: Item = Item {
     id: ItemId(2),
     name: ShortString::new("Torch"),
     color: ORANGE,
-    uses_max: 3,
-    uses: 3,
+    uses_max: 1,
+    uses: 1,
     actions: ShortList::new(&[LIGHT]),
 };
 
