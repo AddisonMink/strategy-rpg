@@ -167,6 +167,9 @@ fn action_description_panel(action: &ItemAction) -> Panel {
 fn effect_template_desc(effect: &EffectTemplate) -> Option<(String, Color)> {
     match effect {
         EffectTemplate::Damage { min, max } => Some((format!("Damage {}-{}", min, max), RED)),
+        EffectTemplate::AddLightToEntity { radius, .. } => {
+            Some((format!("Light {}", radius), ORANGE))
+        }
         _ => None,
     }
 }

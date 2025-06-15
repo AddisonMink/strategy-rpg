@@ -90,6 +90,10 @@ pub fn single_unit_range_targets(
     coords
 }
 
+pub fn compile_self_action(level: &Level, action: &ItemAction, entity: Entity) -> VecDeque<Effect> {
+    compile_single_unit_action(level, action, entity, entity)
+}
+
 pub fn compile_single_unit_action(
     level: &Level,
     action: &ItemAction,
@@ -119,6 +123,13 @@ pub fn compile_single_unit_action(
                     entity: target,
                     min: *min,
                     max: *max,
+                });
+            }
+            EffectTemplate::AddLightToEntity { color, radius } => {
+                effect_queue.push_back(Effect::AddLightToEntity {
+                    entity: target,
+                    color: *color,
+                    radius: *radius,
                 });
             }
         }

@@ -1,4 +1,4 @@
-use crate::engine::*;
+use crate::{engine::*, level_model::Entity};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Action {
@@ -18,4 +18,5 @@ pub enum Range {
 pub enum EffectTemplate {
     AttackAnimation,
     Damage { min: u16, max: u16 },
+    AddLightToEntity { color: Color, radius: u16 },
 }

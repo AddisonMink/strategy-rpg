@@ -41,4 +41,9 @@ pub enum Effect {
         entity: Entity,
         item: ItemId,
     },
+    AddLightToEntity {
+        entity: Entity,
+        color: Color,
+        radius: u16,
+    },
 }

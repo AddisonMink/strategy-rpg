@@ -16,7 +16,9 @@ pub fn process_effects(level: &mut Level) {
             Effect::UpdateNpcVisionOfAllPlayers { npc } => {
                 npc_vision::update_npc_vision_of_all_players(level, npc)
             }
-            Effect::Move { entity, coord } => execute_move(level, entity, coord),
+            Effect::Move { entity, coord } => {
+                execute_move(level, entity, coord);
+            }
             Effect::Sleep { duration } => level.sleep_timer = Some(Timer::new(duration)),
             Effect::Damage { entity, min, max } => execute_damage(level, entity, min, max),
             Effect::Animation { animation } => level.animation_queue.push_back(animation),
@@ -27,6 +29,11 @@ pub fn process_effects(level: &mut Level) {
                 amount,
             } => execute_use_item(level, entity, item, amount),
             Effect::BreakItem { entity, item } => execute_break_item(level, entity, item),
+            Effect::AddLightToEntity {
+                entity,
+                color,
+                radius,
+            } => execute_add_light_to_entity(level, entity, color, radius),
         }
         if level.sleep_timer.is_some() || level.animation_queue.len() > 0 {
             break;
@@ -34,16 +41,14 @@ pub fn process_effects(level: &mut Level) {
     }
 }
 
-fn execute_move(level: &mut Level, entity: Entity, coord: Coord) {
-    let Some(unit) = level.units.get(&entity) else {
-        return;
-    };
-
-    let Some(pos) = level.positions.get_mut(&entity) else {
-        return;
-    };
-
+fn execute_move(level: &mut Level, entity: Entity, coord: Coord) -> Option<()> {
+    let unit = level.units.get(&entity)?;
+    let pos = level.positions.get_mut(&entity)?;
     pos.coord = coord;
+
+    if level.lights.contains_key(&entity) {
+        level.effect_queue.push_front(Effect::UpdateLightGrid);
+    }
 
     if unit.side == Side::Player {
         level
@@ -54,7 +59,9 @@ fn execute_move(level: &mut Level, entity: Entity, coord: Coord) {
             .effect_queue
             .push_front(Effect::UpdateNpcVisionOfAllPlayers { npc: entity });
     }
+
     level.effect_queue.push_front(Effect::UpdateVisionGrid);
+    Some(())
 }
 
 fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
@@ -126,6 +133,12 @@ fn execute_break_item(level: &mut Level, entity: Entity, item: ItemId) {
         pos.coord,
         format!("{} broke!", item_name.as_str()),
     ));
+}
+
+fn execute_add_light_to_entity(level: &mut Level, entity: Entity, color: Color, radius: u16) {
+    let light = Light::new(entity, radius, color);
+    level.lights.insert(entity, light);
+    level.effect_queue.push_front(Effect::UpdateLightGrid);
 }
 
 fn roll(low: u16, high: u16) -> u16 {
