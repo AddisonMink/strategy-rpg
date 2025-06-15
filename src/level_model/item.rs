@@ -8,5 +8,7 @@ pub struct Item {
     pub id: ItemId,
     pub name: ShortString,
     pub color: Color,
+    pub uses_max: u16,
+    pub uses: u16,
     pub actions: ShortList<Action>,
 }

@@ -38,5 +38,7 @@ pub struct ItemAction {
     pub item_id: ItemId,
     pub item_name: ShortString,
     pub item_color: Color,
+    pub uses_max: u16,
+    pub uses: u16,
     pub action: Action,
 }

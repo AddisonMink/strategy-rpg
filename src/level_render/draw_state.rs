@@ -122,26 +122,35 @@ fn tile_description_panel(tile: &Tile) -> Panel {
 fn unit_description_panel(unit: &Unit) -> Panel {
     Panel::builder(unit.name.to_string().to_uppercase(), unit.glyph.color)
         .min_width(INFO_PANEL_WIDTH)
-        .meter("HP", WHITE, unit.hp, unit.hp_max, RED)
-        .line(format!("MOVE {}", unit.movement), WHITE)
-        .line(format!("VISION {}", unit.vision), WHITE)
+        .meter("HP ", WHITE, unit.hp, unit.hp_max, RED)
+        .line(format!("Move {}", unit.movement), WHITE)
+        .line(format!("Vision {}", unit.vision), WHITE)
         .build()
 }
 
 fn action_description_panel(action: &ItemAction) -> Panel {
     let title = action.action.name.to_string().to_uppercase();
     let title_color = action.item_color;
+    let meter_label = format!("{} ", action.item_name.to_string());
+    let meter_value = action.uses;
+    let meter_max = action.uses_max;
 
     let range_text = match action.action.range {
-        Range::SelfRange => "SELF".to_string(),
-        Range::SingleUnit { min, max } => format!("UNIT {}-{}", min, max),
+        Range::SelfRange => "Self".to_string(),
+        Range::SingleUnit { min, max } => format!("Unit {}-{}", min, max),
     };
 
     let mut panel = Panel::builder(title, title_color)
         .min_width(INFO_PANEL_WIDTH)
-        .line(action.item_name.as_str(), title_color)
+        .meter(
+            meter_label,
+            title_color,
+            meter_value,
+            meter_max,
+            title_color,
+        )
         .line(range_text, WHITE)
-        .line("EFFECTS", WHITE);
+        .line("Effects", WHITE);
 
     for effect in action.action.effects.as_slice() {
         if let Some((desc, color)) = effect_template_desc(effect) {
@@ -155,7 +164,7 @@ fn action_description_panel(action: &ItemAction) -> Panel {
 
 fn effect_template_desc(effect: &EffectTemplate) -> Option<(String, Color)> {
     match effect {
-        EffectTemplate::Damage { min, max } => Some((format!("DAMAGE {}-{}", min, max), RED)),
+        EffectTemplate::Damage { min, max } => Some((format!("Damage {}-{}", min, max), RED)),
         _ => None,
     }
 }

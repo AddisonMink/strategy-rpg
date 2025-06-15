@@ -5,6 +5,8 @@ pub const SWORD: Item = Item {
     id: ItemId(1),
     name: ShortString::new("Sword"),
     color: LIGHTGRAY,
+    uses_max: 5,
+    uses: 5,
     actions: ShortList::new(&[SLASH]),
 };
 

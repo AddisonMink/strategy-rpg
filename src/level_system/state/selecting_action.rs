@@ -22,6 +22,8 @@ pub fn transition(level: &mut Level) {
                             item_id: item.id,
                             item_name: item.name,
                             item_color: item.color,
+                            uses_max: item.uses_max,
+                            uses: item.uses,
                             action: *action,
                         })
                     })
