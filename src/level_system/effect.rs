@@ -138,6 +138,7 @@ fn execute_add_light_to_entity(
 ) -> Option<()> {
     let unit = level.units.get_mut(&entity)?;
     unit.light = Some(Light { radius, color });
+    level.effect_queue.push_front(Effect::UpdateVisionGrid);
     level.effect_queue.push_front(Effect::UpdateLightGrid);
     Some(())
 }
