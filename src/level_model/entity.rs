@@ -34,7 +34,7 @@ pub enum EntityTag {
     Lurker,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct Unit {
     // Identifiers
     pub entity: Entity,
@@ -49,6 +49,8 @@ pub struct Unit {
     pub hp: u16,
     pub coord: Coord,
     pub light: Option<Light>,
+    // NPC Fields
+    pub memory: Memory,
 }
 
 impl Unit {
@@ -72,7 +74,8 @@ impl Unit {
             hp_max,
             hp: hp_max, // Start with full HP,
             coord,
-            light: None, // No light by default
+            light: None, // No light by default,
+            memory: Memory::default(),
         }
     }
 }
@@ -101,16 +104,14 @@ impl PointLight {
 }
 
 #[derive(Debug, Clone)]
-pub struct VisionMemory {
-    pub entity: Entity,
+pub struct Memory {
     pub visible_players: HashSet<Entity>,
     pub last_seen_player: Option<(Entity, Coord)>,
 }
 
-impl VisionMemory {
-    pub fn new(entity: Entity) -> Self {
+impl Default for Memory {
+    fn default() -> Self {
         Self {
-            entity,
             visible_players: HashSet::new(),
             last_seen_player: None,
         }

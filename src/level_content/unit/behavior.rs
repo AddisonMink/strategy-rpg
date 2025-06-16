@@ -1,4 +1,5 @@
 use std::collections::VecDeque;
+use std::mem;
 
 use crate::engine::*;
 use crate::level_model::*;
@@ -8,18 +9,18 @@ use crate::level_model::*;
 /// If no visible player is found, it moves towards the last seen player position.
 /// If no players are visible or last seen, it does not move.
 pub fn standard_move(level: &Level) -> Option<VecDeque<Coord>> {
-    let (_, unit, memory) = unpack_npc(level)?;
-    let player_opt = find_nearest_visible_player(level, unit, memory);
+    let npc = level.active_unit()?;
+    let player_opt = find_nearest_visible_player(level, npc);
 
     let mut path = if let Some(player) = player_opt {
-        find_path_to_adjacent(level, unit.coord, player.coord)
-    } else if let Some((_, player_pos)) = memory.last_seen_player {
-        find_path_to(level, unit.coord, player_pos)
+        find_path_to_adjacent(level, npc.coord, player.coord)
+    } else if let Some((_, player_pos)) = npc.memory.last_seen_player {
+        find_path_to(level, npc.coord, player_pos)
     } else {
         None
     }?;
 
-    path.truncate(unit.movement as usize);
+    path.truncate(npc.movement as usize);
     Some(path)
 }
 
@@ -54,12 +55,8 @@ pub fn basic_attack(
     Some(effects)
 }
 
-pub fn find_nearest_visible_player<'a>(
-    level: &'a Level,
-    npc: &Unit,
-    memory: &VisionMemory,
-) -> Option<&'a Unit> {
-    memory
+pub fn find_nearest_visible_player<'a>(level: &'a Level, npc: &Unit) -> Option<&'a Unit> {
+    npc.memory
         .visible_players
         .iter()
         .filter_map(|entity| level.units.get(entity))
@@ -78,11 +75,4 @@ pub fn find_path_to_adjacent(level: &Level, from: Coord, to: Coord) -> Option<Ve
     let goal = |coord: Coord| coord.manhattan_distance(to) == 1;
     let path = algorithm::breadth_first_search(from, accept, goal);
     (!path.is_empty()).then_some(path)
-}
-
-pub fn unpack_npc(level: &Level) -> Option<(Entity, &Unit, &VisionMemory)> {
-    let entity = level.turn_queue.front()?;
-    let unit = level.units.get(entity)?;
-    let memory = level.vision_memory.get(entity)?;
-    Some((entity.clone(), unit, memory))
 }

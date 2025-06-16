@@ -51,25 +51,25 @@ pub fn update_npc_vision_of_all_players(level: &mut Level, npc: Entity) {
     }
 }
 
-fn update_npc_vision_of_player(level: &mut Level, npc: Entity, player: Entity) -> Option<()> {
-    let visible = level.unit_can_see_unit(npc, player);
-    let memory = level.vision_memory.get_mut(&npc)?;
-    let player_seen = visible && !memory.visible_players.contains(&player);
-    let player_lost = !visible && memory.visible_players.contains(&player);
-    let player_coord = level.units.get(&player)?.coord;
-    let coord = level.units.get(&npc)?.coord;
+fn update_npc_vision_of_player(level: &mut Level, npc_id: Entity, player_id: Entity) -> Option<()> {
+    let visible = level.unit_can_see_unit(npc_id, player_id);
+    let player_coord = level.units.get(&player_id)?.coord;
+    let coord = level.units.get(&npc_id)?.coord;
+    let npc = level.units.get_mut(&npc_id)?;
+    let player_seen = visible && !npc.memory.visible_players.contains(&player_id);
+    let player_lost = !visible && npc.memory.visible_players.contains(&player_id);
 
     if visible {
-        memory.last_seen_player = Some((player, player_coord));
+        npc.memory.last_seen_player = Some((player_id, player_coord));
     }
 
     if player_seen {
-        memory.visible_players.insert(player);
+        npc.memory.visible_players.insert(player_id);
         level
             .animation_queue
             .push_back(Animation::text(coord, "!".to_string(), RED));
     } else if player_lost {
-        memory.visible_players.remove(&player);
+        npc.memory.visible_players.remove(&player_id);
         level
             .animation_queue
             .push_back(Animation::text(coord, "?".to_string(), YELLOW));

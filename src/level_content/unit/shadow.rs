@@ -27,10 +27,6 @@ pub fn add_shadow(level: &mut Level, coord: Coord) -> Entity {
         ),
     );
 
-    level
-        .vision_memory
-        .insert(entity, VisionMemory::new(entity));
-
     level.tags.insert(entity, Tags::new(entity, &TAGS));
 
     level.behaviors.insert(
@@ -46,8 +42,8 @@ pub fn add_shadow(level: &mut Level, coord: Coord) -> Entity {
 }
 
 fn select_action(level: &Level) -> Option<VecDeque<Effect>> {
-    let (_, npc, memory) = behavior::unpack_npc(level)?;
-    let player = behavior::find_nearest_visible_player(level, npc, memory)?;
+    let npc = level.active_unit()?;
+    let player = behavior::find_nearest_visible_player(level, npc)?;
     let in_darkness = level.light_grid.distance_from_light(npc.coord) > 0;
 
     let (attack, min_damage, max_damage) = if in_darkness {

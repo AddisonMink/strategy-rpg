@@ -30,7 +30,6 @@ pub struct Level {
     pub player_vision: PlayerVision,
     // Entities
     pub tags: HashMap<Entity, Tags>,
-    pub vision_memory: HashMap<Entity, VisionMemory>,
     pub lights: HashMap<Entity, PointLight>,
     pub units: HashMap<Entity, Unit>,
     pub behaviors: HashMap<Entity, Behavior>,
@@ -52,7 +51,6 @@ impl Level {
             light_grid: LightGrid::empty(),
             player_vision: PlayerVision::empty(),
             tags: HashMap::new(),
-            vision_memory: HashMap::new(),
             lights: HashMap::new(),
             units: HashMap::new(),
             behaviors: HashMap::new(),
@@ -69,7 +67,6 @@ impl Level {
 
     pub fn delete(&mut self, entity: Entity) {
         self.tags.remove(&entity);
-        self.vision_memory.remove(&entity);
         self.lights.remove(&entity);
         self.units.remove(&entity);
         self.turn_queue.retain(|id| *id != entity);
