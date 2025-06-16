@@ -5,7 +5,7 @@ use std::collections::VecDeque;
 
 pub fn valid_player_actions(level: &Level) -> Vec<ItemAction> {
     let entity = level.turn_queue.front().unwrap();
-    let origin = level.positions.get(entity).unwrap().coord;
+    let origin = level.units.get(entity).unwrap().coord;
     let actions = player_actions(level, origin);
     actions
         .into_iter()
@@ -54,7 +54,7 @@ pub fn find_target_coords(
         Range::SingleUnit { min, max } => {
             single_unit_range_targets(level, entity, origin, min, max)
                 .iter()
-                .map(|e| level.positions.get(e).unwrap().coord)
+                .map(|e| level.units.get(e).unwrap().coord)
                 .collect()
         }
     }
@@ -105,13 +105,13 @@ pub fn compile_single_unit_action(
     for effect in action.action.effects.as_slice() {
         match effect {
             EffectTemplate::AttackAnimation => {
-                let Some(actor_pos) = level.positions.get(&actor) else {
+                let Some(actor_unit) = level.units.get(&actor) else {
                     continue;
                 };
-                let Some(target_pos) = level.positions.get(&target) else {
+                let Some(target_unit) = level.units.get(&target) else {
                     continue;
                 };
-                let Some(direction) = actor_pos.coord.direction_to(target_pos.coord) else {
+                let Some(direction) = actor_unit.coord.direction_to(target_unit.coord) else {
                     continue;
                 };
                 effect_queue.push_back(Effect::Animation {

@@ -38,7 +38,7 @@ fn draw_entity_animation(level: &Level, entity: Entity, kind: EntityAnimationKin
         return;
     };
 
-    let coord = level.positions.get(&entity).unwrap().coord;
+    let coord = level.units.get(&entity).unwrap().coord;
     let light_color = level.light_grid.light_color(coord);
     let color = color::mix_color(unit.glyph.color, light_color, 0.5);
     let glyph = Glyph::new(unit.glyph.symbol, color);

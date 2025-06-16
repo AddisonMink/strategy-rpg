@@ -10,10 +10,9 @@ pub fn transition(level: &mut Level) {
 
     match unit.side {
         Side::Player => {
-            let pos = level.positions.get(entity).unwrap();
             let accept = |c: Coord| level.map.tile(c).walkable && level.unit_at(c).is_none();
-            let mut valid_moves = algorithm::flood_fill(pos.coord, unit.movement, accept);
-            valid_moves.remove(&pos.coord);
+            let mut valid_moves = algorithm::flood_fill(unit.coord, unit.movement, accept);
+            valid_moves.remove(&unit.coord);
 
             if valid_moves.is_empty() {
                 level.state = LevelState::ResolvingMove;
@@ -70,10 +69,10 @@ pub fn update(level: &mut Level) {
         return;
     }
 
-    let (pos, _) = level.active_unit_with_position().unwrap();
+    let unit = level.active_unit().unwrap();
     let accept = |c: Coord| level.map.tile(c).walkable && level.unit_at(c).is_none();
     let goal = |c: Coord| c == mouse_coord;
-    let new_path = algorithm::breadth_first_search(pos.coord, accept, goal);
+    let new_path = algorithm::breadth_first_search(unit.coord, accept, goal);
     let action_previews = action::player_actions(level, mouse_coord);
 
     level.state = LevelState::SelectingMove {

@@ -21,7 +21,6 @@ pub fn check_goal(level: &Level) -> bool {
         .units
         .values()
         .filter(|unit| unit.side == Side::Player)
-        .filter_map(|u| level.positions.get(&u.entity))
-        .map(|pos| pos.coord)
+        .map(|u| u.coord)
         .any(|c| level.map.tile(c).goal)
 }

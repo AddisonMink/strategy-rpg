@@ -13,11 +13,18 @@ pub fn add_shadow(level: &mut Level, coord: Coord) -> Entity {
     level.next_id.0 += 1;
     level.turn_queue.push_back(entity);
 
-    level.positions.insert(entity, Position::new(entity, coord));
-
     level.units.insert(
         entity,
-        Unit::new(entity, NAME, GLYPH, Side::NPC, VISION, MOVEMENT, HP_MAX),
+        Unit::new(
+            entity,
+            NAME,
+            GLYPH,
+            Side::NPC,
+            VISION,
+            MOVEMENT,
+            HP_MAX,
+            coord,
+        ),
     );
 
     level
@@ -39,9 +46,9 @@ pub fn add_shadow(level: &mut Level, coord: Coord) -> Entity {
 }
 
 fn select_action(level: &Level) -> Option<VecDeque<Effect>> {
-    let (_, _, pos, memory) = behavior::unpack_npc(level)?;
-    let player = behavior::find_nearest_visible_player(level, pos, memory)?;
-    let in_darkness = level.light_grid.distance_from_light(pos.coord) > 0;
+    let (_, npc, memory) = behavior::unpack_npc(level)?;
+    let player = behavior::find_nearest_visible_player(level, npc, memory)?;
+    let in_darkness = level.light_grid.distance_from_light(npc.coord) > 0;
 
     let (attack, min_damage, max_damage) = if in_darkness {
         ("REND", 2, 5)
@@ -49,5 +56,5 @@ fn select_action(level: &Level) -> Option<VecDeque<Effect>> {
         ("RAKE", 0, 2)
     };
 
-    behavior::basic_attack(attack.to_string(), min_damage, max_damage, pos, player)
+    behavior::basic_attack(attack.to_string(), min_damage, max_damage, npc, player)
 }

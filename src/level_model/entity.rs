@@ -5,20 +5,14 @@ use crate::engine::*;
 use std::collections::HashMap;
 use std::collections::{HashSet, VecDeque};
 
+#[derive(Debug, Clone, Copy)]
+pub struct Light {
+    pub radius: u16,
+    pub color: Color,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Entity(pub u16);
-
-#[derive(Debug, Clone, Copy)]
-pub struct Position {
-    pub entity: Entity,
-    pub coord: Coord,
-}
-
-impl Position {
-    pub fn new(entity: Entity, coord: Coord) -> Self {
-        Self { entity, coord }
-    }
-}
 
 #[derive(Debug, Clone)]
 pub struct Tags {
@@ -53,6 +47,8 @@ pub struct Unit {
     pub hp_max: u16,
     // State
     pub hp: u16,
+    pub coord: Coord,
+    pub light: Option<Light>,
 }
 
 impl Unit {
@@ -64,6 +60,7 @@ impl Unit {
         vision: u16,
         movement: u16,
         hp_max: u16,
+        coord: Coord,
     ) -> Self {
         Self {
             entity,
@@ -73,7 +70,9 @@ impl Unit {
             vision,
             movement,
             hp_max,
-            hp: hp_max, // Start with full HP
+            hp: hp_max, // Start with full HP,
+            coord,
+            light: None, // No light by default
         }
     }
 }
@@ -85,18 +84,18 @@ pub enum Side {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct Light {
+pub struct PointLight {
     pub entity: Entity,
-    pub radius: u16,
-    pub color: Color,
+    pub coord: Coord,
+    pub light: Light,
 }
 
-impl Light {
-    pub fn new(entity: Entity, radius: u16, color: Color) -> Self {
+impl PointLight {
+    pub fn new(entity: Entity, coord: Coord, light: Light) -> Self {
         Self {
             entity,
-            radius,
-            color,
+            coord,
+            light,
         }
     }
 }

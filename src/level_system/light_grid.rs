@@ -5,19 +5,14 @@ pub fn update_light_grid(level: &mut Level) {
     let mut lights: Vec<u16> = vec![u16::max_value(); (Map::WIDTH * Map::HEIGHT) as usize];
     let mut colors: Vec<Color> = vec![BLACK; (Map::WIDTH * Map::HEIGHT) as usize];
 
-    let lights_iter = level
-        .lights
-        .values()
-        .flat_map(|l| level.positions.get(&l.entity).map(|p| (p.coord, l)));
-
-    for (center, light) in lights_iter {
+    for (origin, light) in level.lights_iter() {
         for x in 0..Map::WIDTH {
             for y in 0..Map::HEIGHT {
                 let coord = Coord { x, y };
                 let radius = light.radius as f32;
 
-                if level.map.check_line_of_sight(center, coord) {
-                    let distance = center
+                if level.map.check_line_of_sight(origin, coord) {
+                    let distance = origin
                         .manhattan_distance(coord)
                         .saturating_sub(light.radius);
 

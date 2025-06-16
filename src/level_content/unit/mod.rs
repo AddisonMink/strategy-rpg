@@ -15,8 +15,6 @@ pub fn add_hero(level: &mut Level, coord: Coord) {
     level.next_id.0 += 1;
     level.turn_queue.push_back(entity);
 
-    level.positions.insert(entity, Position::new(entity, coord));
-
     level.units.insert(
         entity,
         Unit::new(
@@ -26,7 +24,8 @@ pub fn add_hero(level: &mut Level, coord: Coord) {
             Side::Player,
             3,  // vision
             3,  // movement
-            10, // hp_max
+            10, // hp_max,
+            coord,
         ),
     );
 

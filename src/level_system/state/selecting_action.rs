@@ -69,9 +69,10 @@ pub fn update(level: &mut Level) {
     // if mouse is hovered over an action, highlight it
     else if let Some(selected_line) = selected_line_opt {
         let action = &actions[selected_line];
-        let entity = level.turn_queue.front().unwrap();
-        let origin = level.positions.get(entity).unwrap().coord;
-        let new_target_coords = action::find_target_coords(level, *entity, origin, &action.action);
+        let unit = level.active_unit().unwrap();
+
+        let new_target_coords =
+            action::find_target_coords(level, unit.entity, unit.coord, &action.action);
 
         level.state = LevelState::SelectingAction {
             actions: actions.to_vec(),

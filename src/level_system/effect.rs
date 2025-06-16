@@ -1,3 +1,5 @@
+use macroquad::prelude::trace;
+
 use super::light_grid::update_light_grid;
 use super::player_vision::update_player_vision;
 use crate::engine::*;
@@ -33,7 +35,9 @@ pub fn process_effects(level: &mut Level) {
                 entity,
                 color,
                 radius,
-            } => execute_add_light_to_entity(level, entity, color, radius),
+            } => {
+                execute_add_light_to_entity(level, entity, color, radius);
+            }
         }
         if level.sleep_timer.is_some() || level.animation_queue.len() > 0 {
             break;
@@ -42,9 +46,8 @@ pub fn process_effects(level: &mut Level) {
 }
 
 fn execute_move(level: &mut Level, entity: Entity, coord: Coord) -> Option<()> {
-    let unit = level.units.get(&entity)?;
-    let pos = level.positions.get_mut(&entity)?;
-    pos.coord = coord;
+    let unit = level.units.get_mut(&entity)?;
+    unit.coord = coord;
 
     if level.lights.contains_key(&entity) {
         level.effect_queue.push_front(Effect::UpdateLightGrid);
@@ -69,19 +72,18 @@ fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
         return;
     };
 
-    let coord = level.positions.get(&entity).unwrap().coord;
     let damage = roll(min, max);
     let text = (-(damage as i32)).to_string();
 
     unit.hp = unit.hp.saturating_sub(damage);
     level
         .animation_queue
-        .push_back(Animation::text(coord, text, RED));
+        .push_back(Animation::text(unit.coord, text, RED));
 
     if unit.hp == 0 {
         level
             .animation_queue
-            .push_back(Animation::text(coord, "DEATH".to_string(), GRAY));
+            .push_back(Animation::text(unit.coord, "DEATH".to_string(), GRAY));
         level.animation_queue.push_back(Animation::death(entity));
         level.effect_queue.push_front(Effect::Death { entity });
     }
@@ -116,10 +118,6 @@ fn execute_break_item(level: &mut Level, entity: Entity, item: ItemId) {
         return;
     };
 
-    let Some(pos) = level.positions.get(&entity) else {
-        return;
-    };
-
     let Some(inventory) = level.inventories.get_mut(&entity) else {
         return;
     };
@@ -130,15 +128,21 @@ fn execute_break_item(level: &mut Level, entity: Entity, item: ItemId) {
 
     inventory.items.remove(&item);
     level.animation_queue.push_back(Animation::panel_text(
-        pos.coord,
+        unit.coord,
         format!("{} broke!", item_name.as_str()),
     ));
 }
 
-fn execute_add_light_to_entity(level: &mut Level, entity: Entity, color: Color, radius: u16) {
-    let light = Light::new(entity, radius, color);
-    level.lights.insert(entity, light);
+fn execute_add_light_to_entity(
+    level: &mut Level,
+    entity: Entity,
+    color: Color,
+    radius: u16,
+) -> Option<()> {
+    let unit = level.units.get_mut(&entity)?;
+    unit.light = Some(Light { radius, color });
     level.effect_queue.push_front(Effect::UpdateLightGrid);
+    Some(())
 }
 
 fn roll(low: u16, high: u16) -> u16 {

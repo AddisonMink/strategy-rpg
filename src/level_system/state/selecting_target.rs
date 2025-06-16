@@ -17,20 +17,19 @@ fn self_action(level: &mut Level, action: ItemAction) {
 }
 
 fn single_unit_action(level: &mut Level, action: ItemAction, min: u16, max: u16) {
-    let entity = level.turn_queue.front().unwrap();
-    let origin = level.positions.get(entity).unwrap().coord;
-    let targets = action::single_unit_range_targets(level, *entity, origin, min, max);
+    let unit = level.active_unit().unwrap();
+    let targets = action::single_unit_range_targets(level, unit.entity, unit.coord, min, max);
 
     // If there is only 1 target, select it automatically.
     if targets.iter().count() == 1 {
         let target = targets.iter().next().unwrap();
-        let effects = action::compile_single_unit_action(level, &action, *entity, *target);
+        let effects = action::compile_single_unit_action(level, &action, unit.entity, *target);
         level.effect_queue.extend(effects);
         level.state = LevelState::ResolvingAction;
     } else {
         let mut ts = HashMap::new();
         for target in targets {
-            let coord = level.positions.get(&target).unwrap().coord;
+            let coord = level.units.get(&target).unwrap().coord;
             ts.insert(coord, target);
         }
         level.state = LevelState::SelectingSingleUnitTarget {

@@ -8,13 +8,13 @@ use crate::level_model::*;
 /// If no visible player is found, it moves towards the last seen player position.
 /// If no players are visible or last seen, it does not move.
 pub fn standard_move(level: &Level) -> Option<VecDeque<Coord>> {
-    let (_, unit, pos, memory) = unpack_npc(level)?;
-    let player_opt = find_nearest_visible_player(level, pos, memory);
+    let (_, unit, memory) = unpack_npc(level)?;
+    let player_opt = find_nearest_visible_player(level, unit, memory);
 
     let mut path = if let Some(player) = player_opt {
-        find_path_to_adjacent(level, pos.coord, player.coord)
+        find_path_to_adjacent(level, unit.coord, player.coord)
     } else if let Some((_, player_pos)) = memory.last_seen_player {
-        find_path_to(level, pos.coord, player_pos)
+        find_path_to(level, unit.coord, player_pos)
     } else {
         None
     }?;
@@ -27,8 +27,8 @@ pub fn basic_attack(
     attack_name: String,
     min_damage: u16,
     max_damage: u16,
-    attacker: &Position,
-    defender: &Position,
+    attacker: &Unit,
+    defender: &Unit,
 ) -> Option<VecDeque<Effect>> {
     (attacker.coord.manhattan_distance(defender.coord) == 1).then_some(())?;
     let direction = attacker.coord.direction_to(defender.coord)?;
@@ -56,14 +56,14 @@ pub fn basic_attack(
 
 pub fn find_nearest_visible_player<'a>(
     level: &'a Level,
-    pos: &Position,
+    npc: &Unit,
     memory: &VisionMemory,
-) -> Option<&'a Position> {
+) -> Option<&'a Unit> {
     memory
         .visible_players
         .iter()
-        .filter_map(|e| level.positions.get(e))
-        .min_by_key(|p| p.coord.manhattan_distance(pos.coord))
+        .filter_map(|entity| level.units.get(entity))
+        .min_by_key(|p| p.coord.manhattan_distance(npc.coord))
 }
 
 pub fn find_path_to(level: &Level, from: Coord, to: Coord) -> Option<VecDeque<Coord>> {
@@ -80,10 +80,9 @@ pub fn find_path_to_adjacent(level: &Level, from: Coord, to: Coord) -> Option<Ve
     (!path.is_empty()).then_some(path)
 }
 
-pub fn unpack_npc(level: &Level) -> Option<(Entity, &Unit, &Position, &VisionMemory)> {
+pub fn unpack_npc(level: &Level) -> Option<(Entity, &Unit, &VisionMemory)> {
     let entity = level.turn_queue.front()?;
     let unit = level.units.get(entity)?;
-    let pos = level.positions.get(entity)?;
     let memory = level.vision_memory.get(entity)?;
-    Some((entity.clone(), unit, pos, memory))
+    Some((entity.clone(), unit, memory))
 }

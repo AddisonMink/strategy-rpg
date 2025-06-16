@@ -20,7 +20,6 @@ pub use goal::*;
 pub use item::*;
 pub use level_state::*;
 pub use light_grid::*;
-use macroquad::prelude::trace;
 pub use map::*;
 pub use player_vision::*;
 
@@ -30,10 +29,9 @@ pub struct Level {
     pub light_grid: LightGrid,
     pub player_vision: PlayerVision,
     // Entities
-    pub positions: HashMap<Entity, Position>,
     pub tags: HashMap<Entity, Tags>,
     pub vision_memory: HashMap<Entity, VisionMemory>,
-    pub lights: HashMap<Entity, Light>,
+    pub lights: HashMap<Entity, PointLight>,
     pub units: HashMap<Entity, Unit>,
     pub behaviors: HashMap<Entity, Behavior>,
     pub inventories: HashMap<Entity, Inventory>,
@@ -53,7 +51,6 @@ impl Level {
             map: Map::new(),
             light_grid: LightGrid::empty(),
             player_vision: PlayerVision::empty(),
-            positions: HashMap::new(),
             tags: HashMap::new(),
             vision_memory: HashMap::new(),
             lights: HashMap::new(),
@@ -71,7 +68,6 @@ impl Level {
     }
 
     pub fn delete(&mut self, entity: Entity) {
-        self.positions.remove(&entity);
         self.tags.remove(&entity);
         self.vision_memory.remove(&entity);
         self.lights.remove(&entity);
@@ -83,54 +79,46 @@ impl Level {
         });
     }
 
-    pub fn active_unit(&self) -> Option<&Unit> {
-        self.turn_queue.front().and_then(|id| self.units.get(id))
+    pub fn lights_iter(&self) -> impl Iterator<Item = (Coord, Light)> {
+        let point_lights = self.lights.values().map(|l| (l.coord, l.light.clone()));
+
+        let unit_lights = self
+            .units
+            .values()
+            .filter_map(|u| u.light.map(|l| (u.coord, l)));
+
+        point_lights.chain(unit_lights)
     }
 
-    pub fn active_unit_with_position(&self) -> Option<(&Position, &Unit)> {
-        self.active_unit()
-            .and_then(|unit| self.positions.get(&unit.entity).map(|pos| (pos, unit)))
+    pub fn active_unit(&self) -> Option<&Unit> {
+        let active_entity = self.turn_queue.front()?;
+        self.units.get(active_entity)
     }
 
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {
-        self.positions
-            .values()
-            .filter_map(|p| {
-                if p.coord == coord {
-                    self.units.get(&p.entity)
-                } else {
-                    None
-                }
-            })
-            .next()
+        self.units.values().find(|unit| unit.coord == coord)
     }
 
     pub fn unit_can_see_tile(&self, unit_id: Entity, coord: Coord) -> bool {
-        let Some(pos) = self.positions.get(&unit_id) else {
-            return false;
-        };
-
         let Some(unit) = self.units.get(&unit_id) else {
             return false;
         };
 
-        if !self.map.check_line_of_sight(pos.coord, coord) {
+        if !self.map.check_line_of_sight(unit.coord, coord) {
             return false;
         }
 
-        let distance = pos.coord.manhattan_distance(coord);
+        let distance = unit.coord.manhattan_distance(coord);
         let distance_from_light = self.light_grid.distance_from_light(coord);
         distance <= unit.vision || distance_from_light <= unit.vision
     }
 
     pub fn unit_can_see_unit(&self, from: Entity, to: Entity) -> bool {
-        let Some(from_pos) = self.positions.get(&from) else {
-            return false;
-        };
         let Some(from_unit) = self.units.get(&from) else {
             return false;
         };
-        let Some(to_pos) = self.positions.get(&to) else {
+
+        let Some(to_unit) = self.units.get(&to) else {
             return false;
         };
 
@@ -140,12 +128,12 @@ impl Level {
             false
         };
 
-        if !self.map.check_line_of_sight(from_pos.coord, to_pos.coord) {
+        if !self.map.check_line_of_sight(from_unit.coord, to_unit.coord) {
             return false;
         }
 
-        let distance = from_pos.coord.manhattan_distance(to_pos.coord);
-        let distance_from_light = self.light_grid.distance_from_light(to_pos.coord);
+        let distance = from_unit.coord.manhattan_distance(to_unit.coord);
+        let distance_from_light = self.light_grid.distance_from_light(to_unit.coord);
 
         if distance_from_light > 0 && lurker {
             return false; // Lurkers are hidden when not in light.
