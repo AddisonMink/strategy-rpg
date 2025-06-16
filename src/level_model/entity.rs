@@ -51,6 +51,7 @@ pub struct Unit {
     pub light: Option<Light>,
     // NPC Fields
     pub memory: Memory,
+    pub behavior: Behavior,
 }
 
 impl Unit {
@@ -63,6 +64,7 @@ impl Unit {
         movement: u16,
         hp_max: u16,
         coord: Coord,
+        behavior_opt: Option<Behavior>,
     ) -> Self {
         Self {
             entity,
@@ -76,6 +78,7 @@ impl Unit {
             coord,
             light: None, // No light by default,
             memory: Memory::default(),
+            behavior: behavior_opt.unwrap_or_default(),
         }
     }
 }
@@ -103,25 +106,25 @@ impl PointLight {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Memory {
     pub visible_players: HashSet<Entity>,
     pub last_seen_player: Option<(Entity, Coord)>,
 }
 
-impl Default for Memory {
-    fn default() -> Self {
-        Self {
-            visible_players: HashSet::new(),
-            last_seen_player: None,
-        }
-    }
-}
-
+#[derive(Debug, Clone)]
 pub struct Behavior {
-    pub entity: Entity,
     pub select_move: fn(&Level) -> Option<VecDeque<Coord>>,
     pub select_action: fn(&Level) -> Option<VecDeque<Effect>>,
+}
+
+impl Default for Behavior {
+    fn default() -> Self {
+        Self {
+            select_move: |_| None,
+            select_action: |_| None,
+        }
+    }
 }
 
 pub struct Inventory {

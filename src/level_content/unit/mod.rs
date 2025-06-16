@@ -26,6 +26,7 @@ pub fn add_hero(level: &mut Level, coord: Coord) {
             3,  // movement
             10, // hp_max,
             coord,
+            None,
         ),
     );
 

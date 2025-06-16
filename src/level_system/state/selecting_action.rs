@@ -25,8 +25,7 @@ pub fn transition(level: &mut Level) {
             }
         }
         Side::NPC => {
-            let behavior = level.behaviors.get(entity).unwrap();
-            let effects = (behavior.select_action)(&level).unwrap_or_default();
+            let effects = (unit.behavior.select_action)(&level).unwrap_or_default();
             level.effect_queue.extend(effects);
             level.state = LevelState::ResolvingAction;
         }

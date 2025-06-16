@@ -12,6 +12,11 @@ pub fn add_goon(level: &mut Level, coord: Coord) {
     level.next_id.0 += 1;
     level.turn_queue.push_back(entity);
 
+    let behavior = Behavior {
+        select_move: behavior::standard_move,
+        select_action,
+    };
+
     level.units.insert(
         entity,
         Unit::new(
@@ -23,16 +28,8 @@ pub fn add_goon(level: &mut Level, coord: Coord) {
             MOVEMENT,
             HP_MAX,
             coord,
+            Some(behavior.clone()),
         ),
-    );
-
-    level.behaviors.insert(
-        entity,
-        Behavior {
-            entity,
-            select_move: behavior::standard_move,
-            select_action,
-        },
     );
 }
 
