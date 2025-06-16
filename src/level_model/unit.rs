@@ -10,26 +10,6 @@ use std::collections::{HashSet, VecDeque};
 pub struct UnitId(pub u16);
 
 #[derive(Debug, Clone)]
-pub struct Tags {
-    pub entity: UnitId,
-    pub tags: HashSet<EntityTag>,
-}
-
-impl Tags {
-    pub fn new(entity: UnitId, tags: &ShortList<EntityTag>) -> Self {
-        Self {
-            entity,
-            tags: tags.as_slice().iter().cloned().collect(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum EntityTag {
-    Lurker,
-}
-
-#[derive(Debug, Clone)]
 pub struct Unit {
     // Identifiers
     pub entity: UnitId,
@@ -40,6 +20,7 @@ pub struct Unit {
     pub vision: u16,
     pub movement: u16,
     pub hp_max: u16,
+    pub tags: HashSet<UnitTag>,
     // State
     pub hp: u16,
     pub coord: Coord,
@@ -71,6 +52,7 @@ impl Unit {
             vision,
             movement,
             hp_max,
+            tags: HashSet::new(),
             hp: hp_max,
             coord,
             light: None,
@@ -110,4 +92,9 @@ impl Default for Behavior {
             select_action: |_| None,
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum UnitTag {
+    Lurker,
 }

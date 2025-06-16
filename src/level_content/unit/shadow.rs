@@ -6,7 +6,7 @@ const GLYPH: Glyph = Glyph::new('S', WHITE);
 const VISION: u16 = 99;
 const MOVEMENT: u16 = 3;
 const HP_MAX: u16 = 3;
-const TAGS: ShortList<EntityTag> = ShortList::new(&[EntityTag::Lurker]);
+const TAGS: ShortList<UnitTag> = ShortList::new(&[UnitTag::Lurker]);
 
 pub fn add_shadow(level: &mut Level, coord: Coord) -> UnitId {
     let entity = level.next_unit_id;
@@ -33,7 +33,10 @@ pub fn add_shadow(level: &mut Level, coord: Coord) -> UnitId {
         ),
     );
 
-    level.tags.insert(entity, Tags::new(entity, &TAGS));
+    let shadow = level.units.get_mut(&entity).unwrap();
+    for tag in TAGS.as_slice() {
+        shadow.tags.insert(tag.clone());
+    }
 
     entity
 }

@@ -33,7 +33,6 @@ pub struct Level {
     pub light_grid: LightGrid,
     pub player_vision: PlayerVision,
     // Entities
-    pub tags: HashMap<UnitId, Tags>,
     pub point_lights: HashMap<PointLightId, PointLight>,
     pub next_point_light_id: PointLightId,
     pub units: HashMap<UnitId, Unit>,
@@ -53,7 +52,6 @@ impl Level {
             map: Map::new(),
             light_grid: LightGrid::empty(),
             player_vision: PlayerVision::empty(),
-            tags: HashMap::new(),
             point_lights: HashMap::new(),
             next_point_light_id: PointLightId(0),
             units: HashMap::new(),
@@ -68,7 +66,6 @@ impl Level {
     }
 
     pub fn delete_unit(&mut self, entity: UnitId) {
-        self.tags.remove(&entity);
         self.units.remove(&entity);
         self.turn_queue.retain(|id| *id != entity);
         self.effect_queue.retain(|effect| match effect {
@@ -123,11 +120,7 @@ impl Level {
             return false;
         };
 
-        let lurker = if let Some(tags) = self.tags.get(&to) {
-            tags.tags.contains(&EntityTag::Lurker)
-        } else {
-            false
-        };
+        let lurker = to_unit.tags.contains(&UnitTag::Lurker);
 
         if !self.map.check_line_of_sight(from_unit.coord, to_unit.coord) {
             return false;
