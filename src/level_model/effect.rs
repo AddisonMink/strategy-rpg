@@ -1,4 +1,4 @@
-use super::entity::Entity;
+use super::unit::UnitId;
 use crate::{
     engine::*,
     level_model::{Animation, ItemId},
@@ -9,40 +9,40 @@ pub enum Effect {
     UpdateVisionGrid,
     UpdateAllNpcVision,
     UpdateAllNpcVisionOfPlayer {
-        player: Entity,
+        player: UnitId,
     },
     UpdateNpcVisionOfAllPlayers {
-        npc: Entity,
+        npc: UnitId,
     },
     Move {
-        entity: Entity,
+        entity: UnitId,
         coord: Coord,
     },
     Sleep {
         duration: f32,
     },
     Damage {
-        entity: Entity,
+        entity: UnitId,
         min: u16,
         max: u16,
     },
     Death {
-        entity: Entity,
+        entity: UnitId,
     },
     Animation {
         animation: Animation,
     },
     UseItem {
-        entity: Entity,
+        entity: UnitId,
         item: ItemId,
         amount: u16,
     },
     BreakItem {
-        entity: Entity,
+        entity: UnitId,
         item: ItemId,
     },
     AddLightToEntity {
-        entity: Entity,
+        entity: UnitId,
         color: Color,
         radius: u16,
     },

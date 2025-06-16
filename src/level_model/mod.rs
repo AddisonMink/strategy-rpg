@@ -1,13 +1,15 @@
 mod action;
 mod animation;
 mod effect;
-mod entity;
 mod goal;
 mod item;
 mod level_state;
+mod light;
 mod light_grid;
 mod map;
 mod player_vision;
+mod point_light;
+mod unit;
 
 use crate::engine::*;
 use std::collections::{HashMap, VecDeque};
@@ -15,13 +17,15 @@ use std::collections::{HashMap, VecDeque};
 pub use action::*;
 pub use animation::*;
 pub use effect::*;
-pub use entity::*;
 pub use goal::*;
 pub use item::*;
 pub use level_state::*;
+pub use light::*;
 pub use light_grid::*;
 pub use map::*;
 pub use player_vision::*;
+pub use point_light::*;
+pub use unit::*;
 
 pub struct Level {
     // Resources
@@ -29,13 +33,14 @@ pub struct Level {
     pub light_grid: LightGrid,
     pub player_vision: PlayerVision,
     // Entities
-    pub tags: HashMap<Entity, Tags>,
-    pub lights: HashMap<Entity, PointLight>,
-    pub units: HashMap<Entity, Unit>,
-    pub next_id: Entity,
+    pub tags: HashMap<UnitId, Tags>,
+    pub point_lights: HashMap<PointLightId, PointLight>,
+    pub next_point_light_id: PointLightId,
+    pub units: HashMap<UnitId, Unit>,
+    pub next_unit_id: UnitId,
     // State
     pub state: LevelState,
-    pub turn_queue: VecDeque<Entity>,
+    pub turn_queue: VecDeque<UnitId>,
     pub effect_queue: VecDeque<Effect>,
     pub sleep_timer: Option<Timer>,
     pub animation_queue: VecDeque<Animation>,
@@ -49,9 +54,10 @@ impl Level {
             light_grid: LightGrid::empty(),
             player_vision: PlayerVision::empty(),
             tags: HashMap::new(),
-            lights: HashMap::new(),
+            point_lights: HashMap::new(),
+            next_point_light_id: PointLightId(0),
             units: HashMap::new(),
-            next_id: Entity(0),
+            next_unit_id: UnitId(0),
             state: LevelState::Starting,
             turn_queue: VecDeque::new(),
             effect_queue: VecDeque::new(),
@@ -61,9 +67,8 @@ impl Level {
         }
     }
 
-    pub fn delete(&mut self, entity: Entity) {
+    pub fn delete_unit(&mut self, entity: UnitId) {
         self.tags.remove(&entity);
-        self.lights.remove(&entity);
         self.units.remove(&entity);
         self.turn_queue.retain(|id| *id != entity);
         self.effect_queue.retain(|effect| match effect {
@@ -73,7 +78,10 @@ impl Level {
     }
 
     pub fn lights_iter(&self) -> impl Iterator<Item = (Coord, Light)> {
-        let point_lights = self.lights.values().map(|l| (l.coord, l.light.clone()));
+        let point_lights = self
+            .point_lights
+            .values()
+            .map(|l| (l.coord, l.light.clone()));
 
         let unit_lights = self
             .units
@@ -92,7 +100,7 @@ impl Level {
         self.units.values().find(|unit| unit.coord == coord)
     }
 
-    pub fn unit_can_see_tile(&self, unit_id: Entity, coord: Coord) -> bool {
+    pub fn unit_can_see_tile(&self, unit_id: UnitId, coord: Coord) -> bool {
         let Some(unit) = self.units.get(&unit_id) else {
             return false;
         };
@@ -106,7 +114,7 @@ impl Level {
         distance <= unit.vision || distance_from_light <= unit.vision
     }
 
-    pub fn unit_can_see_unit(&self, from: Entity, to: Entity) -> bool {
+    pub fn unit_can_see_unit(&self, from: UnitId, to: UnitId) -> bool {
         let Some(from_unit) = self.units.get(&from) else {
             return false;
         };

@@ -37,14 +37,14 @@ pub fn player_actions(level: &Level, origin: Coord) -> Vec<(ItemAction, bool)> {
     actions
 }
 
-pub fn has_valid_targets(level: &Level, entity: Entity, origin: Coord, action: &Action) -> bool {
+pub fn has_valid_targets(level: &Level, entity: UnitId, origin: Coord, action: &Action) -> bool {
     let target_coords = find_target_coords(level, entity, origin, action);
     !target_coords.is_empty()
 }
 
 pub fn find_target_coords(
     level: &Level,
-    entity: Entity,
+    entity: UnitId,
     origin: Coord,
     action: &Action,
 ) -> HashSet<Coord> {
@@ -61,11 +61,11 @@ pub fn find_target_coords(
 
 pub fn single_unit_range_targets(
     level: &Level,
-    entity: Entity,
+    entity: UnitId,
     origin: Coord,
     min_range: u16,
     max_range: u16,
-) -> HashSet<Entity> {
+) -> HashSet<UnitId> {
     let mut coords = HashSet::new();
     for dy in origin.y.saturating_sub(max_range)..=(origin.y + max_range) {
         for dx in origin.x.saturating_sub(max_range)..=(origin.x + max_range) {
@@ -89,15 +89,15 @@ pub fn single_unit_range_targets(
     coords
 }
 
-pub fn compile_self_action(level: &Level, action: &ItemAction, entity: Entity) -> VecDeque<Effect> {
+pub fn compile_self_action(level: &Level, action: &ItemAction, entity: UnitId) -> VecDeque<Effect> {
     compile_single_unit_action(level, action, entity, entity)
 }
 
 pub fn compile_single_unit_action(
     level: &Level,
     action: &ItemAction,
-    actor: Entity,
-    target: Entity,
+    actor: UnitId,
+    target: UnitId,
 ) -> VecDeque<Effect> {
     let mut effect_queue = VecDeque::new();
 

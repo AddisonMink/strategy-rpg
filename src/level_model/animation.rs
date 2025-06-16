@@ -1,4 +1,4 @@
-use crate::{engine::*, level_model::Entity};
+use crate::{engine::*, level_model::UnitId};
 
 const ATTACK_DURATION: f32 = 0.1;
 const DEATH_DURATION: f32 = 0.5;
@@ -27,7 +27,7 @@ pub enum AnimationKind {
 
 #[derive(Debug, Clone)]
 pub struct EntityAnimation {
-    pub entity: Entity,
+    pub entity: UnitId,
     pub kind: EntityAnimationKind,
 }
 
@@ -52,7 +52,7 @@ impl Animation {
         }
     }
 
-    pub fn attack(entity: Entity, direction: Direction) -> Self {
+    pub fn attack(entity: UnitId, direction: Direction) -> Self {
         Animation {
             timer: Timer::new(ATTACK_DURATION),
             kind: AnimationKind::Entity(EntityAnimation {
@@ -62,7 +62,7 @@ impl Animation {
         }
     }
 
-    pub fn death(entity: Entity) -> Self {
+    pub fn death(entity: UnitId) -> Self {
         Animation {
             timer: Timer::new(DEATH_DURATION),
             kind: AnimationKind::Entity(EntityAnimation {
@@ -72,7 +72,7 @@ impl Animation {
         }
     }
 
-    pub fn animating_entity(&self) -> Option<Entity> {
+    pub fn animating_entity(&self) -> Option<UnitId> {
         if let AnimationKind::Entity(EntityAnimation { entity, .. }) = &self.kind {
             Some(*entity)
         } else {

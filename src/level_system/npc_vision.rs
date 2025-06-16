@@ -25,7 +25,7 @@ pub fn update_all_npc_vision(level: &mut Level) {
     }
 }
 
-pub fn update_all_npc_vision_of_player(level: &mut Level, player: Entity) {
+pub fn update_all_npc_vision_of_player(level: &mut Level, player: UnitId) {
     let npcs = level
         .units
         .iter()
@@ -38,7 +38,7 @@ pub fn update_all_npc_vision_of_player(level: &mut Level, player: Entity) {
     }
 }
 
-pub fn update_npc_vision_of_all_players(level: &mut Level, npc: Entity) {
+pub fn update_npc_vision_of_all_players(level: &mut Level, npc: UnitId) {
     let players = level
         .units
         .iter()
@@ -51,7 +51,7 @@ pub fn update_npc_vision_of_all_players(level: &mut Level, npc: Entity) {
     }
 }
 
-fn update_npc_vision_of_player(level: &mut Level, npc_id: Entity, player_id: Entity) -> Option<()> {
+fn update_npc_vision_of_player(level: &mut Level, npc_id: UnitId, player_id: UnitId) -> Option<()> {
     let visible = level.unit_can_see_unit(npc_id, player_id);
     let player_coord = level.units.get(&player_id)?.coord;
     let coord = level.units.get(&npc_id)?.coord;

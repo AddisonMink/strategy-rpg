@@ -1,12 +1,12 @@
 use std::collections::HashSet;
 
-use super::entity::Entity;
 use super::map::Map;
+use super::unit::UnitId;
 use crate::engine::*;
 
 pub struct PlayerVision {
     pub tiles_visible: Vec<bool>,
-    pub units_visible: HashSet<Entity>,
+    pub units_visible: HashSet<UnitId>,
 }
 
 impl PlayerVision {
@@ -25,7 +25,7 @@ impl PlayerVision {
         }
     }
 
-    pub fn entity_visible(&self, entity: Entity) -> bool {
+    pub fn entity_visible(&self, entity: UnitId) -> bool {
         self.units_visible.contains(&entity)
     }
 }

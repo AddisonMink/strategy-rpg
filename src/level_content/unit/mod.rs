@@ -11,8 +11,8 @@ pub use goon::add_goon;
 pub use shadow::add_shadow;
 
 pub fn add_hero(level: &mut Level, coord: Coord) {
-    let entity = level.next_id;
-    level.next_id.0 += 1;
+    let entity = level.next_unit_id;
+    level.next_unit_id.0 += 1;
     level.turn_queue.push_back(entity);
 
     level.units.insert(

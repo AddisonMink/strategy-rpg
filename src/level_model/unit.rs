@@ -1,27 +1,22 @@
 use super::Effect;
 use super::Level;
 use super::item::*;
+use super::light::*;
 use crate::engine::*;
 use std::collections::HashMap;
 use std::collections::{HashSet, VecDeque};
 
-#[derive(Debug, Clone, Copy)]
-pub struct Light {
-    pub radius: u16,
-    pub color: Color,
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Entity(pub u16);
+pub struct UnitId(pub u16);
 
 #[derive(Debug, Clone)]
 pub struct Tags {
-    pub entity: Entity,
+    pub entity: UnitId,
     pub tags: HashSet<EntityTag>,
 }
 
 impl Tags {
-    pub fn new(entity: Entity, tags: &ShortList<EntityTag>) -> Self {
+    pub fn new(entity: UnitId, tags: &ShortList<EntityTag>) -> Self {
         Self {
             entity,
             tags: tags.as_slice().iter().cloned().collect(),
@@ -37,7 +32,7 @@ pub enum EntityTag {
 #[derive(Debug, Clone)]
 pub struct Unit {
     // Identifiers
-    pub entity: Entity,
+    pub entity: UnitId,
     pub name: ShortString,
     pub glyph: Glyph,
     pub side: Side,
@@ -58,7 +53,7 @@ pub struct Unit {
 
 impl Unit {
     pub fn new(
-        entity: Entity,
+        entity: UnitId,
         name: ShortString,
         glyph: Glyph,
         side: Side,
@@ -96,27 +91,10 @@ pub enum Side {
     NPC,
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct PointLight {
-    pub entity: Entity,
-    pub coord: Coord,
-    pub light: Light,
-}
-
-impl PointLight {
-    pub fn new(entity: Entity, coord: Coord, light: Light) -> Self {
-        Self {
-            entity,
-            coord,
-            light,
-        }
-    }
-}
-
 #[derive(Debug, Clone, Default)]
 pub struct Memory {
-    pub visible_players: HashSet<Entity>,
-    pub last_seen_player: Option<(Entity, Coord)>,
+    pub visible_players: HashSet<UnitId>,
+    pub last_seen_player: Option<(UnitId, Coord)>,
 }
 
 #[derive(Debug, Clone)]

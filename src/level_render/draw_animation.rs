@@ -29,7 +29,7 @@ pub fn draw_animation(level: &Level) {
     }
 }
 
-fn draw_entity_animation(level: &Level, entity: Entity, kind: EntityAnimationKind, progress: f32) {
+fn draw_entity_animation(level: &Level, entity: UnitId, kind: EntityAnimationKind, progress: f32) {
     if !level.player_vision.entity_visible(entity) {
         return;
     }

@@ -8,9 +8,9 @@ const MOVEMENT: u16 = 3;
 const HP_MAX: u16 = 3;
 const TAGS: ShortList<EntityTag> = ShortList::new(&[EntityTag::Lurker]);
 
-pub fn add_shadow(level: &mut Level, coord: Coord) -> Entity {
-    let entity = level.next_id;
-    level.next_id.0 += 1;
+pub fn add_shadow(level: &mut Level, coord: Coord) -> UnitId {
+    let entity = level.next_unit_id;
+    level.next_unit_id.0 += 1;
     level.turn_queue.push_back(entity);
 
     let behavior = Behavior {

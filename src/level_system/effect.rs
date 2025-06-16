@@ -24,7 +24,9 @@ pub fn process_effects(level: &mut Level) {
             Effect::Sleep { duration } => level.sleep_timer = Some(Timer::new(duration)),
             Effect::Damage { entity, min, max } => execute_damage(level, entity, min, max),
             Effect::Animation { animation } => level.animation_queue.push_back(animation),
-            Effect::Death { entity } => execute_death(level, entity),
+            Effect::Death { entity } => {
+                execute_death(level, entity);
+            }
             Effect::UseItem {
                 entity,
                 item,
@@ -49,29 +51,29 @@ pub fn process_effects(level: &mut Level) {
     }
 }
 
-fn execute_move(level: &mut Level, entity: Entity, coord: Coord) -> Option<()> {
-    let unit = level.units.get_mut(&entity)?;
+fn execute_move(level: &mut Level, id: UnitId, coord: Coord) -> Option<()> {
+    let unit = level.units.get_mut(&id)?;
     unit.coord = coord;
 
-    if level.lights.contains_key(&entity) {
+    if unit.light.is_some() {
         level.effect_queue.push_front(Effect::UpdateLightGrid);
     }
 
     if unit.side == Side::Player {
         level
             .effect_queue
-            .push_front(Effect::UpdateAllNpcVisionOfPlayer { player: entity });
+            .push_front(Effect::UpdateAllNpcVisionOfPlayer { player: id });
     } else {
         level
             .effect_queue
-            .push_front(Effect::UpdateNpcVisionOfAllPlayers { npc: entity });
+            .push_front(Effect::UpdateNpcVisionOfAllPlayers { npc: id });
     }
 
     level.effect_queue.push_front(Effect::UpdateVisionGrid);
     Some(())
 }
 
-fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
+fn execute_damage(level: &mut Level, entity: UnitId, min: u16, max: u16) {
     let Some(unit) = level.units.get_mut(&entity) else {
         return;
     };
@@ -93,15 +95,16 @@ fn execute_damage(level: &mut Level, entity: Entity, min: u16, max: u16) {
     }
 }
 
-fn execute_death(level: &mut Level, entity: Entity) {
-    let has_light = level.lights.contains_key(&entity);
-    level.delete(entity);
+fn execute_death(level: &mut Level, id: UnitId) -> Option<()> {
+    let has_light = level.units.get(&id)?.light.is_some();
+    level.delete_unit(id);
     if has_light {
         level.effect_queue.push_front(Effect::UpdateLightGrid);
     }
+    Some(())
 }
 
-fn execute_use_item(level: &mut Level, entity: Entity, item: ItemId, amount: u16) -> Option<()> {
+fn execute_use_item(level: &mut Level, entity: UnitId, item: ItemId, amount: u16) -> Option<()> {
     let unit = level.units.get_mut(&entity)?;
     let item = unit.items.get_mut(&item)?;
 
@@ -115,7 +118,7 @@ fn execute_use_item(level: &mut Level, entity: Entity, item: ItemId, amount: u16
     Some(())
 }
 
-fn execute_break_item(level: &mut Level, entity: Entity, item: ItemId) -> Option<()> {
+fn execute_break_item(level: &mut Level, entity: UnitId, item: ItemId) -> Option<()> {
     let unit = level.units.get_mut(&entity)?;
     let item_name = unit.items.get(&item)?.name.clone();
 
@@ -129,7 +132,7 @@ fn execute_break_item(level: &mut Level, entity: Entity, item: ItemId) -> Option
 
 fn execute_add_light_to_entity(
     level: &mut Level,
-    entity: Entity,
+    entity: UnitId,
     color: Color,
     radius: u16,
 ) -> Option<()> {

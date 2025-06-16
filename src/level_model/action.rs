@@ -1,4 +1,4 @@
-use crate::{engine::*, level_model::Entity};
+use crate::{engine::*, level_model::UnitId};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Action {

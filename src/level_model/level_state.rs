@@ -1,5 +1,5 @@
 use super::action::Action;
-use super::entity::Entity;
+use super::unit::UnitId;
 use crate::{engine::*, level_model::ItemId};
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -20,7 +20,7 @@ pub enum LevelState {
     },
     SelectingSingleUnitTarget {
         action: ItemAction,
-        targets: HashMap<Coord, Entity>,
+        targets: HashMap<Coord, UnitId>,
         selected_target: Option<Coord>,
     },
     ResolvingAction,
