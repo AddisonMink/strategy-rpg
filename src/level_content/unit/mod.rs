@@ -30,7 +30,7 @@ pub fn add_hero(level: &mut Level, coord: Coord) {
         ),
     );
 
-    level
-        .inventories
-        .insert(entity, Inventory::new(entity, [item::SWORD, item::TORCH]));
+    let hero = level.units.get_mut(&entity).unwrap();
+    hero.add_item(item::SWORD);
+    hero.add_item(item::TORCH);
 }

@@ -14,11 +14,10 @@ pub fn valid_player_actions(level: &Level) -> Vec<ItemAction> {
 }
 
 pub fn player_actions(level: &Level, origin: Coord) -> Vec<(ItemAction, bool)> {
-    let entity = level.turn_queue.front().unwrap();
-    let inventory = level.inventories.get(entity).unwrap();
+    let unit = level.active_unit().unwrap();
     let mut actions = Vec::new();
 
-    for item in inventory.items.values() {
+    for item in unit.items.values() {
         for action in item.actions.as_slice() {
             if action.cost <= item.uses {
                 let item_action = ItemAction {
@@ -29,7 +28,7 @@ pub fn player_actions(level: &Level, origin: Coord) -> Vec<(ItemAction, bool)> {
                     uses: item.uses,
                     action: action.clone(),
                 };
-                let valid = has_valid_targets(level, *entity, origin, &item_action.action);
+                let valid = has_valid_targets(level, unit.entity, origin, &item_action.action);
                 actions.push((item_action, valid));
             }
         }

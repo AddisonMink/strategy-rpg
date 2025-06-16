@@ -32,7 +32,6 @@ pub struct Level {
     pub tags: HashMap<Entity, Tags>,
     pub lights: HashMap<Entity, PointLight>,
     pub units: HashMap<Entity, Unit>,
-    pub inventories: HashMap<Entity, Inventory>,
     pub next_id: Entity,
     // State
     pub state: LevelState,
@@ -52,7 +51,6 @@ impl Level {
             tags: HashMap::new(),
             lights: HashMap::new(),
             units: HashMap::new(),
-            inventories: HashMap::new(),
             next_id: Entity(0),
             state: LevelState::Starting,
             turn_queue: VecDeque::new(),

@@ -49,6 +49,8 @@ pub struct Unit {
     pub hp: u16,
     pub coord: Coord,
     pub light: Option<Light>,
+    // Player Fields
+    pub items: HashMap<ItemId, Item>,
     // NPC Fields
     pub memory: Memory,
     pub behavior: Behavior,
@@ -74,12 +76,17 @@ impl Unit {
             vision,
             movement,
             hp_max,
-            hp: hp_max, // Start with full HP,
+            hp: hp_max,
             coord,
-            light: None, // No light by default,
+            light: None,
+            items: HashMap::new(),
             memory: Memory::default(),
             behavior: behavior_opt.unwrap_or_default(),
         }
+    }
+
+    pub fn add_item(&mut self, item: Item) {
+        self.items.insert(item.id, item);
     }
 }
 
@@ -124,20 +131,5 @@ impl Default for Behavior {
             select_move: |_| None,
             select_action: |_| None,
         }
-    }
-}
-
-pub struct Inventory {
-    pub entity: Entity,
-    pub items: HashMap<ItemId, Item>,
-}
-
-impl Inventory {
-    pub fn new<I>(entity: Entity, items: I) -> Self
-    where
-        I: IntoIterator<Item = Item>,
-    {
-        let items = items.into_iter().map(|item| (item.id, item)).collect();
-        Self { entity, items }
     }
 }

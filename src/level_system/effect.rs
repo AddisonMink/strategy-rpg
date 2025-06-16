@@ -29,8 +29,12 @@ pub fn process_effects(level: &mut Level) {
                 entity,
                 item,
                 amount,
-            } => execute_use_item(level, entity, item, amount),
-            Effect::BreakItem { entity, item } => execute_break_item(level, entity, item),
+            } => {
+                execute_use_item(level, entity, item, amount);
+            }
+            Effect::BreakItem { entity, item } => {
+                execute_break_item(level, entity, item);
+            }
             Effect::AddLightToEntity {
                 entity,
                 color,
@@ -97,40 +101,30 @@ fn execute_death(level: &mut Level, entity: Entity) {
     }
 }
 
-fn execute_use_item(level: &mut Level, entity: Entity, item: ItemId, amount: u16) {
-    let Some(inventory) = level.inventories.get_mut(&entity) else {
-        return;
-    };
+fn execute_use_item(level: &mut Level, entity: Entity, item: ItemId, amount: u16) -> Option<()> {
+    let unit = level.units.get_mut(&entity)?;
+    let item = unit.items.get_mut(&item)?;
 
-    if let Some(item) = inventory.items.get_mut(&item) {
-        item.uses = item.uses.saturating_sub(amount);
-        if item.uses == 0 {
-            level.effect_queue.push_front(Effect::BreakItem {
-                entity,
-                item: item.id,
-            });
-        }
+    item.uses = item.uses.saturating_sub(amount);
+    if item.uses == 0 {
+        level.effect_queue.push_front(Effect::BreakItem {
+            entity,
+            item: item.id,
+        });
     }
+    Some(())
 }
 
-fn execute_break_item(level: &mut Level, entity: Entity, item: ItemId) {
-    let Some(unit) = level.units.get(&entity) else {
-        return;
-    };
+fn execute_break_item(level: &mut Level, entity: Entity, item: ItemId) -> Option<()> {
+    let unit = level.units.get_mut(&entity)?;
+    let item_name = unit.items.get(&item)?.name.clone();
 
-    let Some(inventory) = level.inventories.get_mut(&entity) else {
-        return;
-    };
-
-    let Some(item_name) = inventory.items.get(&item).map(|i| i.name.clone()) else {
-        return;
-    };
-
-    inventory.items.remove(&item);
+    unit.items.remove(&item);
     level.animation_queue.push_back(Animation::panel_text(
         unit.coord,
         format!("{} broke!", item_name.as_str()),
     ));
+    Some(())
 }
 
 fn execute_add_light_to_entity(
