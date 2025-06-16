@@ -25,6 +25,7 @@ pub enum LevelState {
     },
     ResolvingAction,
     EndingTurn,
+    Success,
 }
 
 #[derive(Debug, Clone, Copy)]

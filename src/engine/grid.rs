@@ -9,6 +9,9 @@ pub const TILE_SIZE: f32 = 32.0;
 const GRID_FRAME_ORIGIN: Vec2 = Vec2::new(10.0, 10.0);
 const GRID_ORIGIN: Vec2 = Vec2::new(20.0, 20.0);
 const TEXT_SIZE: u16 = 32;
+const BIG_TEXT_SIZE: u16 = 48;
+const WIDTH_PX: f32 = WIDTH as f32 * TILE_SIZE + 40.0;
+const HEIGHT_PX: f32 = HEIGHT as f32 * TILE_SIZE + 40.0;
 
 pub fn mouse_coord() -> Option<Coord> {
     let (x, y) = mouse_position();
@@ -80,6 +83,24 @@ pub fn draw_panel(panel: &Panel, coord: Coord) {
     let x = x + (TILE_SIZE - width) / 2.0;
     let y = y + (TILE_SIZE - height) / 2.0;
     panel.draw(x, y);
+}
+
+pub fn draw_big_message(message: String, color: Color) {
+    let size = measure_text(&message, asset::UI_FONT.get(), BIG_TEXT_SIZE, 1.0);
+    let x = (WIDTH_PX - size.width) / 2.0;
+    let y = (HEIGHT_PX - size.height) / 2.0 + size.offset_y;
+
+    draw_text_ex(
+        &message,
+        x,
+        y,
+        TextParams {
+            font: asset::UI_FONT.get(),
+            font_size: BIG_TEXT_SIZE,
+            color,
+            ..Default::default()
+        },
+    );
 }
 
 pub fn in_bounds(coord: Coord) -> bool {

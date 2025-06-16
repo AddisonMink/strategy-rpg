@@ -24,5 +24,6 @@ pub fn process_state(level: &mut Level) {
         LevelState::SelectingSingleUnitTarget { .. } => selecting_single_unit_target::update(level),
         LevelState::ResolvingAction => ending_turn::transition(level),
         LevelState::EndingTurn => ending_turn::update(level),
+        LevelState::Success => {}
     }
 }

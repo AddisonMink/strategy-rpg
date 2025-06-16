@@ -35,6 +35,7 @@ pub fn update_level(level: &mut Level, delta_time: f32) -> UpdateResult {
         LevelState::SelectingMove { .. } => UpdateResult::Stop,
         LevelState::SelectingAction { .. } => UpdateResult::Stop,
         LevelState::SelectingSingleUnitTarget { .. } => UpdateResult::Stop,
+        LevelState::Success => UpdateResult::Stop,
         _ => UpdateResult::Continue,
     }
 }

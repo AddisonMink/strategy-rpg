@@ -1,3 +1,5 @@
+use macroquad::prelude::trace;
+
 use super::INFO_PANEL_ORIGIN;
 use super::INFO_PANEL_WIDTH;
 use crate::engine::*;
@@ -68,6 +70,9 @@ pub fn draw_state(level: &Level) {
 
             draw_description_panels(level, y);
         }
+        LevelState::Success => {
+            grid::draw_big_message("CLEAR!".to_string(), WHITE);
+        }
         _ => draw_description_panels(level, INFO_PANEL_ORIGIN.1),
     }
 }
@@ -115,6 +120,10 @@ fn tile_description_panel(tile: &Tile) -> Panel {
 
     if !tile.transparent {
         panel = panel.line("OPAQUE", WHITE);
+    }
+
+    if tile.goal {
+        panel = panel.line("GOAL", WHITE);
     }
 
     panel.build()

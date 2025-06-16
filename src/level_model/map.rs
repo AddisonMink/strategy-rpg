@@ -7,6 +7,7 @@ pub struct Tile {
     pub bg_color: Option<Color>,
     pub walkable: bool,
     pub transparent: bool,
+    pub goal: bool,
 }
 
 impl Tile {
@@ -16,6 +17,7 @@ impl Tile {
         bg_color: None,
         walkable: true,
         transparent: true,
+        goal: false,
     };
 
     pub const WALL: Self = Self {
@@ -24,6 +26,16 @@ impl Tile {
         bg_color: Some(DARKGRAY),
         walkable: false,
         transparent: false,
+        goal: false,
+    };
+
+    pub const GOAL: Self = Self {
+        name: ShortString::new("Goal"),
+        glyph: Glyph::new('<', WHITE),
+        bg_color: None,
+        walkable: true,
+        transparent: true,
+        goal: true,
     };
 }
 
@@ -40,7 +52,7 @@ impl Map {
         "#........#",
         "#..####..#",
         "#..#..#..#",
-        "#..#..#..#",
+        "#..#..#..<",
         "#..####..#",
         "#........#",
         "#..####..#",
@@ -56,6 +68,7 @@ impl Map {
                 let tile = match ch {
                     '#' => Tile::WALL,
                     '.' => Tile::FLOOR,
+                    '<' => Tile::GOAL,
                     _ => Tile::FLOOR, // fallback for unknown chars
                 };
                 tiles.push(tile);

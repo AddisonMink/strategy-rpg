@@ -2,6 +2,7 @@ mod action;
 mod animation;
 mod effect;
 mod entity;
+mod goal;
 mod item;
 mod level_state;
 mod light_grid;
@@ -11,11 +12,12 @@ mod player_vision;
 use crate::engine::*;
 use std::collections::{HashMap, VecDeque};
 
-pub use item::*;
 pub use action::*;
 pub use animation::*;
 pub use effect::*;
 pub use entity::*;
+pub use goal::*;
+pub use item::*;
 pub use level_state::*;
 pub use light_grid::*;
 use macroquad::prelude::trace;
@@ -42,6 +44,7 @@ pub struct Level {
     pub effect_queue: VecDeque<Effect>,
     pub sleep_timer: Option<Timer>,
     pub animation_queue: VecDeque<Animation>,
+    pub goal: Goal,
 }
 
 impl Level {
@@ -63,6 +66,7 @@ impl Level {
             effect_queue: VecDeque::new(),
             sleep_timer: None,
             animation_queue: VecDeque::new(),
+            goal: Goal::ReachGoalTile,
         }
     }
 
