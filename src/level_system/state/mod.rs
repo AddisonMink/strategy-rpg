@@ -12,12 +12,17 @@ use crate::level_model::*;
 
 pub fn process_state(level: &mut Level) {
     match level.state {
-        LevelState::Starting => {
+        LevelState::Initializing => {
             level.effect_queue.push_back(Effect::UpdateLightGrid);
             level.effect_queue.push_back(Effect::UpdateVisionGrid);
             level.effect_queue.push_back(Effect::UpdateAllNpcVision);
-            selecting_move::transition(level);
+            level.state = LevelState::Starting;
+            
+            level
+                .effect_queue
+                .push_back(Effect::Sleep { duration: 1.0 });
         }
+        LevelState::Starting => selecting_move::transition(level),
         LevelState::SelectingMove { .. } => selecting_move::update(level),
         LevelState::ResolvingMove => selecting_action::transition(level),
         LevelState::SelectingAction { .. } => selecting_action::update(level),

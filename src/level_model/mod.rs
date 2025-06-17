@@ -56,7 +56,7 @@ impl Level {
             next_point_light_id: PointLightId(0),
             units: HashMap::new(),
             next_unit_id: UnitId(0),
-            state: LevelState::Starting,
+            state: LevelState::Initializing,
             turn_queue: VecDeque::new(),
             effect_queue: VecDeque::new(),
             sleep_timer: None,

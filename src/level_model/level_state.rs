@@ -5,6 +5,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Debug, Clone)]
 pub enum LevelState {
+    Initializing,
     Starting,
     SelectingMove {
         valid_moves: HashSet<Coord>,

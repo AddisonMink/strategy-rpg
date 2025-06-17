@@ -11,7 +11,7 @@ pub const INFO_PANEL_WIDTH: f32 = 200.0;
 pub const INFO_PANEL_ORIGIN: (f32, f32) = (360.0, 10.0);
 
 pub fn render_level(level: &Level) {
-    draw_map(level);
+    draw_map(level, "LVL 0");
     draw_state(level);
     draw_animation(level);
 }

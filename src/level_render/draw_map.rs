@@ -1,8 +1,8 @@
 use crate::engine::*;
 use crate::level_model::*;
 
-pub fn draw_map(level: &Level) {
-    grid::draw_frame("MAP");
+pub fn draw_map(level: &Level, title: &str) {
+    grid::draw_frame(title);
     for y in 0..Map::HEIGHT {
         for x in 0..Map::WIDTH {
             let coord = Coord::new(x, y);

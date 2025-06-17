@@ -9,6 +9,9 @@ const PADDING: f32 = 10.0;
 
 pub fn draw_state(level: &Level) {
     match &level.state {
+        LevelState::Starting => {
+            grid::draw_big_message("ESCAPE!".to_string(), WHITE);
+        }
         LevelState::SelectingMove {
             valid_moves,
             path,
