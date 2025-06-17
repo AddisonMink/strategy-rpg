@@ -10,10 +10,14 @@ use level_model::*;
 use level_render::*;
 use level_system::*;
 use macroquad::prelude::*;
+use macroquad::rand::srand;
 
 #[macroquad::main("Strategy RPG")]
 async fn main() {
     asset::load_assets().await;
+
+    let now = (macroquad::miniquad::date::now() * 1000.0) as u64;
+    srand(now);
 
     let mut level = Level::empty();
     add_hero(&mut level, Coord::new(1, 1));
