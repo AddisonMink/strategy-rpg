@@ -9,6 +9,7 @@ pub const TILE_SIZE: f32 = 32.0;
 const GRID_FRAME_ORIGIN: Vec2 = Vec2::new(10.0, 10.0);
 const GRID_ORIGIN: Vec2 = Vec2::new(20.0, 20.0);
 const TEXT_SIZE: u16 = 32;
+const SMALL_TEXT_SIZE: u16 = 16;
 const BIG_TEXT_SIZE: u16 = 32;
 const WIDTH_PX: f32 = WIDTH as f32 * TILE_SIZE;
 const HEIGHT_PX: f32 = HEIGHT as f32 * TILE_SIZE;
@@ -85,8 +86,8 @@ pub fn draw_panel(panel: &Panel, coord: Coord) {
     panel.draw(x, y);
 }
 
-pub fn draw_big_message(message: String, color: Color) {
-    let size = measure_text(&message, asset::UI_FONT.get(), BIG_TEXT_SIZE, 1.0);
+pub fn draw_big_message(message: &str, color: Color) {
+    let size = measure_text(message, asset::UI_FONT.get(), BIG_TEXT_SIZE, 1.0);
     let x = (WIDTH_PX - size.width) / 2.0 + 20.0;
     let y = (HEIGHT_PX - size.height) / 2.0 + size.offset_y + BIG_TEXT_SIZE as f32 / 2.0;
 
@@ -97,6 +98,32 @@ pub fn draw_big_message(message: String, color: Color) {
         TextParams {
             font: asset::UI_FONT.get(),
             font_size: BIG_TEXT_SIZE,
+            color,
+            ..Default::default()
+        },
+    );
+}
+
+pub fn draw_sub_message(message: &str, color: Color) {
+    let big_message_size = measure_text(" ", asset::UI_FONT.get(), BIG_TEXT_SIZE, 1.0);
+    let size = measure_text(&message, asset::UI_FONT.get(), SMALL_TEXT_SIZE, 1.0);
+    let x = (WIDTH_PX - size.width) / 2.0 + 20.0;
+
+    let y = (HEIGHT_PX - big_message_size.height) / 2.0
+        + big_message_size.offset_y
+        + BIG_TEXT_SIZE as f32 / 2.0
+        + big_message_size.height
+        + SMALL_TEXT_SIZE as f32 / 2.0
+        + 10.0
+        + size.offset_y;
+
+    draw_text_ex(
+        &message,
+        x,
+        y,
+        TextParams {
+            font: asset::UI_FONT.get(),
+            font_size: SMALL_TEXT_SIZE,
             color,
             ..Default::default()
         },

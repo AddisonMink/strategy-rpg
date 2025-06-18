@@ -17,7 +17,7 @@ pub fn process_state(level: &mut Level) {
             level.effect_queue.push_back(Effect::UpdateVisionGrid);
             level.effect_queue.push_back(Effect::UpdateAllNpcVision);
             level.state = LevelState::Starting;
-            
+
             level
                 .effect_queue
                 .push_back(Effect::Sleep { duration: 1.0 });
@@ -30,5 +30,6 @@ pub fn process_state(level: &mut Level) {
         LevelState::ResolvingAction => ending_turn::transition(level),
         LevelState::EndingTurn => ending_turn::update(level),
         LevelState::Success => {}
+        LevelState::Failure => {}
     }
 }

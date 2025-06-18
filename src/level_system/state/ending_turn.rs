@@ -9,11 +9,22 @@ pub fn update(level: &mut Level) {
         level.turn_queue.push_back(entity);
     }
 
-    if check_goal(level) {
+    if check_game_over(level) {
+        level.state = LevelState::Failure
+    } else if check_goal(level) {
         level.state = LevelState::Success;
     } else {
         selecting_move::transition(level);
     }
+}
+
+pub fn check_game_over(level: &Level) -> bool {
+    level
+        .units
+        .values()
+        .filter(|unit| unit.side == Side::Player)
+        .next()
+        .is_none()
 }
 
 pub fn check_goal(level: &Level) -> bool {

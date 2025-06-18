@@ -12,6 +12,7 @@ use effect::process_effects;
 pub enum UpdateResult {
     Continue,
     Stop,
+    LevelComplete,
 }
 
 pub fn update_level(level: &mut Level, delta_time: f32) -> UpdateResult {
@@ -35,7 +36,8 @@ pub fn update_level(level: &mut Level, delta_time: f32) -> UpdateResult {
         LevelState::SelectingMove { .. } => UpdateResult::Stop,
         LevelState::SelectingAction { .. } => UpdateResult::Stop,
         LevelState::SelectingSingleUnitTarget { .. } => UpdateResult::Stop,
-        LevelState::Success => UpdateResult::Stop,
+        LevelState::Success => UpdateResult::LevelComplete,
+        LevelState::Failure => UpdateResult::LevelComplete,
         _ => UpdateResult::Continue,
     }
 }

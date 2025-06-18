@@ -10,7 +10,7 @@ const PADDING: f32 = 10.0;
 pub fn draw_state(level: &Level) {
     match &level.state {
         LevelState::Starting => {
-            grid::draw_big_message("ESCAPE!".to_string(), WHITE);
+            grid::draw_big_message("ESCAPE!", WHITE);
         }
         LevelState::SelectingMove {
             valid_moves,
@@ -74,7 +74,10 @@ pub fn draw_state(level: &Level) {
             draw_description_panels(level, y);
         }
         LevelState::Success => {
-            grid::draw_big_message("CLEAR!".to_string(), WHITE);
+            grid::draw_big_message("CLEAR!", WHITE);
+        }
+        LevelState::Failure => {
+            grid::draw_big_message("FAILURE", WHITE);
         }
         _ => draw_description_panels(level, INFO_PANEL_ORIGIN.1),
     }

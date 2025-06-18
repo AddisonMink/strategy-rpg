@@ -1,14 +1,12 @@
 mod engine;
+mod game;
 mod level_content;
 mod level_model;
 mod level_render;
 mod level_system;
 
 use engine::*;
-use level_content::*;
-use level_model::*;
-use level_render::*;
-use level_system::*;
+use game::*;
 use macroquad::prelude::*;
 use macroquad::rand::srand;
 
@@ -19,17 +17,13 @@ async fn main() {
     let now = (macroquad::miniquad::date::now() * 1000.0) as u64;
     srand(now);
 
-    let mut level = Level::empty();
-    add_hero(&mut level, Coord::new(1, 1));
-    add_goon(&mut level, Coord::new(5, 1));
-    add_shadow(&mut level, Coord::new(8, 4));
-    add_point_light(&mut level, Coord::new(1, 1), 3, BLUE);
+    let mut game = Game::new();
 
     loop {
         let delta_time = get_frame_time();
-        while update_level(&mut level, delta_time) == UpdateResult::Continue {}
+        update_game(&mut game, delta_time);
         clear_background(BLACK);
-        render_level(&level);
+        render_game(&game);
         next_frame().await;
     }
 }
