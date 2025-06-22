@@ -2,6 +2,10 @@ use super::*;
 use crate::constants::*;
 use crate::engine_v2::*;
 
+pub fn coords_iter() -> impl Iterator<Item = Coord> {
+    (0..GRID_ROWS).flat_map(move |y| (0..GRID_COLUMNS).map(move |x| Coord::new(x, y)))
+}
+
 pub fn mouse_coord() -> Option<Coord> {
     let (x, y) = mouse_pos();
     let x = ((x - GRID_ORIGIN.0) / TILE_SIZE).floor() as u16;
@@ -30,8 +34,8 @@ pub fn draw_glyph(coord: Coord, glyph: Glyph) {
 
 pub fn draw_glyph_with_offset(coord: Coord, glyph: Glyph, offset: (f32, f32)) {
     let (cx, cy) = coord_to_pos(coord);
-    let x = cx + TILE_SIZE / 8.0 + offset.0;
-    let y = cy + TILE_SIZE - TILE_SIZE / 8.0 + offset.1;
+    let x = cx + offset.0 + TILE_SIZE / 8.0;
+    let y = cy + offset.1 + TILE_SIZE / 8.0;
     crate::engine_v2::draw_glyph(x, y, glyph.symbol, glyph.color);
 }
 

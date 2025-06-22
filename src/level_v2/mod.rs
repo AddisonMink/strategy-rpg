@@ -1,0 +1,40 @@
+mod draw;
+mod state;
+mod update;
+mod world;
+
+use crate::engine_v2::*;
+use crate::util::*;
+use state::*;
+use world::*;
+
+pub struct Level {
+    world: World,
+    state: State,
+}
+
+impl Level {
+    pub fn new() -> Self {
+        let hero_data = UnitData {
+            name: ShortString::new("Hero"),
+            glyph: Glyph::new('@', WHITE),
+        };
+
+        let mut world = World::new();
+        world.add_unit(hero_data, Coord::new(1, 1));
+        world.add_point_light(3, ORANGE, Coord::new(1, 1));
+
+        Self {
+            world,
+            state: State::Starting(Starting {}),
+        }
+    }
+
+    pub fn update(&mut self, delta_time: f32) {
+        update::update(&mut self.world, &mut self.state, delta_time);
+    }
+
+    pub fn draw(&self) {
+        draw::draw(&self.world, &self.state);
+    }
+}

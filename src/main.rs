@@ -6,6 +6,7 @@ mod level_content;
 mod level_model;
 mod level_render;
 mod level_system;
+mod level_v2;
 mod util;
 
 use engine::*;
@@ -20,14 +21,13 @@ async fn main() {
     let now = (macroquad::miniquad::date::now() * 1000.0) as u64;
     srand(now);
 
-    let mut game = Game::new();
+    let mut level = level_v2::Level::new();
 
     loop {
         let delta_time = get_frame_time();
-        //update_game(&mut game, delta_time);
+        level.update(delta_time);
         clear_background(BLACK);
-        //render_game(&game);
-        util::grid::draw_frame("Strategy RPG");
+        level.draw();
         next_frame().await;
     }
 }
