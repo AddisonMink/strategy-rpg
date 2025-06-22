@@ -6,9 +6,11 @@ pub mod direction;
 pub mod glyph;
 pub mod grid;
 pub mod input;
+pub mod nine_slice;
 pub mod panel;
 pub mod short_list;
 pub mod short_string;
+pub mod text;
 pub mod timer;
 
 pub use coord::Coord;

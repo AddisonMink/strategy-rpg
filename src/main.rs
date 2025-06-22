@@ -1,14 +1,18 @@
+mod constants;
 mod engine;
 mod game;
 mod level_content;
 mod level_model;
 mod level_render;
 mod level_system;
+mod ui;
+mod engine_v2;
 
 use engine::*;
 use game::*;
 use macroquad::prelude::*;
 use macroquad::rand::srand;
+use ui::*;
 
 #[macroquad::main("Strategy RPG")]
 async fn main() {
@@ -21,9 +25,17 @@ async fn main() {
 
     loop {
         let delta_time = get_frame_time();
-        update_game(&mut game, delta_time);
+        //update_game(&mut game, delta_time);
         clear_background(BLACK);
-        render_game(&game);
+        //render_game(&game);
+        ui::Panel::builder()
+            .title("Hello", WHITE)
+            .text("Line 1", WHITE)
+            .selectable_text("Line 2", WHITE)
+            .labeled_meter("HP", 3, 2, 5, RED)
+            .position(10.0, 10.0)
+            .build()
+            .draw();
         next_frame().await;
     }
 }
