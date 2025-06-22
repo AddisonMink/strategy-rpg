@@ -15,4 +15,5 @@ pub async fn load_assets() {
     let nineslice_texture: Texture2D = load_texture("assets/textures/nineslice.png").await.unwrap();
     nineslice_texture.set_filter(FilterMode::Nearest);
     NINESLICE_TEXTURE.set(nineslice_texture).unwrap();
+    trace!("Assets loaded successfully");
 }

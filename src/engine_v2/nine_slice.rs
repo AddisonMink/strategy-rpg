@@ -10,7 +10,10 @@ const NINE_SLICE_TILE_SIZE: f32 = 16.0 / 3.0;
 const SCALE: f32 = 1.0;
 
 pub fn draw_nine_slice(x: f32, y: f32, width: f32, height: f32) {
-    let texture = asset::NINESLICE_TEXTURE.get().unwrap();
+    let Some(texture) = asset::NINESLICE_TEXTURE.get() else {
+        return; // Texture not loaded, skip drawing
+    };
+
     let tile = NINE_SLICE_TILE_SIZE * SCALE;
     let center_w = width - tile * 2.0;
     let center_h = height - tile * 2.0;

@@ -62,6 +62,14 @@ impl Panel {
         PanelBuilder::new()
     }
 
+    pub fn get_width(&self) -> f32 {
+        self.width
+    }
+
+    pub fn get_height(&self) -> f32 {
+        self.height
+    }
+
     pub fn selected_index(&self) -> Option<usize> {
         let (mouse_x, mouse_y) = mouse_pos();
         if !self.in_bounds(mouse_x, mouse_y) {
