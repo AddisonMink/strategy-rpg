@@ -2,9 +2,6 @@ use crate::{engine::Panel, util::*};
 use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug, Clone)]
-pub struct Starting {}
-
-#[derive(Debug, Clone)]
 pub struct SelectingMove {
     pub valid_moves: HashSet<Coord>,
     pub path: Option<VecDeque<Coord>>,
@@ -14,6 +11,7 @@ pub struct SelectingMove {
 }
 
 pub enum State {
-    Starting(Starting),
+    Starting,
     SelectingMove(SelectingMove),
+    ResolvingMove,
 }

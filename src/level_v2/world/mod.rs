@@ -8,6 +8,7 @@ mod tile;
 mod unit;
 
 use crate::engine_v2::*;
+use crate::util::*;
 use std::collections::{HashMap, VecDeque};
 
 pub use effect::*;
@@ -34,6 +35,7 @@ pub struct World {
     point_lights: HashMap<PointLightId, PointLight>,
     next_point_light_id: u32,
     // State
+    pub sleep_timer: Option<Timer>,
     pub effects: VecDeque<Effect>,
 }
 
@@ -48,6 +50,7 @@ impl World {
             unit_queue: VecDeque::new(),
             point_lights: HashMap::new(),
             next_point_light_id: 0,
+            sleep_timer: None,
             effects: VecDeque::new(),
         }
     }
@@ -70,6 +73,10 @@ impl World {
 
     pub fn unit(&self, id: UnitId) -> Option<&Unit> {
         self.units.get(&id)
+    }
+
+    pub fn unit_mut(&mut self, id: UnitId) -> Option<&mut Unit> {
+        self.units.get_mut(&id)
     }
 
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {

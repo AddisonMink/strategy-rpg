@@ -29,7 +29,7 @@ impl Level {
 
         Self {
             world,
-            state: State::Starting(Starting {}),
+            state: State::Starting,
         }
     }
 

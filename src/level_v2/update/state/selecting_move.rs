@@ -4,6 +4,8 @@ use crate::engine::coord;
 use crate::engine::input::{cancel_pressed, mouse_clicked};
 use crate::util::*;
 
+const MOVE_DURATION: f32 = 0.25;
+
 pub fn transition(world: &mut World, state: &mut State) {
     let Some(unit) = world.active_unit() else {
         panic!("No active unit to select move for");
@@ -41,16 +43,39 @@ pub fn update(world: &mut World, state: &mut State) {
 
     let coord_opt = grid::mouse_coord().filter(|c| selecting_move.valid_moves.contains(c));
 
+    // If cancel button is clicked or cancel is pressed, cancel the move.
     if selecting_move.cancel_button.is_clicked() || cancel_pressed() {
-    } else if selecting_move.path.is_some() && mouse_clicked() {
-    } else if coord_opt.is_some() {
+        *state = State::ResolvingMove;
+    }
+    // If mouse is clicked and a path is selected, execute the move.
+    else if selecting_move.path.is_some() && mouse_clicked() {
+        let id = unit.id();
+
+        for coord in selecting_move.path.iter().flatten() {
+            world.effects.push_back(Effect::Move { id, coord: *coord });
+
+            world.effects.push_back(Effect::Sleep {
+                duration: MOVE_DURATION,
+            });
+        }
+
+        if selecting_move.path.is_some() {
+            world.effects.pop_back();
+        }
+
+        *state = State::ResolvingMove;
+    }
+    // If mouse is over a valid move, update the path.
+    else if coord_opt.is_some() {
         let coord = coord_opt.unwrap();
         let accept = |c: Coord| world.valid_move(c);
         let goal = |c: Coord| c == coord;
         let mut path = breadth_first_search(unit.coord, accept, goal);
         path.truncate(unit.data().movement as usize);
         selecting_move.path = (!path.is_empty()).then_some(path);
-    } else if coord_opt.is_none() {
+    }
+    // If mouse is not over a valid move, clear the path.
+    else if coord_opt.is_none() {
         selecting_move.path = None;
     }
 }
