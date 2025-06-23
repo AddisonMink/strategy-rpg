@@ -3,6 +3,8 @@ mod state;
 use super::state::*;
 use super::world::*;
 use crate::util::*;
+use macroquad::color::RED;
+use macroquad::color::YELLOW;
 use state::update_state;
 
 pub fn update(world: &mut World, state: &mut State, delta_time: f32) {
@@ -17,7 +19,7 @@ pub fn update(world: &mut World, state: &mut State, delta_time: f32) {
             break;
         }
 
-        update_state(world, state, delta_time);
+        update_state(world, state);
         if !world.animations.is_empty() {
             break;
         }
@@ -43,6 +45,7 @@ fn execute_effects(world: &mut World) {
         match effect {
             Effect::UpdateLightGrid => world.light_grid = LightGrid::new(world),
             Effect::UpdatePlayerVision => world.player_vision = PlayerVision::new(world),
+            Effect::UpdateNpcVision => update_npc_vision(world),
             Effect::Sleep { duration } => world.animations.push_front(Animation::sleep(duration)),
             Effect::Move { id, coord } => execute_move(world, id, coord),
         }
@@ -59,6 +62,65 @@ fn execute_move(world: &mut World, id: UnitId, coord: Coord) {
     };
 
     unit.coord = coord;
+    world.effects.push_front(Effect::UpdateNpcVision);
     world.effects.push_front(Effect::UpdatePlayerVision);
     world.effects.push_front(Effect::UpdateLightGrid);
+}
+
+fn update_npc_vision(world: &mut World) {
+    let player_ids = world
+        .player_units_iter()
+        .map(|player| player.id())
+        .collect::<Vec<_>>();
+
+    let npc_ids = world
+        .npc_units_iter()
+        .map(|npc| npc.id())
+        .collect::<Vec<_>>();
+
+    for npc_id in npc_ids.iter() {
+        for moved_player_id in player_ids.iter() {
+            update_npc_vision_of_player(world, *npc_id, *moved_player_id);
+        }
+    }
+}
+
+fn update_npc_vision_of_player(
+    world: &mut World,
+    npc_id: UnitId,
+    moved_player_id: UnitId,
+) -> Option<()> {
+    let player_coord = world.unit(moved_player_id)?.coord;
+    let npc_coord = world.unit(npc_id)?.coord;
+    let visible = world.unit_can_see_unit(npc_id, moved_player_id);
+    let visible_to_player = world.unit_can_see_unit(moved_player_id, npc_id);
+    let memory = &world.unit(npc_id)?.memory;
+    let player_seen = visible && !memory.visible_players.contains(&moved_player_id);
+    let player_lost = !visible && memory.visible_players.contains(&moved_player_id);
+
+    // If the NPC has lost sight of the player, it remembers the last known position.
+    if player_lost {
+        let npc = world.unit_mut(npc_id)?;
+        npc.memory.visible_players.remove(&moved_player_id);
+        npc.memory.last_seen_player = Some((moved_player_id, player_coord));
+
+        if visible_to_player {
+            world
+                .animations
+                .push_front(Animation::text(npc_coord, ShortString::new("?"), YELLOW));
+        }
+    }
+    // If the NPC sees the player for the first time, it updates its memory.
+    else if player_seen {
+        let npc = world.unit_mut(npc_id)?;
+        npc.memory.visible_players.insert(moved_player_id);
+
+        if visible_to_player {
+            world
+                .animations
+                .push_front(Animation::text(npc_coord, ShortString::new("!"), RED));
+        }
+    }
+
+    Some(())
 }

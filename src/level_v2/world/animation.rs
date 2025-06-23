@@ -1,4 +1,7 @@
-use crate::util::Timer;
+use crate::engine_v2::*;
+use crate::util::*;
+
+const TEXT_DURATION: f32 = 1.0;
 
 pub struct Animation {
     pub timer: Timer,
@@ -12,9 +15,17 @@ impl Animation {
             kind: AnimationKind::Sleep,
         }
     }
+
+    pub fn text(coord: Coord, text: ShortString, color: Color) -> Self {
+        Self {
+            timer: Timer::new(TEXT_DURATION),
+            kind: AnimationKind::Text(coord, text, color),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum AnimationKind {
     Sleep,
+    Text(Coord, ShortString, Color),
 }

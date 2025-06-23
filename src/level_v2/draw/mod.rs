@@ -8,6 +8,7 @@ use crate::util::*;
 
 pub fn draw(world: &World, state: &State) {
     draw_world(world);
+    draw_animation(world);
     draw_state(world, state);
 }
 
@@ -41,6 +42,17 @@ fn draw_world(world: &World) {
             grid::draw_glyph(coord, tile.glyph.mix_color(light_color, 0.5));
         }
     }
+}
+
+fn draw_animation(world: &World) -> Option<()> {
+    let animation = world.animations.front()?;
+
+    match &animation.kind {
+        AnimationKind::Text(coord, text, color) => grid::draw_text(*coord, text.as_str(), *color),
+        _ => {}
+    }
+
+    Some(())
 }
 
 fn draw_state(world: &World, state: &State) {

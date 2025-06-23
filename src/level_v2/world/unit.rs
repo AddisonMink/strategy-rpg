@@ -1,6 +1,6 @@
 use super::World;
 use crate::util::*;
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UnitId(pub u32);
@@ -33,12 +33,19 @@ impl Default for UnitBehavior {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Default)]
+pub struct Memory {
+    pub visible_players: HashSet<UnitId>,
+    pub last_seen_player: Option<(UnitId, Coord)>,
+}
+
+#[derive(Debug, Clone)]
 pub struct Unit {
     id: UnitId,
     data: UnitData,
     unit_behavior: UnitBehavior,
     pub coord: Coord,
+    pub memory: Memory,
 }
 
 impl Unit {
@@ -48,6 +55,7 @@ impl Unit {
             data,
             coord,
             unit_behavior: UnitBehavior::default(),
+            memory: Memory::default(),
         }
     }
 
@@ -62,6 +70,7 @@ impl Unit {
             data,
             coord,
             unit_behavior,
+            memory: Memory::default(),
         }
     }
 

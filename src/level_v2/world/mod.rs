@@ -99,6 +99,12 @@ impl World {
             .filter(|unit| unit.data().side == Side::Player)
     }
 
+    pub fn npc_units_iter(&self) -> impl Iterator<Item = &Unit> {
+        self.units
+            .values()
+            .filter(|unit| unit.data().side == Side::NPC)
+    }
+
     pub fn end_turn(&mut self) -> Option<UnitId> {
         if let Some(id) = self.unit_queue.pop_front() {
             self.unit_queue.push_back(id);
