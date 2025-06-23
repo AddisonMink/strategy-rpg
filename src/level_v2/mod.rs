@@ -18,6 +18,8 @@ impl Level {
         let hero_data = UnitData {
             name: ShortString::new("Hero"),
             glyph: Glyph::new('@', WHITE),
+            side: Side::Player,
+            vision: 2,
         };
 
         let mut world = World::new();

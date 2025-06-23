@@ -3,10 +3,18 @@ use crate::util::*;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UnitId(pub u32);
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Side {
+    Player,
+    NPC,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct UnitData {
     pub name: ShortString,
     pub glyph: Glyph,
+    pub side: Side,
+    pub vision: u16,
 }
 
 #[derive(Debug, Clone, Copy)]

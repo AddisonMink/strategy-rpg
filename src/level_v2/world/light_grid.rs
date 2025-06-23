@@ -4,8 +4,8 @@ use crate::level_v2::world::World;
 use crate::util::*;
 
 pub struct LightGrid {
-    pub distances_from_light: Vec<u16>,
-    pub light_colors: Vec<Color>,
+    distances_from_light: Vec<u16>,
+    light_colors: Vec<Color>,
 }
 
 impl LightGrid {

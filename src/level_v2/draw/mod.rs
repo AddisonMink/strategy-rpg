@@ -15,6 +15,10 @@ fn draw_world(world: &World) {
     grid::draw_frame("Level 0");
 
     for coord in grid::coords_iter() {
+        if !world.player_vision.tile_visible(coord) {
+            continue;
+        }
+
         let tile = world.map.tile(coord);
         let light_distance = world.light_grid.distance_from_light(coord);
 
@@ -28,7 +32,10 @@ fn draw_world(world: &World) {
             grid::draw_square(coord, mix_color(bg_color, light_color, 0.5));
         }
 
-        if let Some(unit) = world.unit_at(coord) {
+        if let Some(unit) = world
+            .unit_at(coord)
+            .filter(|u| world.player_vision.unit_visible(u.id()))
+        {
             grid::draw_glyph(coord, unit.data().glyph.mix_color(light_color, 0.5));
         } else {
             grid::draw_glyph(coord, tile.glyph.mix_color(light_color, 0.5));

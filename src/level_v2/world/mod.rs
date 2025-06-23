@@ -2,6 +2,7 @@ mod effect;
 mod light;
 mod light_grid;
 mod map;
+mod player_vision;
 mod point_light;
 mod tile;
 mod unit;
@@ -13,6 +14,7 @@ pub use effect::*;
 pub use light::*;
 pub use light_grid::*;
 pub use map::*;
+pub use player_vision::*;
 pub use point_light::*;
 pub use tile::*;
 pub use unit::*;
@@ -23,6 +25,7 @@ pub struct World {
     // Resources
     pub map: Map,
     pub light_grid: LightGrid,
+    pub player_vision: PlayerVision,
     // Units
     units: HashMap<UnitId, Unit>,
     next_unit_id: u32,
@@ -39,6 +42,7 @@ impl World {
         Self {
             map: Map::new(),
             light_grid: LightGrid::empty(),
+            player_vision: PlayerVision::empty(),
             units: HashMap::new(),
             next_unit_id: 0,
             unit_queue: VecDeque::new(),
@@ -76,6 +80,16 @@ impl World {
         self.unit_queue.front().and_then(|id| self.units.get(id))
     }
 
+    pub fn units_iter(&self) -> impl Iterator<Item = &Unit> {
+        self.units.values()
+    }
+
+    pub fn player_units_iter(&self) -> impl Iterator<Item = &Unit> {
+        self.units
+            .values()
+            .filter(|unit| unit.data().side == Side::Player)
+    }
+
     pub fn end_turn(&mut self) -> Option<UnitId> {
         if let Some(id) = self.unit_queue.pop_front() {
             self.unit_queue.push_back(id);
@@ -101,5 +115,27 @@ impl World {
 
     pub fn lights_iter(&self) -> impl Iterator<Item = (Coord, &Light)> {
         self.point_lights.values().map(|l| (l.coord, &l.light))
+    }
+
+    pub fn unit_can_see_tile(&self, unit_id: UnitId, coord: Coord) -> bool {
+        let Some(unit) = self.unit(unit_id) else {
+            return false;
+        };
+
+        if !self.map.check_line_of_sight(unit.coord, coord) {
+            return false;
+        }
+
+        let distance = unit.coord.manhattan_distance(coord);
+        let distance_from_light = self.light_grid.distance_from_light(coord);
+        distance <= unit.data().vision || distance_from_light <= unit.data().vision
+    }
+
+    pub fn unit_can_see_unit(&self, observer_id: UnitId, target_id: UnitId) -> bool {
+        let Some(target) = self.unit(target_id) else {
+            return false;
+        };
+
+        self.unit_can_see_tile(observer_id, target.coord)
     }
 }
