@@ -7,29 +7,33 @@ use state::update_state;
 
 pub fn update(world: &mut World, state: &mut State, delta_time: f32) {
     loop {
-        update_timer(world, delta_time);
-        if world.sleep_timer.is_some() {
+        update_animations(world, delta_time);
+        if !world.animations.is_empty() {
             break;
         }
 
         execute_effects(world);
-        if world.sleep_timer.is_some() || !world.effects.is_empty() {
+        if !world.animations.is_empty() {
             break;
         }
 
         update_state(world, state, delta_time);
-
-        if world.effects.is_empty() && world.sleep_timer.is_none() {
+        if !world.animations.is_empty() {
             break;
+        }
+
+        match state {
+            State::SelectingMove(..) => break,
+            _ => {}
         }
     }
 }
 
-fn update_timer(world: &mut World, delta_time: f32) {
-    if let Some(timer) = &mut world.sleep_timer {
-        timer.update(delta_time);
-        if timer.is_finished() {
-            world.sleep_timer = None;
+fn update_animations(world: &mut World, delta_time: f32) {
+    if let Some(animation) = world.animations.front_mut() {
+        animation.timer.update(delta_time);
+        if animation.timer.is_finished() {
+            world.animations.pop_front();
         }
     }
 }
@@ -39,11 +43,11 @@ fn execute_effects(world: &mut World) {
         match effect {
             Effect::UpdateLightGrid => world.light_grid = LightGrid::new(world),
             Effect::UpdatePlayerVision => world.player_vision = PlayerVision::new(world),
-            Effect::Sleep { duration } => world.sleep_timer = Some(Timer::new(duration)),
+            Effect::Sleep { duration } => world.animations.push_front(Animation::sleep(duration)),
             Effect::Move { id, coord } => execute_move(world, id, coord),
         }
 
-        if world.sleep_timer.is_some() {
+        if !world.animations.is_empty() {
             break;
         }
     }

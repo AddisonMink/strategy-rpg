@@ -14,4 +14,5 @@ pub enum State {
     Starting,
     SelectingMove(SelectingMove),
     ResolvingMove,
+    EndingTurn,
 }

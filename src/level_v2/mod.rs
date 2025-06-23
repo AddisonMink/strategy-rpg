@@ -23,8 +23,17 @@ impl Level {
             movement: 3,
         };
 
+        let goon_data = UnitData {
+            name: ShortString::new("Goon"),
+            glyph: Glyph::new('g', WHITE),
+            side: Side::NPC,
+            vision: 2,
+            movement: 2,
+        };
+
         let mut world = World::new();
         world.add_unit(hero_data, Coord::new(1, 1));
+        world.add_unit(goon_data, Coord::new(5, 1));
         world.add_point_light(3, ORANGE, Coord::new(1, 1));
 
         Self {

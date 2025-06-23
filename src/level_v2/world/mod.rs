@@ -1,3 +1,4 @@
+mod animation;
 mod effect;
 mod light;
 mod light_grid;
@@ -11,6 +12,7 @@ use crate::engine_v2::*;
 use crate::util::*;
 use std::collections::{HashMap, VecDeque};
 
+pub use animation::*;
 pub use effect::*;
 pub use light::*;
 pub use light_grid::*;
@@ -35,8 +37,8 @@ pub struct World {
     point_lights: HashMap<PointLightId, PointLight>,
     next_point_light_id: u32,
     // State
-    pub sleep_timer: Option<Timer>,
     pub effects: VecDeque<Effect>,
+    pub animations: VecDeque<Animation>,
 }
 
 impl World {
@@ -50,8 +52,8 @@ impl World {
             unit_queue: VecDeque::new(),
             point_lights: HashMap::new(),
             next_point_light_id: 0,
-            sleep_timer: None,
             effects: VecDeque::new(),
+            animations: VecDeque::new(),
         }
     }
 

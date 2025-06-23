@@ -1,4 +1,6 @@
+use super::World;
 use crate::util::*;
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UnitId(pub u32);
@@ -19,26 +21,59 @@ pub struct UnitData {
 }
 
 #[derive(Debug, Clone, Copy)]
+pub struct UnitBehavior {
+    pub select_move: fn(&World) -> Option<VecDeque<Coord>>,
+}
+
+impl Default for UnitBehavior {
+    fn default() -> Self {
+        Self {
+            select_move: |_| None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
 pub struct Unit {
-    _id: UnitId,
-    _data: UnitData,
+    id: UnitId,
+    data: UnitData,
+    unit_behavior: UnitBehavior,
     pub coord: Coord,
 }
 
 impl Unit {
     pub fn new(id: UnitId, data: UnitData, coord: Coord) -> Self {
         Self {
-            _id: id,
-            _data: data,
+            id,
+            data,
             coord,
+            unit_behavior: UnitBehavior::default(),
+        }
+    }
+
+    pub fn new_with_behavior(
+        id: UnitId,
+        data: UnitData,
+        coord: Coord,
+        unit_behavior: UnitBehavior,
+    ) -> Self {
+        Self {
+            id,
+            data,
+            coord,
+            unit_behavior,
         }
     }
 
     pub fn id(&self) -> UnitId {
-        self._id
+        self.id
     }
 
     pub fn data(&self) -> &UnitData {
-        &self._data
+        &self.data
+    }
+
+    pub fn behavior(&self) -> &UnitBehavior {
+        &self.unit_behavior
     }
 }

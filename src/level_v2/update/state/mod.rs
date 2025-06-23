@@ -1,5 +1,6 @@
 use super::super::*;
 
+mod ending_turn;
 mod selecting_move;
 
 pub fn update_state(world: &mut World, state: &mut State, delta_time: f32) {
@@ -10,6 +11,7 @@ pub fn update_state(world: &mut World, state: &mut State, delta_time: f32) {
             selecting_move::transition(world, state);
         }
         State::SelectingMove(..) => selecting_move::update(world, state),
-        State::ResolvingMove => selecting_move::transition(world, state),
+        State::ResolvingMove => ending_turn::transition(world, state),
+        State::EndingTurn => ending_turn::update(world, state),
     }
 }
