@@ -49,6 +49,10 @@ impl Button {
             && mouse_y <= self.y + self.height
     }
 
+    pub fn is_clicked(&self) -> bool {
+        self.is_selected() && mouse_clicked()
+    }
+
     pub fn draw(&self) {
         let (text_width, text_height) = text_size(&self.label);
         let text_x = self.x + (self.width - text_width) / 2.0;

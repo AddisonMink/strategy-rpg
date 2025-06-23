@@ -3,7 +3,7 @@ use macroquad::color::BLACK;
 use super::state::*;
 use super::world::*;
 use crate::constants::*;
-use crate::engine::color::mix_color;
+use crate::engine_v2::*;
 use crate::util::*;
 
 pub fn draw(world: &World, state: &State) {
@@ -43,4 +43,21 @@ fn draw_world(world: &World) {
     }
 }
 
-fn draw_state(world: &World, state: &State) {}
+fn draw_state(world: &World, state: &State) {
+    match state {
+        State::SelectingMove(selecting_move) => draw_selecting_move(selecting_move),
+        _ => {}
+    }
+}
+
+fn draw_selecting_move(selecting_move: &SelectingMove) {
+    for coord in selecting_move.valid_moves.iter() {
+        grid::draw_square(*coord, WHITE.with_alpha(0.5));
+    }
+
+    for coord in selecting_move.path.iter().flatten() {
+        grid::draw_glyph(*coord, Glyph::new('o', WHITE));
+    }
+
+    selecting_move.cancel_button.draw();
+}

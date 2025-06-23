@@ -138,4 +138,8 @@ impl World {
 
         self.unit_can_see_tile(observer_id, target.coord)
     }
+
+    pub fn valid_move(&self, coord: Coord) -> bool {
+        self.map.tile(coord).walkable && self.unit_at(coord).is_none()
+    }
 }

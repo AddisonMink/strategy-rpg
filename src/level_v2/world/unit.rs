@@ -15,6 +15,7 @@ pub struct UnitData {
     pub glyph: Glyph,
     pub side: Side,
     pub vision: u16,
+    pub movement: u16,
 }
 
 #[derive(Debug, Clone, Copy)]

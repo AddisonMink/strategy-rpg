@@ -20,6 +20,7 @@ impl Level {
             glyph: Glyph::new('@', WHITE),
             side: Side::Player,
             vision: 2,
+            movement: 3,
         };
 
         let mut world = World::new();
