@@ -70,6 +70,10 @@ impl Panel {
         self.height
     }
 
+    pub fn get_y(&self) -> f32 {
+        self.y
+    }
+
     pub fn selected_index(&self) -> Option<usize> {
         let (mouse_x, mouse_y) = mouse_pos();
         if !self.in_bounds(mouse_x, mouse_y) {

@@ -1,3 +1,4 @@
+mod action;
 mod animation;
 mod effect;
 mod light;
@@ -12,6 +13,7 @@ use crate::engine_v2::*;
 use crate::util::*;
 use std::collections::{HashMap, VecDeque};
 
+pub use action::*;
 pub use animation::*;
 pub use effect::*;
 pub use light::*;

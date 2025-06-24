@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 use super::*;
-use crate::constants::{UI_ORIGIN, UI_WIDTH};
+use crate::constants::{PADDING, UI_ORIGIN};
 use crate::engine::input::{cancel_pressed, mouse_clicked};
 use crate::util::*;
 
@@ -24,15 +24,15 @@ pub fn transition(world: &mut World, state: &mut State) {
         });
         valid_moves.remove(&unit.coord);
 
-        let cancel_button = Button::builder("Cancel")
-            .min_size(UI_WIDTH, 0.0)
-            .position(UI_ORIGIN.0, UI_ORIGIN.1)
-            .build();
+        let mut y = UI_ORIGIN.1;
+        let cancel_button = make_cancel_button(&mut y);
+        let action_preview = make_action_preview_panel(&unit.actions(), &mut y);
 
         let selecting_move = SelectingMove {
             valid_moves,
             path: None,
             cancel_button,
+            action_preview,
             unit_description_opt: None,
             tile_description_opt: None,
         };
@@ -50,7 +50,21 @@ pub fn update(world: &mut World, state: &mut State) {
         panic!("No active unit to select move for");
     };
 
-    let coord_opt = grid::mouse_coord().filter(|c| selecting_move.valid_moves.contains(c));
+    let coord_opt = grid::mouse_coord();
+    let valid_coord_opt = coord_opt.filter(|c| selecting_move.valid_moves.contains(c));
+    let tile_coord = coord_opt.filter(|c| world.unit_can_see_tile(unit.id(), *c));
+    let tile_opt = tile_coord.map(|c| world.map.tile(c));
+
+    let mut y = selecting_move.action_preview.get_y()
+        + selecting_move.action_preview.get_height()
+        + PADDING;
+
+    // If the mouse is hovering over a tile, show a tile description.
+    if let Some(tile) = tile_opt {
+        selecting_move.tile_description_opt = Some(make_tile_description_panel(tile, &mut y));
+    } else {
+        selecting_move.tile_description_opt = None;
+    }
 
     // If cancel button is clicked or cancel is pressed, cancel the move.
     if selecting_move.cancel_button.is_clicked() || cancel_pressed() {
@@ -64,8 +78,8 @@ pub fn update(world: &mut World, state: &mut State) {
         *state = State::ResolvingMove;
     }
     // If mouse is over a valid move, update the path.
-    else if coord_opt.is_some() {
-        let coord = coord_opt.unwrap();
+    else if valid_coord_opt.is_some() {
+        let coord = valid_coord_opt.unwrap();
         let accept = |c: Coord| world.valid_move(c);
         let goal = |c: Coord| c == coord;
         let mut path = breadth_first_search(unit.coord, accept, goal);
@@ -73,7 +87,7 @@ pub fn update(world: &mut World, state: &mut State) {
         selecting_move.path = (!path.is_empty()).then_some(path);
     }
     // If mouse is not over a valid move, clear the path.
-    else if coord_opt.is_none() {
+    else if valid_coord_opt.is_none() {
         selecting_move.path = None;
     }
 }

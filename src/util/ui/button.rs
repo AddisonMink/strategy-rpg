@@ -40,6 +40,10 @@ impl Button {
         ButtonBuilder::new(label)
     }
 
+    pub fn size(&self) -> (f32, f32) {
+        (self.width, self.height)
+    }
+
     pub fn is_selected(&self) -> bool {
         let (mouse_x, mouse_y) = mouse_pos();
 

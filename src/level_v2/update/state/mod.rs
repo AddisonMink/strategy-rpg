@@ -1,7 +1,10 @@
 use super::super::*;
 
 mod ending_turn;
+mod panel;
 mod selecting_move;
+
+use panel::*;
 
 pub fn update_state(world: &mut World, state: &mut State) {
     match state {

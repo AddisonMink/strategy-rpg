@@ -72,4 +72,9 @@ fn draw_selecting_move(selecting_move: &SelectingMove) {
     }
 
     selecting_move.cancel_button.draw();
+    selecting_move.action_preview.draw();
+
+    if let Some(tile_description) = &selecting_move.tile_description_opt {
+        tile_description.draw();
+    }
 }

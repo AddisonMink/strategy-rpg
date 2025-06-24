@@ -1,4 +1,5 @@
 use super::World;
+use super::action::Action;
 use crate::util::*;
 use std::collections::{HashSet, VecDeque};
 
@@ -85,5 +86,12 @@ impl Unit {
 
     pub fn behavior(&self) -> &UnitBehavior {
         &self.behavior
+    }
+
+    pub fn actions(&self) -> Vec<&Action> {
+        match self.data.side {
+            Side::Player => vec![&Action::ATTACK],
+            Side::NPC => vec![],
+        }
     }
 }
