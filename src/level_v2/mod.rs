@@ -1,3 +1,4 @@
+mod content;
 mod draw;
 mod state;
 mod update;
@@ -21,15 +22,10 @@ impl Level {
             side: Side::Player,
             vision: 2,
             movement: 3,
+            behavior: None,
         };
 
-        let goon_data = UnitData {
-            name: ShortString::new("Goon"),
-            glyph: Glyph::new('g', WHITE),
-            side: Side::NPC,
-            vision: 2,
-            movement: 2,
-        };
+        let goon_data = content::unit::GOON_DATA;
 
         let mut world = World::new();
         world.add_unit(hero_data, Coord::new(1, 1));

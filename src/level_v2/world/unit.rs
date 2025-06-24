@@ -18,6 +18,7 @@ pub struct UnitData {
     pub side: Side,
     pub vision: u16,
     pub movement: u16,
+    pub behavior: Option<UnitBehavior>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -43,7 +44,7 @@ pub struct Memory {
 pub struct Unit {
     id: UnitId,
     data: UnitData,
-    unit_behavior: UnitBehavior,
+    behavior: UnitBehavior,
     pub coord: Coord,
     pub memory: Memory,
 }
@@ -54,7 +55,7 @@ impl Unit {
             id,
             data,
             coord,
-            unit_behavior: UnitBehavior::default(),
+            behavior: data.behavior.unwrap_or_default(),
             memory: Memory::default(),
         }
     }
@@ -69,7 +70,7 @@ impl Unit {
             id,
             data,
             coord,
-            unit_behavior,
+            behavior: unit_behavior,
             memory: Memory::default(),
         }
     }
@@ -83,6 +84,6 @@ impl Unit {
     }
 
     pub fn behavior(&self) -> &UnitBehavior {
-        &self.unit_behavior
+        &self.behavior
     }
 }
