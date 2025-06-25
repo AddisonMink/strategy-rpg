@@ -40,8 +40,8 @@ impl Button {
         ButtonBuilder::new(label)
     }
 
-    pub fn next_y(&self) -> f32 {
-        self.y + self.height + PADDING
+    pub fn get_y2(&self) -> f32 {
+        self.y + self.height
     }
 
     pub fn size(&self) -> (f32, f32) {

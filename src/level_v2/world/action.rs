@@ -23,7 +23,7 @@ impl Action {
         name: ShortString::new("Attack"),
         range: ActionRange::Enemy {
             min_range: 1,
-            max_range: 3,
+            max_range: 1,
         },
         effects: ShortList::new(&[ActionEffect::Damage { min: 1, max: 3 }]),
     };
@@ -43,7 +43,7 @@ impl Action {
             ActionRange::Enemy {
                 min_range,
                 max_range,
-            } => self.find_enemy_targets(world, unit, origin),
+            } => self.find_enemy_targets(world, unit, origin, min_range, max_range),
         }
     }
 
@@ -52,9 +52,20 @@ impl Action {
         world: &World,
         unit: &Unit,
         origin: Coord,
+        min_range: u16,
+        max_range: u16,
     ) -> Option<ActionTargets> {
-        let mut targets = HashSet::new();
-        Some(ActionTargets::EnemyTargets(targets))
+        let targets: HashSet<UnitId> = world
+            .npc_units_iter()
+            .filter_map(|npc| {
+                let dist = origin.manhattan_distance(npc.coord);
+                let in_range = dist >= min_range && dist <= max_range;
+                let visible = world.unit_can_see_unit(unit.id(), npc.id());
+                (in_range && visible).then_some(npc.id())
+            })
+            .collect();
+
+        (!targets.is_empty()).then_some(ActionTargets::EnemyTargets(targets))
     }
 }
 

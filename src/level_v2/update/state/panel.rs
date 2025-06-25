@@ -10,14 +10,30 @@ pub fn make_cancel_button(y: &mut f32) -> Button {
     button
 }
 
-pub fn make_action_preview_panel(actions: &Vec<&Action>, y: &mut f32) -> Panel {
+pub fn make_action_preview_panel(
+    world: &World,
+    player_pos: Option<Coord>,
+    y: &mut f32,
+) -> Panel {
+    let Some(unit) = world.active_unit() else {
+        panic!("No active unit.");
+    };
+
     let mut builder = Panel::builder()
         .title("ACTIONS", WHITE)
         .size(UI_WIDTH, 0.0)
         .position(UI_ORIGIN.0, *y);
 
-    for action in actions {
-        builder = builder.text(action.name.to_string(), WHITE);
+    for action in unit.actions() {
+        let valid = if let Some(origin) = player_pos {
+            action.find_targets_from(world, unit, origin).is_some()
+        } else {
+            false
+        };
+
+        let color = if valid { WHITE } else { GRAY };
+
+        builder = builder.text(action.name.to_string(), color);
     }
 
     let panel = builder.build();
@@ -55,7 +71,7 @@ pub fn make_unit_description_panel(unit: &Unit, y: &mut f32) -> Panel {
         .text(format!("Vision: {}", unit.data().vision), WHITE)
         .text(format!("Movement: {}", unit.data().movement), WHITE)
         .build();
-    
+
     *y += panel.get_height() + PADDING;
     panel
 }

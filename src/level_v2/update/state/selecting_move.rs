@@ -26,7 +26,7 @@ pub fn transition(world: &mut World, state: &mut State) {
 
         let mut y = UI_ORIGIN.1;
         let cancel_button = make_cancel_button(&mut y);
-        let action_preview = make_action_preview_panel(&unit.actions(), &mut y);
+        let action_preview = make_action_preview_panel(world, None, &mut y);
 
         let selecting_move = SelectingMove {
             valid_moves,
@@ -98,8 +98,8 @@ fn update_panels(
         .and_then(|c| world.unit_at(c))
         .filter(|u| world.unit_can_see_unit(unit_id, u.id()));
 
-    let mut y = selecting_move.action_preview.get_y2() + PADDING;
-
+    let mut y = selecting_move.cancel_button.get_y2() + PADDING;
+    selecting_move.action_preview = make_action_preview_panel(world, mouse_coord, &mut y);
     selecting_move.tile_description_opt = tile_opt.map(|t| make_tile_description_panel(t, &mut y));
     selecting_move.unit_description_opt = unit_opt.map(|u| make_unit_description_panel(u, &mut y));
 }
