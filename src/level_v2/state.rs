@@ -9,6 +9,7 @@ pub struct SelectingMove {
     pub action_preview: Panel,
     pub unit_description_opt: Option<Panel>,
     pub tile_description_opt: Option<Panel>,
+    pub action_description_opt: Option<Panel>,
 }
 
 pub enum State {

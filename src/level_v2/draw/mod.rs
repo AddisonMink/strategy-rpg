@@ -81,4 +81,8 @@ fn draw_selecting_move(selecting_move: &SelectingMove) {
     if let Some(unit_description) = &selecting_move.unit_description_opt {
         unit_description.draw();
     }
+
+    if let Some(action_description) = &selecting_move.action_description_opt {
+        action_description.draw();
+    }
 }
