@@ -78,6 +78,13 @@ impl Panel {
         self.y + self.height
     }
 
+    pub fn clicked_index(&self) -> Option<usize> {
+        self.selected_index()
+            .iter()
+            .filter_map(|i| mouse_clicked().then_some(*i))
+            .next()
+    }
+
     pub fn selected_index(&self) -> Option<usize> {
         let (mouse_x, mouse_y) = mouse_pos();
         if !self.in_bounds(mouse_x, mouse_y) {

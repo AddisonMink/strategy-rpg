@@ -111,3 +111,19 @@ pub fn make_action_description_panel(action: &Action, y: &mut f32) -> Panel {
     *y += panel.get_height() + PADDING;
     panel
 }
+
+pub fn make_action_list_panel(actions: &Vec<Action>, y: &mut f32) -> Panel {
+    let mut builder = Panel::builder()
+        .title("ACTIONS", WHITE)
+        .size(UI_WIDTH, 0.0)
+        .position(UI_ORIGIN.0, *y);
+
+    for (i, action) in actions.iter().enumerate() {
+        let text = format!("{}. {}", i + 1, action.name);
+        builder = builder.selectable_text(text, WHITE);
+    }
+
+    let panel = builder.build();
+    *y += panel.get_height() + PADDING;
+    panel
+}

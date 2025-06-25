@@ -58,6 +58,7 @@ fn draw_animation(world: &World) -> Option<()> {
 fn draw_state(world: &World, state: &State) {
     match state {
         State::SelectingMove(selecting_move) => draw_selecting_move(selecting_move),
+        State::SelectingAction(selecting_action) => draw_selecting_action(selecting_action),
         _ => {}
     }
 }
@@ -83,6 +84,23 @@ fn draw_selecting_move(selecting_move: &SelectingMove) {
     }
 
     if let Some(action_description) = &selecting_move.action_description_opt {
+        action_description.draw();
+    }
+}
+
+pub fn draw_selecting_action(selecting_action: &SelectingAction) {
+    selecting_action.cancel_button.draw();
+    selecting_action.action_list.draw();
+
+    if let Some(tile_description) = &selecting_action.tile_description_opt {
+        tile_description.draw();
+    }
+
+    if let Some(unit_description) = &selecting_action.unit_description_opt {
+        unit_description.draw();
+    }
+
+    if let Some(action_description) = &selecting_action.action_description_opt {
         action_description.draw();
     }
 }

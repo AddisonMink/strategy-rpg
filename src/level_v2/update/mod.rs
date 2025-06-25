@@ -26,6 +26,7 @@ pub fn update(world: &mut World, state: &mut State, delta_time: f32) {
 
         match state {
             State::SelectingMove(..) => break,
+            State::SelectingAction(..) => break,
             _ => {}
         }
     }
