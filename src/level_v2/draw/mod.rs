@@ -77,4 +77,8 @@ fn draw_selecting_move(selecting_move: &SelectingMove) {
     if let Some(tile_description) = &selecting_move.tile_description_opt {
         tile_description.draw();
     }
+
+    if let Some(unit_description) = &selecting_move.unit_description_opt {
+        unit_description.draw();
+    }
 }

@@ -87,6 +87,10 @@ impl World {
         self.units.values().find(|unit| unit.coord == coord)
     }
 
+    pub fn active_unit_id(&self) -> Option<UnitId> {
+        self.unit_queue.front().cloned()
+    }
+
     pub fn active_unit(&self) -> Option<&Unit> {
         self.unit_queue.front().and_then(|id| self.units.get(id))
     }

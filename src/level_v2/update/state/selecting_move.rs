@@ -46,25 +46,17 @@ pub fn update(world: &mut World, state: &mut State) {
         panic!("Expected SelectingMove state");
     };
 
+    let coord_opt = grid::mouse_coord();
+
+    if let Some(id) = world.active_unit_id() {
+        update_panels(world, selecting_move, id, coord_opt);
+    }
+
     let Some(unit) = world.active_unit() else {
         panic!("No active unit to select move for");
     };
 
-    let coord_opt = grid::mouse_coord();
     let valid_coord_opt = coord_opt.filter(|c| selecting_move.valid_moves.contains(c));
-    let tile_coord = coord_opt.filter(|c| world.unit_can_see_tile(unit.id(), *c));
-    let tile_opt = tile_coord.map(|c| world.map.tile(c));
-
-    let mut y = selecting_move.action_preview.get_y()
-        + selecting_move.action_preview.get_height()
-        + PADDING;
-
-    // If the mouse is hovering over a tile, show a tile description.
-    if let Some(tile) = tile_opt {
-        selecting_move.tile_description_opt = Some(make_tile_description_panel(tile, &mut y));
-    } else {
-        selecting_move.tile_description_opt = None;
-    }
 
     // If cancel button is clicked or cancel is pressed, cancel the move.
     if selecting_move.cancel_button.is_clicked() || cancel_pressed() {
@@ -90,6 +82,26 @@ pub fn update(world: &mut World, state: &mut State) {
     else if valid_coord_opt.is_none() {
         selecting_move.path = None;
     }
+}
+
+fn update_panels(
+    world: &mut World,
+    selecting_move: &mut SelectingMove,
+    unit_id: UnitId,
+    mouse_coord: Option<Coord>,
+) {
+    let tile_opt = mouse_coord
+        .filter(|c| world.unit_can_see_tile(unit_id, *c))
+        .map(|c| world.map.tile(c));
+
+    let unit_opt = mouse_coord
+        .and_then(|c| world.unit_at(c))
+        .filter(|u| world.unit_can_see_unit(unit_id, u.id()));
+
+    let mut y = selecting_move.action_preview.get_y2() + PADDING;
+
+    selecting_move.tile_description_opt = tile_opt.map(|t| make_tile_description_panel(t, &mut y));
+    selecting_move.unit_description_opt = unit_opt.map(|u| make_unit_description_panel(u, &mut y));
 }
 
 fn compile_path(id: UnitId, path: &VecDeque<Coord>) -> VecDeque<Effect> {

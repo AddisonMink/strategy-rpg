@@ -43,3 +43,19 @@ pub fn make_tile_description_panel(tile: &Tile, y: &mut f32) -> Panel {
     *y += panel.get_height() + PADDING;
     panel
 }
+
+pub fn make_unit_description_panel(unit: &Unit, y: &mut f32) -> Panel {
+    let panel = Panel::builder()
+        .title(
+            unit.data().name.as_str().to_uppercase(),
+            unit.data().glyph.color,
+        )
+        .size(UI_WIDTH, 0.0)
+        .position(UI_ORIGIN.0, *y)
+        .text(format!("Vision: {}", unit.data().vision), WHITE)
+        .text(format!("Movement: {}", unit.data().movement), WHITE)
+        .build();
+    
+    *y += panel.get_height() + PADDING;
+    panel
+}
