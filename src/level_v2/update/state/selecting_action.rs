@@ -2,6 +2,7 @@ use crate::constants::{PADDING, UI_ORIGIN};
 
 use super::*;
 
+use macroquad::prelude::trace;
 use panel::*;
 
 pub fn transition(world: &mut World, state: &mut State) {
@@ -51,9 +52,15 @@ pub fn update(world: &mut World, state: &mut State) {
     }
     // If an action is clicked, select it.
     else if let Some(index) = selecting_action.action_list.clicked_index() {
+        if let Some(action) = selecting_action.actions.get(index).cloned() {
+            selecting_target::transition(world, state, action.clone());
+        }
     }
     // If a number is pressed, select the corresponding action.
     else if let Some(index) = number_pressed() {
+        if let Some(action) = selecting_action.actions.get(index - 1).cloned() {
+            selecting_target::transition(world, state, action.clone());
+        }
     }
 }
 

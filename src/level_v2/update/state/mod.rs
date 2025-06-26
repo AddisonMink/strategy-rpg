@@ -4,6 +4,7 @@ mod ending_turn;
 mod panel;
 mod selecting_action;
 mod selecting_move;
+mod selecting_target;
 
 use panel::*;
 
@@ -18,6 +19,8 @@ pub fn update_state(world: &mut World, state: &mut State) {
         State::SelectingMove(..) => selecting_move::update(world, state),
         State::ResolvingMove => selecting_action::transition(world, state),
         State::SelectingAction(..) => selecting_action::update(world, state),
+        State::SelectingEnemyTarget(..) => selecting_target::update_single_enemy(world, state),
+        State::ResolvingAction => ending_turn::transition(world, state),
         State::EndingTurn => ending_turn::update(world, state),
     }
 }

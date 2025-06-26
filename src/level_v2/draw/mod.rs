@@ -59,6 +59,9 @@ fn draw_state(world: &World, state: &State) {
     match state {
         State::SelectingMove(selecting_move) => draw_selecting_move(selecting_move),
         State::SelectingAction(selecting_action) => draw_selecting_action(selecting_action),
+        State::SelectingEnemyTarget(selecting_target) => {
+            draw_selecting_enemy_target(selecting_target)
+        }
         _ => {}
     }
 }
@@ -102,5 +105,26 @@ pub fn draw_selecting_action(selecting_action: &SelectingAction) {
 
     if let Some(action_description) = &selecting_action.action_description_opt {
         action_description.draw();
+    }
+}
+
+pub fn draw_selecting_enemy_target(selecting_target: &SelectingEnemyTarget) {
+    selecting_target.cancel_button.draw();
+    selecting_target.action_description.draw();
+
+    if let Some(tile_description) = &selecting_target.tile_description_opt {
+        tile_description.draw();
+    }
+
+    if let Some(unit_description) = &selecting_target.unit_description_opt {
+        unit_description.draw();
+    }
+
+    for coord in selecting_target.targets.keys() {
+        grid::draw_square(*coord, WHITE.with_alpha(0.5));
+    }
+
+    if let Some(selected_target) = selecting_target.selected_target {
+        grid::draw_square(selected_target, WHITE.with_alpha(0.5));
     }
 }
