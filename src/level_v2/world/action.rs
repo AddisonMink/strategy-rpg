@@ -68,8 +68,31 @@ impl Action {
 
         (!targets.is_empty()).then_some(ActionTargets::EnemyTargets(targets))
     }
+
+    pub fn compile_single_enemy_action(&self, unit: &Unit, enemy_id: UnitId) -> VecDeque<Effect> {
+        let mut effects = VecDeque::new();
+
+        for effeect in self.effects.iter() {
+            match effeect {
+                ActionEffect::Damage { min, max } => {
+                    let effect = Effect::Damage {
+                        id: enemy_id,
+                        min: *min,
+                        max: *max,
+                    };
+                    effects.push_back(effect);
+                }
+            }
+        }
+
+        effects
+    }
 }
 
 pub enum ActionTargets {
     EnemyTargets(HashSet<UnitId>),
+}
+
+pub enum ActionTarget {
+    SingleEnemy(UnitId),
 }

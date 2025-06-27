@@ -5,6 +5,8 @@ use super::world::*;
 use crate::util::*;
 use macroquad::color::RED;
 use macroquad::color::YELLOW;
+use macroquad::prelude::trace;
+use macroquad::rand::gen_range;
 use state::update_state;
 
 pub fn update(world: &mut World, state: &mut State, delta_time: f32) {
@@ -50,6 +52,7 @@ fn execute_effects(world: &mut World) {
             Effect::UpdateNpcVision => update_npc_vision(world),
             Effect::Sleep { duration } => world.animations.push_front(Animation::sleep(duration)),
             Effect::Move { id, coord } => execute_move(world, id, coord),
+            Effect::Damage { id, min, max } => execute_damage(world, id, min, max),
         }
 
         if !world.animations.is_empty() {
@@ -125,4 +128,20 @@ fn update_npc_vision_of_player(
     }
 
     Some(())
+}
+
+pub fn execute_damage(world: &mut World, id: UnitId, min: u16, max: u16) {
+    let Some(unit) = world.unit_mut(id) else {
+        return;
+    };
+
+    let damage = roll(min, max);
+    trace!("Damaging unit {} for {} HP", unit.data().name, damage);
+}
+
+fn roll(min: u16, max: u16) -> u16 {
+    let roll1 = gen_range(min, max + 1) as f32;
+    let roll2 = gen_range(min, max + 1) as f32;
+    let avg = (roll1 + roll2) / 2.0;
+    avg.round() as u16
 }

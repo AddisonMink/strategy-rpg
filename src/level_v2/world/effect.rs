@@ -7,4 +7,5 @@ pub enum Effect {
     UpdateNpcVision,
     Sleep { duration: f32 },
     Move { id: UnitId, coord: Coord },
+    Damage { id: UnitId, min: u16, max: u16 },
 }

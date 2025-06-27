@@ -72,6 +72,13 @@ pub fn update_single_enemy(world: &mut World, state: &mut State) {
     // If a target is selected, resolve the action.
     else if let Some(coord) = selected_target_coord {
         let target_id = selecting.targets[&coord];
+        let unit = world.active_unit().expect("No active unit found");
+
+        let effects = selecting
+            .action
+            .compile_single_enemy_action(unit, target_id);
+
+        world.effects.extend(effects);
         *state = State::ResolvingAction;
     }
 }
