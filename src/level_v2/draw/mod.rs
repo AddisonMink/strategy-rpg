@@ -1,8 +1,11 @@
+use macroquad::color;
 use macroquad::color::BLACK;
+use macroquad::text;
 
 use super::state::*;
 use super::world::*;
 use crate::constants::*;
+use crate::engine::coord;
 use crate::engine_v2::*;
 use crate::util::*;
 
@@ -46,13 +49,25 @@ fn draw_world(world: &World) {
 
 fn draw_animation(world: &World) -> Option<()> {
     let animation = world.animations.front()?;
+    let progress = animation.timer.progress();
 
     match &animation.kind {
         AnimationKind::Text(coord, text, color) => grid::draw_text(*coord, text.as_str(), *color),
+        AnimationKind::FadingRisingText(coord, text, color, max_offset) => {
+            draw_fading_rising_text(*coord, &text.as_str(), *color, *max_offset, progress)
+        }
         _ => {}
     }
 
     Some(())
+}
+
+fn draw_fading_rising_text(coord: Coord, text: &str, color: Color, max_offset: f32, progress: f32) {
+    let offset = (-progress) * max_offset;
+    let alpha = 1.0 - progress;
+    let faded_color = color.with_alpha(alpha);
+
+    grid::draw_text_with_offset(coord, text, faded_color, (0.0, offset));
 }
 
 fn draw_state(world: &World, state: &State) {

@@ -1,6 +1,7 @@
 // General Constants
 pub const PADDING: f32 = 10.0;
 pub const TEXT_SIZE: u16 = 16;
+pub const MAP_TEXT_SIZE: u16 = 24;
 pub const TILE_SIZE: f32 = 32.0;
 
 // Grid Constants

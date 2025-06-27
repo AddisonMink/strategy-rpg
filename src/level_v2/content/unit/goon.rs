@@ -7,6 +7,7 @@ pub const GOON_DATA: UnitData = UnitData {
     side: Side::NPC,
     vision: 5,
     movement: 3,
+    hp_max: 5,
     behavior: Some(UnitBehavior {
         select_move: select_move,
     }),

@@ -66,6 +66,7 @@ pub fn make_unit_description_panel(unit: &Unit, y: &mut f32) -> Panel {
         .position(UI_ORIGIN.0, *y)
         .text(format!("Vision: {}", unit.data().vision), WHITE)
         .text(format!("Movement: {}", unit.data().movement), WHITE)
+        .labeled_meter("HP:", unit.hp, 0, unit.data().hp_max, RED)
         .build();
 
     *y += panel.get_height() + PADDING;

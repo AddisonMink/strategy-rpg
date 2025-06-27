@@ -22,6 +22,7 @@ impl Level {
             side: Side::Player,
             vision: 2,
             movement: 3,
+            hp_max: 10,
             behavior: None,
         };
 

@@ -5,6 +5,7 @@ use super::world::*;
 use crate::util::*;
 use macroquad::color::RED;
 use macroquad::color::YELLOW;
+use macroquad::prelude::animation;
 use macroquad::prelude::trace;
 use macroquad::rand::gen_range;
 use state::update_state;
@@ -136,7 +137,11 @@ pub fn execute_damage(world: &mut World, id: UnitId, min: u16, max: u16) {
     };
 
     let damage = roll(min, max);
-    trace!("Damaging unit {} for {} HP", unit.data().name, damage);
+    let damage_str = ShortString::new(&(-(damage as i16)).to_string());
+    let damage_animation = Animation::fading_rising_text(unit.coord, damage_str, RED);
+
+    unit.hp = unit.hp.saturating_sub(damage);
+    world.animations.push_front(damage_animation);
 }
 
 fn roll(min: u16, max: u16) -> u16 {

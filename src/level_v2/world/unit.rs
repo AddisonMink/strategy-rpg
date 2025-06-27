@@ -19,6 +19,7 @@ pub struct UnitData {
     pub side: Side,
     pub vision: u16,
     pub movement: u16,
+    pub hp_max: u16,
     pub behavior: Option<UnitBehavior>,
 }
 
@@ -47,6 +48,7 @@ pub struct Unit {
     data: UnitData,
     behavior: UnitBehavior,
     pub coord: Coord,
+    pub hp: u16,
     pub memory: Memory,
 }
 
@@ -56,6 +58,7 @@ impl Unit {
             id,
             data,
             coord,
+            hp: data.hp_max,
             behavior: data.behavior.unwrap_or_default(),
             memory: Memory::default(),
         }
@@ -71,6 +74,7 @@ impl Unit {
             id,
             data,
             coord,
+            hp: data.hp_max,
             behavior: unit_behavior,
             memory: Memory::default(),
         }
