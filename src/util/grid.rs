@@ -45,17 +45,10 @@ pub fn draw_text(coord: Coord, text: &str, color: Color) {
 
 pub fn draw_text_with_offset(coord: Coord, text: &str, color: Color, offset: (f32, f32)) {
     let (cx, cy) = coord_to_pos(coord);
-    let (text_width, text_height) = text_size(text);
+    let (text_width, text_height) = map_text_size(text);
     let x = cx + (TILE_SIZE - text_width) / 2.0 + offset.0;
     let y = cy + (TILE_SIZE - text_height) / 2.0 + offset.1;
-    crate::engine_v2::draw_text(x, y, text, color);
-}
-
-pub fn draw_text_centered(message: &str, color: Color) {
-    let (text_width, text_height) = text_size(message);
-    let x = GRID_ORIGIN.0 + (GRID_WIDTH - text_width) / 2.0;
-    let y = GRID_ORIGIN.1 + (GRID_HEIGHT - text_height) / 2.0;
-    crate::engine_v2::draw_text(x, y, message, color);
+    crate::engine_v2::draw_map_text(x, y, text, color);
 }
 
 pub fn in_bounds(coord: Coord) -> bool {

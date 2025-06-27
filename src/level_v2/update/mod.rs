@@ -122,9 +122,11 @@ fn update_npc_vision_of_player(
         npc.memory.visible_players.insert(moved_player_id);
 
         if visible_to_player {
-            world
-                .animations
-                .push_front(Animation::text(npc_coord, ShortString::new("!"), RED));
+            world.animations.push_front(Animation::fading_rising_text(
+                npc_coord,
+                ShortString::new("!"),
+                RED,
+            ));
         }
     }
 

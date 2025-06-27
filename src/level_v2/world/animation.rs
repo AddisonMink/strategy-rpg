@@ -2,8 +2,8 @@ use crate::constants::TILE_SIZE;
 use crate::engine_v2::*;
 use crate::util::*;
 
-const TEXT_DURATION: f32 = 1.0;
-const FADING_RISING_TEXT_MAX_OFFSET: f32 = TILE_SIZE * 0.5;
+const TEXT_DURATION: f32 = 0.5;
+const FADING_RISING_TEXT_MAX_OFFSET: f32 = TILE_SIZE / 2.0;
 
 pub struct Animation {
     pub timer: Timer,
