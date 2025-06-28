@@ -31,19 +31,30 @@ fn transition_single_enemy(
         .filter_map(|id| world.unit(id).map(|unit| (unit.coord, id)))
         .collect();
 
-    let mut y = UI_ORIGIN.1;
-    let cancel_button = make_cancel_button(&mut y);
-    let action_description = make_action_description_panel(&action, &mut y);
+    // If there is only 1 target, resolve the action immediately.
+    if targets.len() == 1 {
+        let target_id = *targets.values().next().expect("No target found");
+        let unit = world.active_unit().expect("No active unit found");
+        let effects = action.compile_single_enemy_action(world, unit, target_id);
+        world.effects.extend(effects);
+        *state = State::ResolvingAction;
+    }
+    // If there are multiple targets, prompt the player to select one.
+    else {
+        let mut y = UI_ORIGIN.1;
+        let cancel_button = make_cancel_button(&mut y);
+        let action_description = make_action_description_panel(&action, &mut y);
 
-    *state = State::SelectingEnemyTarget(SelectingEnemyTarget {
-        action,
-        targets,
-        selected_target: None,
-        cancel_button,
-        action_description,
-        unit_description_opt: None,
-        tile_description_opt: None,
-    })
+        *state = State::SelectingEnemyTarget(SelectingEnemyTarget {
+            action,
+            targets,
+            selected_target: None,
+            cancel_button,
+            action_description,
+            unit_description_opt: None,
+            tile_description_opt: None,
+        })
+    }
 }
 
 pub fn update_single_enemy(world: &mut World, state: &mut State) {
