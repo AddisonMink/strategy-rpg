@@ -1,5 +1,6 @@
 use super::World;
 use super::action::Action;
+use super::*;
 use crate::util::*;
 use std::collections::{HashSet, VecDeque};
 
@@ -26,12 +27,14 @@ pub struct UnitData {
 #[derive(Debug, Clone, Copy)]
 pub struct UnitBehavior {
     pub select_move: fn(&World) -> Option<VecDeque<Coord>>,
+    pub select_action: fn(&World) -> Option<VecDeque<Effect>>,
 }
 
 impl Default for UnitBehavior {
     fn default() -> Self {
         Self {
             select_move: |_| None,
+            select_action: |_| None,
         }
     }
 }

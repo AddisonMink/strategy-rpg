@@ -1,15 +1,15 @@
-use crate::constants::{PADDING, UI_ORIGIN};
-
 use super::*;
-
-use macroquad::prelude::trace;
+use crate::constants::{PADDING, UI_ORIGIN};
 use panel::*;
 
 pub fn transition(world: &mut World, state: &mut State) {
     let unit = world.active_unit().expect("No active unit found");
 
     if unit.data().side == Side::NPC {
-        ending_turn::transition(world, state);
+        if let Some(effects) = (unit.behavior().select_action)(world) {
+            world.effects.extend(effects);
+        }
+        *state = State::ResolvingAction;
     } else {
         let actions: Vec<Action> = unit
             .actions()
