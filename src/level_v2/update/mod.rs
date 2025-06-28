@@ -54,6 +54,7 @@ fn execute_effects(world: &mut World) {
             Effect::Sleep { duration } => world.animations.push_front(Animation::sleep(duration)),
             Effect::Move { id, coord } => execute_move(world, id, coord),
             Effect::Damage { id, min, max } => execute_damage(world, id, min, max),
+            Effect::Animate { animation } => world.animations.push_back(animation),
         }
 
         if !world.animations.is_empty() {

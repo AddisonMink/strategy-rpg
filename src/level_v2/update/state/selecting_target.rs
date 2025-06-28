@@ -76,7 +76,7 @@ pub fn update_single_enemy(world: &mut World, state: &mut State) {
 
         let effects = selecting
             .action
-            .compile_single_enemy_action(unit, target_id);
+            .compile_single_enemy_action(world, unit, target_id);
 
         world.effects.extend(effects);
         *state = State::ResolvingAction;

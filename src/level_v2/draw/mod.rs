@@ -18,6 +18,8 @@ pub fn draw(world: &World, state: &State) {
 fn draw_world(world: &World) {
     grid::draw_frame("Level 0");
 
+    let animating_unit = world.animations.front().and_then(|a| a.unit_id());
+
     for coord in grid::coords_iter() {
         if !world.player_vision.tile_visible(coord) {
             continue;
@@ -39,6 +41,7 @@ fn draw_world(world: &World) {
         if let Some(unit) = world
             .unit_at(coord)
             .filter(|u| world.player_vision.unit_visible(u.id()))
+            .filter(|u| animating_unit != Some(u.id()))
         {
             grid::draw_glyph(coord, unit.data().glyph.mix_color(light_color, 0.5));
         } else {
@@ -56,6 +59,11 @@ fn draw_animation(world: &World) -> Option<()> {
         AnimationKind::FadingRisingText(coord, text, color, max_offset) => {
             draw_fading_rising_text(*coord, &text.as_str(), *color, *max_offset, progress)
         }
+        AnimationKind::UnitAnimation(unit_animation) => match unit_animation.kind {
+            UnitAnimationKind::Attack(dir) => {
+                draw_attack_animation(world, unit_animation.id, dir, progress);
+            }
+        },
         _ => {}
     }
 
@@ -68,6 +76,27 @@ fn draw_fading_rising_text(coord: Coord, text: &str, color: Color, max_offset: f
     let faded_color = color.with_alpha(alpha);
 
     grid::draw_text_with_offset(coord, text, faded_color, (0.0, offset));
+}
+
+fn draw_attack_animation(world: &World, id: UnitId, dir: Direction, progress: f32) {
+    let Some(unit) = world.unit(id) else { return };
+
+    if !world.player_vision.unit_visible(unit.id()) {
+        return;
+    };
+
+    let light_color = world.light_grid.light_color(unit.coord);
+    let glyph = unit.data().glyph.mix_color(light_color, 0.5);
+    let t = (progress * std::f32::consts::PI).sin() * TILE_SIZE / 2.0;
+
+    let offset = match dir {
+        Direction::Up => (0.0, -t),
+        Direction::Down => (0.0, t),
+        Direction::Left => (-t, 0.0),
+        Direction::Right => (t, 0.0),
+    };
+
+    grid::draw_glyph_with_offset(unit.coord, glyph, offset);
 }
 
 fn draw_state(world: &World, state: &State) {

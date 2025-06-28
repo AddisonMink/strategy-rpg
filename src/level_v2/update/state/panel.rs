@@ -96,16 +96,16 @@ pub fn make_action_description_panel(action: &Action, y: &mut f32) -> Panel {
     builder = builder.text("Effects:", WHITE);
 
     for effect in action.effects.iter() {
-        let (effect_str, color) = match effect {
+        match effect {
             ActionEffect::Damage { min, max } => {
                 if min == max {
-                    (format!("Damage: {}", min), RED)
+                    builder = builder.text(format!(" Damage: {}", min), RED);
                 } else {
-                    (format!("Damage: {}-{}", min, max), RED)
+                    builder = builder.text(format!(" Damage: {}-{}", min, max), RED);
                 }
             }
+            _ => {}
         };
-        builder = builder.text(format!(" {}", effect_str), color);
     }
 
     let panel = builder.build();
