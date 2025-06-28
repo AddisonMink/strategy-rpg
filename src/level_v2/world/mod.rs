@@ -109,6 +109,12 @@ impl World {
         self.unit_queue.front().and_then(|id| self.units.get(id))
     }
 
+    pub fn active_unit_mut(&mut self) -> Option<&mut Unit> {
+        self.unit_queue
+            .front()
+            .and_then(|id| self.units.get_mut(id))
+    }
+
     pub fn units_iter(&self) -> impl Iterator<Item = &Unit> {
         self.units.values()
     }
@@ -149,7 +155,14 @@ impl World {
     }
 
     pub fn lights_iter(&self) -> impl Iterator<Item = (Coord, &Light)> {
-        self.point_lights.values().map(|l| (l.coord, &l.light))
+        let point_lights = self.point_lights.values().map(|l| (l.coord, &l.light));
+
+        let unit_lights = self
+            .units
+            .values()
+            .filter_map(|unit| unit.light.as_ref().map(|light| (unit.coord, light)));
+
+        point_lights.chain(unit_lights)
     }
 
     pub fn unit_can_see_tile(&self, unit_id: UnitId, coord: Coord) -> bool {

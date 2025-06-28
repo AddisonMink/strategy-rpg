@@ -26,6 +26,10 @@ pub enum Effect {
         item_id: ItemId,
         amount: u16,
     },
+    AddUnitLight {
+        id: UnitId,
+        light: Light,
+    },
     Animate {
         animation: Animation,
     },

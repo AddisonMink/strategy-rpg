@@ -93,6 +93,11 @@ impl Level {
         self.units.get(active_entity)
     }
 
+    pub fn active_unit_mut(&mut self) -> Option<&mut Unit> {
+        let active_entity = self.turn_queue.front()?;
+        self.units.get_mut(active_entity)
+    }
+
     pub fn unit_at(&self, coord: Coord) -> Option<&Unit> {
         self.units.values().find(|unit| unit.coord == coord)
     }

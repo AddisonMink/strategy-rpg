@@ -4,6 +4,7 @@ use super::*;
 
 #[derive(Debug, Clone, Copy)]
 pub enum ActionRange {
+    SelfRange,
     Enemy { min_range: u16, max_range: u16 },
 }
 
@@ -11,6 +12,7 @@ pub enum ActionRange {
 pub enum ActionEffect {
     Attack,
     Damage { min: u16, max: u16 },
+    Light { light: Light },
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -34,6 +36,7 @@ impl Action {
         origin: Coord,
     ) -> Option<ActionTargets> {
         match self.range {
+            ActionRange::SelfRange => Some(ActionTargets::SelfTarget(unit.id())),
             ActionRange::Enemy {
                 min_range,
                 max_range,
@@ -64,9 +67,11 @@ impl Action {
 }
 
 pub enum ActionTargets {
+    SelfTarget(UnitId),
     EnemyTargets(HashSet<UnitId>),
 }
 
 pub enum ActionTarget {
+    SelfTarget(UnitId),
     SingleEnemy(UnitId),
 }

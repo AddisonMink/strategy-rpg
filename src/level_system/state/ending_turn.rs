@@ -5,6 +5,20 @@ pub fn transition(level: &mut Level) {
 }
 
 pub fn update(level: &mut Level) {
+    let Some(unit) = level.active_unit_mut() else {
+        return;
+    };
+
+    if let Some(light) = unit.light.as_mut() {
+        light.radius = light.radius.saturating_sub(1);
+        
+        if light.radius == 0 {
+            unit.light = None;
+        }
+
+        
+    }
+
     if let Some(entity) = level.turn_queue.pop_front() {
         level.turn_queue.push_back(entity);
     }

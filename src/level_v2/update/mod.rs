@@ -68,6 +68,7 @@ fn execute_effects(world: &mut World) {
                 item_id,
                 amount,
             } => execute_consume_charge(world, id, item_id, amount),
+            Effect::AddUnitLight { id, light } => execute_add_unit_light(world, id, light),
             Effect::Animate { animation } => world.animations.push_back(animation),
         }
 
@@ -198,6 +199,15 @@ fn execute_consume_charge(world: &mut World, id: UnitId, item_id: ItemId, amount
             ShortString::new("broken"),
             RED,
         ));
+    }
+}
+
+fn execute_add_unit_light(world: &mut World, id: UnitId, light: Light) {
+    if let Some(unit) = world.unit_mut(id) {
+        unit.light = Some(light);
+        world.effects.push_front(Effect::UpdateNpcVision);
+        world.effects.push_front(Effect::UpdatePlayerVision);
+        world.effects.push_front(Effect::UpdateLightGrid);
     }
 }
 

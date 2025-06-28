@@ -18,3 +18,21 @@ pub const SWORD_DATA: ItemData = ItemData {
         ]),
     }]),
 };
+
+pub const TORCH_DATA: ItemData = ItemData {
+    id: ItemId(1),
+    name: ShortString::new("Torch"),
+    color: ORANGE,
+    charges_max: 2,
+    actions: ShortList::new(&[Action {
+        name: ShortString::new("Light"),
+        cost: 1,
+        range: ActionRange::SelfRange,
+        effects: ShortList::new(&[ActionEffect::Light {
+            light: Light {
+                radius: 3,
+                color: ORANGE,
+            },
+        }]),
+    }]),
+};

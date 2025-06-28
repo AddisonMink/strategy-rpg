@@ -30,7 +30,11 @@ pub fn make_action_preview_panel(world: &World, player_pos: Option<Coord>, y: &m
             false
         };
 
-        let color = if valid { WHITE } else { GRAY };
+        let color = if valid {
+            action.item_color
+        } else {
+            mix_color(action.item_color, BLACK, 0.5)
+        };
 
         builder = builder.selectable_text(action.action.name.to_string(), color);
     }
@@ -78,6 +82,7 @@ pub fn make_unit_description_panel(unit: &Unit, y: &mut f32) -> Panel {
 
 pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel {
     let range_str = match action.action.range {
+        ActionRange::SelfRange => "Self".to_string(),
         ActionRange::Enemy {
             min_range,
             max_range,
@@ -98,7 +103,7 @@ pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel 
         .labeled_meter(
             action.item_name.as_str(),
             action.item_charges,
-            0,
+            action.action.cost,
             action.item_charges_max,
             action.item_color,
         )
@@ -115,6 +120,9 @@ pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel 
                 } else {
                     builder = builder.text(format!(" Damage: {}-{}", min, max), RED);
                 }
+            }
+            ActionEffect::Light { light } => {
+                builder = builder.text(format!(" Light: {} radius", light.radius), light.color);
             }
             _ => {}
         };

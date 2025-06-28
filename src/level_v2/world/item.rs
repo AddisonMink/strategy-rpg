@@ -58,6 +58,36 @@ pub struct ItemAction {
 }
 
 impl ItemAction {
+    pub fn compile_self_action(
+        &self,
+        world: &World,
+        unit: &Unit,
+        target_id: UnitId,
+    ) -> VecDeque<Effect> {
+        let mut effects = VecDeque::new();
+
+        for effect in self.action.effects.iter() {
+            match effect {
+                ActionEffect::Light { light } => {
+                    let effect = Effect::AddUnitLight {
+                        id: unit.id(),
+                        light: *light,
+                    };
+                    effects.push_back(effect);
+                }
+                _ => {}
+            }
+        }
+
+        effects.push_back(Effect::ConsumeCharge {
+            id: unit.id(),
+            item_id: self.item_id,
+            amount: self.action.cost,
+        });
+
+        effects
+    }
+
     pub fn compile_single_enemy_action(
         &self,
         world: &World,
@@ -84,10 +114,21 @@ impl ItemAction {
                     };
                     effects.push_back(effect);
                 }
+                ActionEffect::Light { light } => {
+                    let effect = Effect::AddUnitLight {
+                        id: unit.id(),
+                        light: *light,
+                    };
+                    effects.push_back(effect);
+                }
             }
         }
 
-        effects.push_back(Effect::ConsumeCharge { id: unit.id(), item_id: self.item_id, amount: self.action.cost });
+        effects.push_back(Effect::ConsumeCharge {
+            id: unit.id(),
+            item_id: self.item_id,
+            amount: self.action.cost,
+        });
 
         effects
     }

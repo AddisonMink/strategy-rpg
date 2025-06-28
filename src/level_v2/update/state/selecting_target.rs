@@ -11,6 +11,12 @@ pub fn transition(world: &mut World, state: &mut State, action: ItemAction) {
     };
 
     match targets {
+        ActionTargets::SelfTarget(target_id) => {
+            // If the action targets self, resolve it immediately.
+            let effects = action.compile_self_action(world, unit, target_id);
+            world.effects.extend(effects);
+            *state = State::ResolvingAction;
+        }
         ActionTargets::EnemyTargets(targets) => {
             transition_single_enemy(world, state, action, targets)
         }

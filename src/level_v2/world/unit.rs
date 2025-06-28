@@ -52,6 +52,7 @@ pub struct Unit {
     pub hp: u16,
     pub memory: Memory,
     pub items: HashMap<ItemId, Item>,
+    pub light: Option<Light>,
 }
 
 impl Unit {
@@ -64,6 +65,7 @@ impl Unit {
             behavior: data.behavior.unwrap_or_default(),
             memory: Memory::default(),
             items: HashMap::default(),
+            light: None,
         }
     }
 
