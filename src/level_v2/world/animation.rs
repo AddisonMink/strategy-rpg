@@ -6,10 +6,12 @@ use crate::util::*;
 const TEXT_DURATION: f32 = 0.5;
 const FADING_RISING_TEXT_MAX_OFFSET: f32 = TILE_SIZE / 2.0;
 const ATTACK_DURATION: f32 = 0.1;
+const DEATH_DURATION: f32 = 0.5;
 
 #[derive(Debug, Clone, Copy)]
 pub enum UnitAnimationKind {
     Attack(Direction),
+    Death,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -65,6 +67,16 @@ impl Animation {
             kind: AnimationKind::UnitAnimation(UnitAnimation {
                 id,
                 kind: UnitAnimationKind::Attack(direction),
+            }),
+        }
+    }
+
+    pub fn death(id: UnitId) -> Self {
+        Self {
+            timer: Timer::new(DEATH_DURATION),
+            kind: AnimationKind::UnitAnimation(UnitAnimation {
+                id,
+                kind: UnitAnimationKind::Death,
             }),
         }
     }

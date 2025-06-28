@@ -63,6 +63,7 @@ fn draw_animation(world: &World) -> Option<()> {
             UnitAnimationKind::Attack(dir) => {
                 draw_attack_animation(world, unit_animation.id, dir, progress);
             }
+            UnitAnimationKind::Death => draw_death_animation(world, unit_animation.id, progress),
         },
         _ => {}
     }
@@ -97,6 +98,25 @@ fn draw_attack_animation(world: &World, id: UnitId, dir: Direction, progress: f3
     };
 
     grid::draw_glyph_with_offset(unit.coord, glyph, offset);
+}
+
+fn draw_death_animation(world: &World, id: UnitId, progress: f32) {
+    let Some(unit) = world.unit(id) else { return };
+
+    if !world.player_vision.unit_visible(unit.id()) {
+        return;
+    };
+
+    let light_color = world.light_grid.light_color(unit.coord);
+    let alpha = 1.0 - progress;
+
+    let glyph = unit
+        .data()
+        .glyph
+        .mix_color(light_color, 0.5)
+        .with_alpha(alpha);
+
+    grid::draw_glyph(unit.coord, glyph);
 }
 
 fn draw_state(world: &World, state: &State) {

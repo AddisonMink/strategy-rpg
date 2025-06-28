@@ -54,6 +54,7 @@ fn execute_effects(world: &mut World) {
             Effect::Sleep { duration } => world.animations.push_front(Animation::sleep(duration)),
             Effect::Move { id, coord } => execute_move(world, id, coord),
             Effect::Damage { id, min, max } => execute_damage(world, id, min, max),
+            Effect::Kill { id } => execute_kill(world, id),
             Effect::Animate { animation } => world.animations.push_back(animation),
         }
 
@@ -134,7 +135,7 @@ fn update_npc_vision_of_player(
     Some(())
 }
 
-pub fn execute_damage(world: &mut World, id: UnitId, min: u16, max: u16) {
+fn execute_damage(world: &mut World, id: UnitId, min: u16, max: u16) {
     let Some(unit) = world.unit_mut(id) else {
         return;
     };
@@ -142,9 +143,22 @@ pub fn execute_damage(world: &mut World, id: UnitId, min: u16, max: u16) {
     let damage = roll(min, max);
     let damage_str = ShortString::new(&(-(damage as i16)).to_string());
     let damage_animation = Animation::fading_rising_text(unit.coord, damage_str, RED);
+    let dead = unit.hp <= damage;
 
     unit.hp = unit.hp.saturating_sub(damage);
-    world.animations.push_front(damage_animation);
+    world.animations.push_back(damage_animation);
+
+    if dead {
+        world.animations.push_back(Animation::death(id));
+        world.effects.push_front(Effect::Kill { id });
+    }
+}
+
+fn execute_kill(world: &mut World, id: UnitId) {
+    world.remove_unit(id);
+    world.effects.push_front(Effect::UpdateNpcVision);
+    world.effects.push_front(Effect::UpdatePlayerVision);
+    world.effects.push_front(Effect::UpdateLightGrid);
 }
 
 fn roll(min: u16, max: u16) -> u16 {

@@ -9,5 +9,6 @@ pub enum Effect {
     Sleep { duration: f32 },
     Move { id: UnitId, coord: Coord },
     Damage { id: UnitId, min: u16, max: u16 },
+    Kill { id: UnitId },
     Animate { animation: Animation },
 }
