@@ -45,10 +45,10 @@ pub fn draw_text(coord: Coord, text: &str, color: Color) {
 
 pub fn draw_text_with_offset(coord: Coord, text: &str, color: Color, offset: (f32, f32)) {
     let (cx, cy) = coord_to_pos(coord);
-    let (text_width, text_height) = huge_text_size(text);
+    let (text_width, text_height) = big_text_size(text);
     let x = cx + (TILE_SIZE - text_width) / 2.0 + offset.0;
     let y = cy + (TILE_SIZE - text_height) / 2.0 + offset.1;
-    crate::engine_v2::draw_huge_text(x, y, text, color);
+    crate::engine_v2::draw_big_text(x, y, text, color);
 }
 
 pub fn draw_text_centered(text: &str, sub_text: Option<&str>, color: Color) {
