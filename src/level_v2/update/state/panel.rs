@@ -77,15 +77,6 @@ pub fn make_unit_description_panel(unit: &Unit, y: &mut f32) -> Panel {
 }
 
 pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel {
-    let mut builder = Panel::builder()
-        .title(
-            action.action.name.to_string().to_uppercase(),
-            action.item_color,
-        )
-        .text(action.item_name.as_str().to_uppercase(), action.item_color)
-        .size(UI_WIDTH, 0.0)
-        .position(UI_ORIGIN.0, *y);
-
     let range_str = match action.action.range {
         ActionRange::Enemy {
             min_range,
@@ -99,8 +90,22 @@ pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel 
         }
     };
 
-    builder = builder.text(range_str, WHITE);
-    builder = builder.text("Effects:", WHITE);
+    let mut builder = Panel::builder()
+        .title(
+            action.action.name.to_string().to_uppercase(),
+            action.item_color,
+        )
+        .labeled_meter(
+            action.item_name.as_str(),
+            action.item_charges,
+            0,
+            action.item_charges_max,
+            action.item_color,
+        )
+        .text(range_str, WHITE)
+        .text("Effects:", WHITE)
+        .size(UI_WIDTH, 0.0)
+        .position(UI_ORIGIN.0, *y);
 
     for effect in action.action.effects.iter() {
         match effect {

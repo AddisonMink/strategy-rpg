@@ -16,23 +16,12 @@ pub enum ActionEffect {
 #[derive(Debug, Clone, Copy)]
 pub struct Action {
     pub name: ShortString,
+    pub cost: u16,
     pub range: ActionRange,
     pub effects: ShortList<ActionEffect>,
 }
 
 impl Action {
-    pub const ATTACK: Self = Self {
-        name: ShortString::new("Attack"),
-        range: ActionRange::Enemy {
-            min_range: 1,
-            max_range: 1,
-        },
-        effects: ShortList::new(&[
-            ActionEffect::Attack,
-            ActionEffect::Damage { min: 1, max: 3 },
-        ]),
-    };
-
     pub fn find_targets(&self, world: &World, unit: &Unit) -> Option<ActionTargets> {
         let origin = unit.coord;
         self.find_targets_from(world, unit, origin)
@@ -71,38 +60,6 @@ impl Action {
             .collect();
 
         (!targets.is_empty()).then_some(ActionTargets::EnemyTargets(targets))
-    }
-
-    pub fn compile_single_enemy_action(
-        &self,
-        world: &World,
-        unit: &Unit,
-        enemy_id: UnitId,
-    ) -> VecDeque<Effect> {
-        let mut effects = VecDeque::new();
-
-        for effect in self.effects.iter() {
-            match effect {
-                ActionEffect::Attack => {
-                    if let Some(enemy) = world.unit(enemy_id) {
-                        let dir = unit.coord.direction_to(enemy.coord).unwrap();
-                        let animation = Animation::attack(unit.id(), dir);
-                        let effect = Effect::Animate { animation };
-                        effects.push_back(effect);
-                    }
-                }
-                ActionEffect::Damage { min, max } => {
-                    let effect = Effect::Damage {
-                        id: enemy_id,
-                        min: *min,
-                        max: *max,
-                    };
-                    effects.push_back(effect);
-                }
-            }
-        }
-
-        effects
     }
 }
 

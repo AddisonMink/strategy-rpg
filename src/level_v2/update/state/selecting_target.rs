@@ -32,10 +32,7 @@ fn transition_single_enemy(
     if targets.len() == 1 {
         let target_id = *targets.values().next().expect("No target found");
         let unit = world.active_unit().expect("No active unit found");
-
-        let effects = action
-            .action
-            .compile_single_enemy_action(world, unit, target_id);
+        let effects = action.compile_single_enemy_action(world, unit, target_id);
 
         world.effects.extend(effects);
         *state = State::ResolvingAction;
@@ -87,7 +84,6 @@ pub fn update_single_enemy(world: &mut World, state: &mut State) {
         let unit = world.active_unit().expect("No active unit found");
 
         let effects = selecting
-            .action
             .action
             .compile_single_enemy_action(world, unit, target_id);
 

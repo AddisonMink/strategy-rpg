@@ -6,9 +6,27 @@ pub enum Effect {
     UpdateLightGrid,
     UpdatePlayerVision,
     UpdateNpcVision,
-    Sleep { duration: f32 },
-    Move { id: UnitId, coord: Coord },
-    Damage { id: UnitId, min: u16, max: u16 },
-    Kill { id: UnitId },
-    Animate { animation: Animation },
+    Sleep {
+        duration: f32,
+    },
+    Move {
+        id: UnitId,
+        coord: Coord,
+    },
+    Damage {
+        id: UnitId,
+        min: u16,
+        max: u16,
+    },
+    Kill {
+        id: UnitId,
+    },
+    ConsumeCharge {
+        id: UnitId,
+        item_id: ItemId,
+        amount: u16,
+    },
+    Animate {
+        animation: Animation,
+    },
 }

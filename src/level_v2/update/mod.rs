@@ -63,6 +63,11 @@ fn execute_effects(world: &mut World) {
             Effect::Move { id, coord } => execute_move(world, id, coord),
             Effect::Damage { id, min, max } => execute_damage(world, id, min, max),
             Effect::Kill { id } => execute_kill(world, id),
+            Effect::ConsumeCharge {
+                id,
+                item_id,
+                amount,
+            } => execute_consume_charge(world, id, item_id, amount),
             Effect::Animate { animation } => world.animations.push_back(animation),
         }
 
@@ -167,6 +172,33 @@ fn execute_kill(world: &mut World, id: UnitId) {
     world.effects.push_front(Effect::UpdateNpcVision);
     world.effects.push_front(Effect::UpdatePlayerVision);
     world.effects.push_front(Effect::UpdateLightGrid);
+}
+
+fn execute_consume_charge(world: &mut World, id: UnitId, item_id: ItemId, amount: u16) {
+    let Some(unit) = world.unit_mut(id) else {
+        return;
+    };
+
+    let coord = unit.coord;
+
+    let broken = unit
+        .items
+        .get_mut(&item_id)
+        .map(|item| {
+            item.charges = item.charges.saturating_sub(amount);
+            (item.charges == 0)
+        })
+        .unwrap_or(false);
+
+    if broken {
+        unit.items.remove(&item_id);
+
+        world.animations.push_back(Animation::fading_rising_text(
+            coord,
+            ShortString::new("broken"),
+            RED,
+        ));
+    }
 }
 
 fn roll(min: u16, max: u16) -> u16 {
