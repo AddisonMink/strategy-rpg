@@ -44,4 +44,5 @@ pub enum State {
     SelectingEnemyTarget(SelectingEnemyTarget),
     ResolvingAction,
     EndingTurn,
+    Failure,
 }

@@ -126,6 +126,7 @@ fn draw_state(world: &World, state: &State) {
         State::SelectingEnemyTarget(selecting_target) => {
             draw_selecting_enemy_target(selecting_target)
         }
+        State::Failure => draw_failure(),
         _ => {}
     }
 }
@@ -191,4 +192,8 @@ pub fn draw_selecting_enemy_target(selecting_target: &SelectingEnemyTarget) {
     if let Some(selected_target) = selecting_target.selected_target {
         grid::draw_square(selected_target, WHITE.with_alpha(0.5));
     }
+}
+
+pub fn draw_failure() {
+    grid::draw_text_centered("FAILED", Some("Click to restart."), WHITE);
 }

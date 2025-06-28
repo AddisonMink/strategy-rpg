@@ -6,5 +6,10 @@ pub fn transition(world: &mut World, state: &mut State) {
 
 pub fn update(world: &mut World, state: &mut State) {
     world.end_turn();
-    selecting_move::transition(world, state);
+
+    if world.player_units_iter().next().is_none() {
+        *state = State::Failure;
+    } else {
+        selecting_move::transition(world, state);
+    }
 }

@@ -31,6 +31,7 @@ pub fn update(world: &mut World, state: &mut State, delta_time: f32) {
             State::SelectingMove(..) => break,
             State::SelectingAction(..) => break,
             State::SelectingEnemyTarget(..) => break,
+            State::Failure => break,
             _ => {}
         }
     }
