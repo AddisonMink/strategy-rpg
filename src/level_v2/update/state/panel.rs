@@ -22,14 +22,17 @@ pub fn make_action_preview_panel(world: &World, player_pos: Option<Coord>, y: &m
 
     for action in unit.actions() {
         let valid = if let Some(origin) = player_pos {
-            action.find_targets_from(world, unit, origin).is_some()
+            action
+                .action
+                .find_targets_from(world, unit, origin)
+                .is_some()
         } else {
             false
         };
 
         let color = if valid { WHITE } else { GRAY };
 
-        builder = builder.selectable_text(action.name.to_string(), color);
+        builder = builder.selectable_text(action.action.name.to_string(), color);
     }
 
     let panel = builder.build();
@@ -73,13 +76,17 @@ pub fn make_unit_description_panel(unit: &Unit, y: &mut f32) -> Panel {
     panel
 }
 
-pub fn make_action_description_panel(action: &Action, y: &mut f32) -> Panel {
+pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel {
     let mut builder = Panel::builder()
-        .title(action.name.to_string().to_uppercase(), WHITE)
+        .title(
+            action.action.name.to_string().to_uppercase(),
+            action.item_color,
+        )
+        .text(action.item_name.as_str().to_uppercase(), action.item_color)
         .size(UI_WIDTH, 0.0)
         .position(UI_ORIGIN.0, *y);
 
-    let range_str = match action.range {
+    let range_str = match action.action.range {
         ActionRange::Enemy {
             min_range,
             max_range,
@@ -95,7 +102,7 @@ pub fn make_action_description_panel(action: &Action, y: &mut f32) -> Panel {
     builder = builder.text(range_str, WHITE);
     builder = builder.text("Effects:", WHITE);
 
-    for effect in action.effects.iter() {
+    for effect in action.action.effects.iter() {
         match effect {
             ActionEffect::Damage { min, max } => {
                 if min == max {
@@ -113,15 +120,15 @@ pub fn make_action_description_panel(action: &Action, y: &mut f32) -> Panel {
     panel
 }
 
-pub fn make_action_list_panel(actions: &Vec<Action>, y: &mut f32) -> Panel {
+pub fn make_action_list_panel(actions: &Vec<ItemAction>, y: &mut f32) -> Panel {
     let mut builder = Panel::builder()
         .title("ACTIONS", WHITE)
         .size(UI_WIDTH, 0.0)
         .position(UI_ORIGIN.0, *y);
 
     for (i, action) in actions.iter().enumerate() {
-        let text = format!("{}. {}", i + 1, action.name);
-        builder = builder.selectable_text(text, WHITE);
+        let text = format!("{}. {}", i + 1, action.action.name);
+        builder = builder.selectable_text(text, action.item_color);
     }
 
     let panel = builder.build();

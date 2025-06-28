@@ -11,12 +11,11 @@ pub fn transition(world: &mut World, state: &mut State) {
         }
         *state = State::ResolvingAction;
     } else {
-        let actions: Vec<Action> = unit
+        let actions: Vec<ItemAction> = unit
             .actions()
             .iter()
-            .filter(|a| a.find_targets(world, unit).is_some())
+            .filter(|a| a.action.find_targets(world, unit).is_some())
             .copied()
-            .cloned()
             .collect();
 
         if actions.is_empty() {

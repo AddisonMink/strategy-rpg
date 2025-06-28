@@ -13,7 +13,7 @@ pub enum ActionEffect {
     Damage { min: u16, max: u16 },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Action {
     pub name: ShortString,
     pub range: ActionRange,

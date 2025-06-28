@@ -1,6 +1,7 @@
 mod action;
 mod animation;
 mod effect;
+mod item;
 mod light;
 mod light_grid;
 mod map;
@@ -16,6 +17,7 @@ use std::collections::{HashMap, VecDeque};
 pub use action::*;
 pub use animation::*;
 pub use effect::*;
+pub use item::*;
 pub use light::*;
 pub use light_grid::*;
 pub use map::*;
@@ -67,6 +69,18 @@ impl World {
         self.next_unit_id += 1;
         self.unit_queue.push_back(id);
 
+        id
+    }
+
+    pub fn add_unit_with_items(
+        &mut self,
+        data: UnitData,
+        coord: Coord,
+        items: HashMap<ItemId, Item>,
+    ) -> UnitId {
+        let id = self.add_unit(data, coord);
+        let unit = self.units.get_mut(&id).expect("Unit should exist");
+        unit.items = items;
         id
     }
 

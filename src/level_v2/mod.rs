@@ -4,6 +4,8 @@ mod state;
 mod update;
 mod world;
 
+use std::collections::HashMap;
+
 use crate::engine_v2::*;
 use crate::util::*;
 use state::*;
@@ -28,10 +30,15 @@ impl Level {
             behavior: None,
         };
 
+        let hero_items: HashMap<ItemId, Item> = vec![Item::new(content::item::SWORD_DATA)]
+            .iter()
+            .map(|item| (item.data().id, *item))
+            .collect();
+
         let goon_data = content::unit::GOON_DATA;
 
         let mut world = World::new();
-        world.add_unit(hero_data, Coord::new(1, 1));
+        world.add_unit_with_items(hero_data, Coord::new(1, 1), hero_items);
         world.add_unit(goon_data, Coord::new(5, 1));
         world.add_point_light(3, ORANGE, Coord::new(1, 1));
 

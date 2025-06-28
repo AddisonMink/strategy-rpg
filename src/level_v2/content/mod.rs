@@ -1,3 +1,4 @@
+pub mod item;
 pub mod unit;
 
 use super::world::*;

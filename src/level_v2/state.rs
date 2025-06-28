@@ -1,6 +1,6 @@
 use super::Action;
 use super::*;
-use crate::util::*;
+use crate::{level_model::Item, util::*};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Debug, Clone, Copy)]
@@ -21,7 +21,7 @@ pub struct SelectingMove {
 
 #[derive(Debug, Clone)]
 pub struct SelectingAction {
-    pub actions: Vec<Action>,
+    pub actions: Vec<ItemAction>,
     pub cancel_button: Button,
     pub action_list: Panel,
     pub unit_description_opt: Option<Panel>,
@@ -31,7 +31,7 @@ pub struct SelectingAction {
 
 #[derive(Debug, Clone)]
 pub struct SelectingEnemyTarget {
-    pub action: Action,
+    pub action: ItemAction,
     pub targets: HashMap<Coord, UnitId>,
     pub selected_target: Option<Coord>,
     pub cancel_button: Button,

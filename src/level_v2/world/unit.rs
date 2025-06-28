@@ -1,8 +1,6 @@
-use super::World;
-use super::action::Action;
 use super::*;
 use crate::util::*;
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UnitId(pub u32);
@@ -53,6 +51,7 @@ pub struct Unit {
     pub coord: Coord,
     pub hp: u16,
     pub memory: Memory,
+    pub items: HashMap<ItemId, Item>,
 }
 
 impl Unit {
@@ -64,22 +63,7 @@ impl Unit {
             hp: data.hp_max,
             behavior: data.behavior.unwrap_or_default(),
             memory: Memory::default(),
-        }
-    }
-
-    pub fn new_with_behavior(
-        id: UnitId,
-        data: UnitData,
-        coord: Coord,
-        unit_behavior: UnitBehavior,
-    ) -> Self {
-        Self {
-            id,
-            data,
-            coord,
-            hp: data.hp_max,
-            behavior: unit_behavior,
-            memory: Memory::default(),
+            items: HashMap::default(),
         }
     }
 
@@ -95,10 +79,10 @@ impl Unit {
         &self.behavior
     }
 
-    pub fn actions(&self) -> Vec<&Action> {
-        match self.data.side {
-            Side::Player => vec![&Action::ATTACK],
-            Side::NPC => vec![],
-        }
+    pub fn actions(&self) -> Vec<ItemAction> {
+        self.items
+            .values()
+            .flat_map(|item| item.actions())
+            .collect()
     }
 }
