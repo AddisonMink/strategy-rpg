@@ -10,7 +10,7 @@ use macroquad::prelude::trace;
 use macroquad::rand::gen_range;
 use state::update_state;
 
-pub fn update(world: &mut World, state: &mut State, delta_time: f32) {
+pub fn update(world: &mut World, state: &mut State, delta_time: f32) -> Option<LevelResult> {
     loop {
         update_animations(world, delta_time);
         if !world.animations.is_empty() {
@@ -32,8 +32,15 @@ pub fn update(world: &mut World, state: &mut State, delta_time: f32) {
             State::SelectingAction(..) => break,
             State::SelectingEnemyTarget(..) => break,
             State::Failure => break,
+            State::Ending(..) => break,
             _ => {}
         }
+    }
+
+    if let State::Ending(result) = state {
+        Some(*result)
+    } else {
+        None
     }
 }
 

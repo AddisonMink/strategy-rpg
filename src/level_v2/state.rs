@@ -3,6 +3,11 @@ use super::*;
 use crate::util::*;
 use std::collections::{HashMap, HashSet, VecDeque};
 
+#[derive(Debug, Clone, Copy)]
+pub enum LevelResult {
+    Restart,
+}
+
 #[derive(Debug, Clone)]
 pub struct SelectingMove {
     pub valid_moves: HashSet<Coord>,
@@ -45,4 +50,5 @@ pub enum State {
     ResolvingAction,
     EndingTurn,
     Failure,
+    Ending(LevelResult),
 }

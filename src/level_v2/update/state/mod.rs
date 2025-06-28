@@ -22,6 +22,11 @@ pub fn update_state(world: &mut World, state: &mut State) {
         State::SelectingEnemyTarget(..) => selecting_target::update_single_enemy(world, state),
         State::ResolvingAction => ending_turn::transition(world, state),
         State::EndingTurn => ending_turn::update(world, state),
-        State::Failure => {}
-    }
+        State::Failure => {
+            if mouse_clicked() {
+                *state = State::Ending(LevelResult::Restart);
+            }
+        }
+        State::Ending(result_code) => {}
+    };
 }

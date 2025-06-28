@@ -9,6 +9,8 @@ use crate::util::*;
 use state::*;
 use world::*;
 
+pub use state::LevelResult;
+
 pub struct Level {
     world: World,
     state: State,
@@ -39,8 +41,8 @@ impl Level {
         }
     }
 
-    pub fn update(&mut self, delta_time: f32) {
-        update::update(&mut self.world, &mut self.state, delta_time);
+    pub fn update(&mut self, delta_time: f32) -> Option<LevelResult> {
+        update::update(&mut self.world, &mut self.state, delta_time)
     }
 
     pub fn draw(&self) {

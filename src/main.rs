@@ -10,7 +10,6 @@ mod level_v2;
 mod util;
 
 use engine::*;
-use game::*;
 use macroquad::prelude::*;
 use macroquad::rand::srand;
 
@@ -25,7 +24,12 @@ async fn main() {
 
     loop {
         let delta_time = get_frame_time();
-        level.update(delta_time);
+        let result = level.update(delta_time);
+
+        if let Some(level_v2::LevelResult::Restart) = result {
+            level = level_v2::Level::new();
+        }
+
         clear_background(BLACK);
         level.draw();
         next_frame().await;
