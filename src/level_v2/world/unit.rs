@@ -11,6 +11,11 @@ pub enum Side {
     NPC,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum UnitTag {
+    Lurker,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct UnitData {
     pub name: ShortString,
@@ -19,6 +24,7 @@ pub struct UnitData {
     pub vision: u16,
     pub movement: u16,
     pub hp_max: u16,
+    pub tags: ShortList<UnitTag>,
     pub behavior: Option<UnitBehavior>,
 }
 
@@ -53,10 +59,17 @@ pub struct Unit {
     pub memory: Memory,
     pub items: HashMap<ItemId, Item>,
     pub light: Option<Light>,
+    pub tags: HashSet<UnitTag>,
 }
 
 impl Unit {
     pub fn new(id: UnitId, data: UnitData, coord: Coord) -> Self {
+        let tag_set = data
+            .tags
+            .iter()
+            .map(|&tag| tag)
+            .collect::<HashSet<UnitTag>>();
+
         Self {
             id,
             data,
@@ -66,6 +79,7 @@ impl Unit {
             memory: Memory::default(),
             items: HashMap::default(),
             light: None,
+            tags: tag_set,
         }
     }
 

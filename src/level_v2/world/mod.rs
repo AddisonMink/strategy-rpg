@@ -189,6 +189,13 @@ impl World {
             return false;
         };
 
+        if target.tags.contains(&UnitTag::Lurker) {
+            let distance_from_light = self.light_grid.distance_from_light(target.coord);
+            if distance_from_light > 0 {
+                return false;
+            }
+        }
+
         self.unit_can_see_tile(observer_id, target.coord)
     }
 

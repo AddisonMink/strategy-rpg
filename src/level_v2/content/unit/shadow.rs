@@ -8,6 +8,7 @@ pub const SHADOW_DATA: UnitData = UnitData {
     vision: 99,
     movement: 3,
     hp_max: 3,
+    tags: ShortList::new(&[UnitTag::Lurker]),
     behavior: Some(UnitBehavior {
         select_move: default_select_move,
         select_action: select_action,

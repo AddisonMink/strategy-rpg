@@ -8,6 +8,7 @@ pub const GOON_DATA: UnitData = UnitData {
     vision: 2,
     movement: 3,
     hp_max: 5,
+    tags: ShortList::empty(),
     behavior: Some(UnitBehavior {
         select_move: default_select_move,
         select_action: select_action,

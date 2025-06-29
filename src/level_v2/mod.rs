@@ -28,6 +28,7 @@ impl Level {
             movement: 3,
             hp_max: 5,
             behavior: None,
+            tags: ShortList::empty(),
         };
 
         let hero_items: HashMap<ItemId, Item> = vec![
