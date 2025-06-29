@@ -5,7 +5,7 @@ pub const GOON_DATA: UnitData = UnitData {
     name: ShortString::new("Goon"),
     glyph: Glyph::new('g', WHITE),
     side: Side::NPC,
-    vision: 5,
+    vision: 2,
     movement: 3,
     hp_max: 5,
     behavior: Some(UnitBehavior {

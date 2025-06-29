@@ -22,6 +22,7 @@ pub use goal::*;
 pub use item::*;
 pub use light::*;
 pub use light_grid::*;
+use macroquad::prelude::trace;
 pub use map::*;
 pub use player_vision::*;
 pub use point_light::*;

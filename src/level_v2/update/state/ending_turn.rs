@@ -1,3 +1,5 @@
+use macroquad::prelude::trace;
+
 use super::*;
 
 pub fn transition(world: &mut World, state: &mut State) {
@@ -12,14 +14,12 @@ pub fn update(world: &mut World, state: &mut State) {
     } else {
     }
 
-    world.end_turn();
-
     if is_failure(world) {
         *state = State::Failure;
     } else if is_success(world) {
         *state = State::Success;
     } else {
-        world.end_turn();
+        let id = world.end_turn();
         selecting_move::transition(world, state);
     }
 }

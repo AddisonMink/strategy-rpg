@@ -5,6 +5,7 @@ use super::world::*;
 use crate::util::*;
 use macroquad::color::RED;
 use macroquad::color::YELLOW;
+use macroquad::prelude::trace;
 use macroquad::rand::gen_range;
 use state::update_state;
 
@@ -57,7 +58,7 @@ fn execute_effects(world: &mut World) {
         match effect {
             Effect::UpdateLightGrid => world.light_grid = LightGrid::new(world),
             Effect::UpdatePlayerVision => world.player_vision = PlayerVision::new(world),
-            Effect::UpdateNpcVision => update_npc_vision(world),
+            Effect::UpdateNpcVision => execute_update_npc_vision(world),
             Effect::Sleep { duration } => world.animations.push_front(Animation::sleep(duration)),
             Effect::Move { id, coord } => execute_move(world, id, coord),
             Effect::Damage { id, min, max } => execute_damage(world, id, min, max),
@@ -88,7 +89,7 @@ fn execute_move(world: &mut World, id: UnitId, coord: Coord) {
     world.effects.push_front(Effect::UpdateLightGrid);
 }
 
-fn update_npc_vision(world: &mut World) {
+fn execute_update_npc_vision(world: &mut World) {
     let player_ids = world
         .player_units_iter()
         .map(|player| player.id())
