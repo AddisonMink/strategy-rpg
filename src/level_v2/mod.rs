@@ -38,11 +38,10 @@ impl Level {
         .map(|item| (item.data().id, *item))
         .collect();
 
-        let goon_data = content::unit::GOON_DATA;
-
         let mut world = World::new();
         world.add_unit_with_items(hero_data, Coord::new(1, 1), hero_items);
-        world.add_unit(goon_data, Coord::new(5, 1));
+        //world.add_unit(content::unit::GOON_DATA, Coord::new(5, 1));
+        world.add_unit(content::unit::SHADOW_DATA, Coord::new(8, 5));
 
         Self {
             world,

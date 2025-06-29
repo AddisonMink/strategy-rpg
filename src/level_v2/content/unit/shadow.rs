@@ -1,13 +1,13 @@
 use super::*;
 use std::collections::VecDeque;
 
-pub const GOON_DATA: UnitData = UnitData {
-    name: ShortString::new("Goon"),
-    glyph: Glyph::new('g', WHITE),
+pub const SHADOW_DATA: UnitData = UnitData {
+    name: ShortString::new("SHADOW"),
+    glyph: Glyph::new('S', WHITE),
     side: Side::NPC,
-    vision: 2,
+    vision: 99,
     movement: 3,
-    hp_max: 5,
+    hp_max: 3,
     behavior: Some(UnitBehavior {
         select_move: default_select_move,
         select_action: select_action,
