@@ -37,7 +37,7 @@ pub const TORCH_DATA: ItemData = ItemData {
             }]),
         },
         Action {
-            name: ShortString::new("Red Mote"),
+            name: ShortString::new("Red Seed"),
             cost: 1,
             range: ActionRange::Enemy {
                 min_range: 2,
@@ -54,5 +54,6 @@ pub const TORCH_DATA: ItemData = ItemData {
                 ActionEffect::Damage { min: 1, max: 3 },
             ]),
         },
+        // TODO: Red Flower
     ]),
 };
