@@ -5,8 +5,6 @@ use super::world::*;
 use crate::util::*;
 use macroquad::color::RED;
 use macroquad::color::YELLOW;
-use macroquad::prelude::animation;
-use macroquad::prelude::trace;
 use macroquad::rand::gen_range;
 use state::update_state;
 
@@ -32,6 +30,7 @@ pub fn update(world: &mut World, state: &mut State, delta_time: f32) -> Option<L
             State::SelectingAction(..) => break,
             State::SelectingEnemyTarget(..) => break,
             State::Failure => break,
+            State::Success => break,
             State::Ending(..) => break,
             _ => {}
         }

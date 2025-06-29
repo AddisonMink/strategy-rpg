@@ -27,6 +27,11 @@ pub fn update_state(world: &mut World, state: &mut State) {
                 *state = State::Ending(LevelResult::Restart);
             }
         }
+        State::Success => {
+            if mouse_clicked() {
+                *state = State::Ending(LevelResult::Restart);
+            }
+        }
         State::Ending(result_code) => {}
     };
 }

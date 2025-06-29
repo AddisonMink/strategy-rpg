@@ -1,5 +1,3 @@
-use macroquad::prelude::trace;
-
 use super::state::*;
 use super::world::*;
 use crate::constants::*;
@@ -136,6 +134,7 @@ fn draw_state(world: &World, state: &State) {
             draw_selecting_enemy_target(selecting_target)
         }
         State::Failure => draw_failure(),
+        State::Success => draw_success(),
         _ => {}
     }
 }
@@ -201,6 +200,10 @@ pub fn draw_selecting_enemy_target(selecting_target: &SelectingEnemyTarget) {
     if let Some(selected_target) = selecting_target.selected_target {
         grid::draw_square(selected_target, WHITE.with_alpha(0.5));
     }
+}
+
+pub fn draw_success() {
+    grid::draw_text_centered("SUCCESS", Some("Click to restart."), WHITE);
 }
 
 pub fn draw_failure() {

@@ -1,6 +1,7 @@
 mod action;
 mod animation;
 mod effect;
+mod goal;
 mod item;
 mod light;
 mod light_grid;
@@ -17,6 +18,7 @@ use std::collections::{HashMap, VecDeque};
 pub use action::*;
 pub use animation::*;
 pub use effect::*;
+pub use goal::*;
 pub use item::*;
 pub use light::*;
 pub use light_grid::*;
@@ -43,6 +45,7 @@ pub struct World {
     // State
     pub effects: VecDeque<Effect>,
     pub animations: VecDeque<Animation>,
+    pub goal: Goal,
 }
 
 impl World {
@@ -58,6 +61,7 @@ impl World {
             next_point_light_id: 0,
             effects: VecDeque::new(),
             animations: VecDeque::new(),
+            goal: Goal::KillAllEnemies,
         }
     }
 

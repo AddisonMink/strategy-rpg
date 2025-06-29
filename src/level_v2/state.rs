@@ -50,5 +50,6 @@ pub enum State {
     ResolvingAction,
     EndingTurn,
     Failure,
+    Success,
     Ending(LevelResult),
 }
