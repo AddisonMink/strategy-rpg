@@ -11,6 +11,7 @@ pub enum ActionRange {
 #[derive(Debug, Clone, Copy)]
 pub enum ActionEffect {
     Attack,
+    Projectile,
     Damage { min: u16, max: u16 },
     Light { light: Light },
 }

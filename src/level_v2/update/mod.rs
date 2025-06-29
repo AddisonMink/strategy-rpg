@@ -138,11 +138,9 @@ fn update_npc_vision_of_player(
         npc.memory.visible_players.insert(moved_player_id);
 
         if visible_to_player {
-            world.animations.push_front(Animation::fading_rising_text(
-                npc_coord,
-                ShortString::new("!"),
-                RED,
-            ));
+            world
+                .animations
+                .push_front(Animation::text(npc_coord, ShortString::new("!"), RED));
         }
     }
 
@@ -156,7 +154,7 @@ fn execute_damage(world: &mut World, id: UnitId, min: u16, max: u16) {
 
     let damage = roll(min, max);
     let damage_str = ShortString::new(&(-(damage as i16)).to_string());
-    let damage_animation = Animation::fading_rising_text(unit.coord, damage_str, RED);
+    let damage_animation = Animation::text(unit.coord, damage_str, RED);
     let dead = unit.hp <= damage;
 
     unit.hp = unit.hp.saturating_sub(damage);
@@ -194,11 +192,9 @@ fn execute_consume_charge(world: &mut World, id: UnitId, item_id: ItemId, amount
     if broken {
         unit.items.remove(&item_id);
 
-        world.animations.push_back(Animation::fading_rising_text(
-            coord,
-            ShortString::new("broken"),
-            RED,
-        ));
+        world
+            .animations
+            .push_back(Animation::text(coord, ShortString::new("broken"), RED));
     }
 }
 

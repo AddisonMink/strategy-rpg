@@ -106,6 +106,20 @@ impl ItemAction {
                         effects.push_back(effect);
                     }
                 }
+                ActionEffect::Projectile => {
+                    if let Some(enemy) = world.unit(enemy_id) {
+                        let mut line = bresenhem_line(unit.coord, enemy.coord);
+
+                        if !line.is_empty() {
+                            line.pop_front();
+                        }
+
+                        let path = ShortList::from_vecdeque(line);
+                        let animation = Animation::path_mote(path, RED);
+                        let effect = Effect::Animate { animation };
+                        effects.push_back(effect);
+                    }
+                }
                 ActionEffect::Damage { min, max } => {
                     let effect = Effect::Damage {
                         id: enemy_id,

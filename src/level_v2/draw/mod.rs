@@ -1,11 +1,8 @@
-use macroquad::color;
-use macroquad::color::BLACK;
-use macroquad::text;
+use macroquad::prelude::trace;
 
 use super::state::*;
 use super::world::*;
 use crate::constants::*;
-use crate::engine::coord;
 use crate::engine_v2::*;
 use crate::util::*;
 
@@ -59,6 +56,7 @@ fn draw_animation(world: &World) -> Option<()> {
         AnimationKind::FadingRisingText(coord, text, color, max_offset) => {
             draw_fading_rising_text(*coord, &text.as_str(), *color, *max_offset, progress)
         }
+        AnimationKind::PathMote(path, color) => draw_path_mote(path, *color, progress),
         AnimationKind::UnitAnimation(unit_animation) => match unit_animation.kind {
             UnitAnimationKind::Attack(dir) => {
                 draw_attack_animation(world, unit_animation.id, dir, progress);
@@ -77,6 +75,17 @@ fn draw_fading_rising_text(coord: Coord, text: &str, color: Color, max_offset: f
     let faded_color = color.with_alpha(alpha);
 
     grid::draw_text_with_offset(coord, text, faded_color, (0.0, offset));
+}
+
+fn draw_path_mote(path: &ShortList<Coord>, color: Color, progress: f32) {
+    if path.len() == 0 {
+        return;
+    }
+
+    let index = (progress * path.len() as f32) as usize;
+    let coord = path.get(index).unwrap_or(&path.last().unwrap());
+
+    grid::draw_glyph(*coord, Glyph::new('+', color));
 }
 
 fn draw_attack_animation(world: &World, id: UnitId, dir: Direction, progress: f32) {

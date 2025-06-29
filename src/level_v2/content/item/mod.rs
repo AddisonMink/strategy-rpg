@@ -24,15 +24,29 @@ pub const TORCH_DATA: ItemData = ItemData {
     name: ShortString::new("Torch"),
     color: ORANGE,
     charges_max: 2,
-    actions: ShortList::new(&[Action {
-        name: ShortString::new("Light"),
-        cost: 1,
-        range: ActionRange::SelfRange,
-        effects: ShortList::new(&[ActionEffect::Light {
-            light: Light {
-                radius: 3,
-                color: ORANGE,
+    actions: ShortList::new(&[
+        Action {
+            name: ShortString::new("Ignite"),
+            cost: 1,
+            range: ActionRange::SelfRange,
+            effects: ShortList::new(&[ActionEffect::Light {
+                light: Light {
+                    radius: 3,
+                    color: ORANGE,
+                },
+            }]),
+        },
+        Action {
+            name: ShortString::new("Red Mote"),
+            cost: 1,
+            range: ActionRange::Enemy {
+                min_range: 2,
+                max_range: 5,
             },
-        }]),
-    }]),
+            effects: ShortList::new(&[
+                ActionEffect::Projectile,
+                ActionEffect::Damage { min: 1, max: 3 },
+            ]),
+        },
+    ]),
 };
