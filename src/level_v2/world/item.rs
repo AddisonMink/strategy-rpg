@@ -130,7 +130,7 @@ impl ItemAction {
                 }
                 ActionEffect::Light { light } => {
                     let effect = Effect::AddUnitLight {
-                        id: unit.id(),
+                        id: enemy_id,
                         light: *light,
                     };
                     effects.push_back(effect);

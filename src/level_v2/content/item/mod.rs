@@ -45,6 +45,12 @@ pub const TORCH_DATA: ItemData = ItemData {
             },
             effects: ShortList::new(&[
                 ActionEffect::Projectile,
+                ActionEffect::Light {
+                    light: Light {
+                        radius: 2,
+                        color: ORANGE,
+                    },
+                },
                 ActionEffect::Damage { min: 1, max: 3 },
             ]),
         },

@@ -1,3 +1,7 @@
+use std::f32::consts::E;
+
+use macroquad::color;
+
 use super::map::Map;
 use crate::engine_v2::*;
 use crate::level_v2::world::World;
@@ -31,12 +35,18 @@ impl LightGrid {
                         .saturating_sub(light.radius);
 
                     let distance_from_radius = (distance as f32 - radius).max(0.0);
-                    let light_alpha = (1.0 - distance_from_radius / radius).max(0.0);
-                    let color = light.color.with_alpha(light_alpha);
                     let index = Self::index(coord);
 
                     lights[index] = lights[index].min(distance);
-                    colors[index] = add_colors(colors[index], color);
+
+                    if distance_from_radius <= 0.0 {
+                        let old_color = colors[index];
+                        if old_color == BLACK {
+                            colors[index] = light.color;
+                        } else {
+                            colors[index] = mix_color(old_color, light.color, 0.5);
+                        }
+                    }
                 }
             }
         }
