@@ -45,9 +45,10 @@ fn transition_single_enemy(
     }
     // If there are multiple targets, prompt the player to select one.
     else {
+        let player = world.active_unit().expect("No active unit found");
         let mut y = UI_ORIGIN.1;
         let cancel_button = make_cancel_button(&mut y);
-        let action_description = make_action_description_panel(&action, &mut y);
+        let action_description = make_action_description_panel(player, &action, &mut y);
 
         *state = State::SelectingEnemyTarget(SelectingEnemyTarget {
             action,

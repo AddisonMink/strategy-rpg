@@ -80,7 +80,7 @@ pub fn make_unit_description_panel(unit: &Unit, y: &mut f32) -> Panel {
     panel
 }
 
-pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel {
+pub fn make_action_description_panel(unit: &Unit, action: &ItemAction, y: &mut f32) -> Panel {
     let range_str = match action.action.range {
         ActionRange::SelfRange => "Self".to_string(),
         ActionRange::Enemy {
@@ -115,12 +115,16 @@ pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel 
     for effect in action.action.effects.iter() {
         match effect {
             ActionEffect::Damage { min, max, strength } => {
-                let bonus_str = if *strength { " + STR" } else { "" };
-
-                if min == max {
-                    builder = builder.text(format!(" Damage: {}{}", min, bonus_str), RED);
+                let (true_min, true_max) = if *strength {
+                    (min + unit.data().strength, max + unit.data().strength)
                 } else {
-                    builder = builder.text(format!(" Damage: {}-{}{}", min, max, bonus_str), RED);
+                    (*min, *max)
+                };
+
+                if true_min == true_max {
+                    builder = builder.text(format!(" Damage: {}", true_min), RED);
+                } else {
+                    builder = builder.text(format!(" Damage: {}-{}", true_min, true_max), RED);
                 }
             }
             ActionEffect::Light { light } => {

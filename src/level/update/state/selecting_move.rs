@@ -110,7 +110,7 @@ fn update_panels(
     selecting_move.tile_description_opt = tile_opt.map(|t| make_tile_description_panel(t, &mut y));
     selecting_move.unit_description_opt = unit_opt.map(|u| make_unit_description_panel(u, &mut y));
     selecting_move.action_description_opt =
-        action_opt.map(|a| make_action_description_panel(&a, &mut y));
+        action_opt.map(|a| make_action_description_panel(player, &a, &mut y));
 }
 
 fn compile_path(id: UnitId, path: &VecDeque<Coord>) -> VecDeque<Effect> {

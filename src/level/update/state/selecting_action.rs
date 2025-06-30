@@ -65,6 +65,7 @@ pub fn update(world: &mut World, state: &mut State) {
 
 fn update_panels(world: &mut World, selecting_action: &mut SelectingAction, unit_id: UnitId) {
     let mouse_coord = grid::mouse_coord();
+    let unit = world.active_unit().expect("No active unit found");
 
     let tile_opt = mouse_coord
         .filter(|c| world.unit_can_see_tile(unit_id, *c))
@@ -85,5 +86,5 @@ fn update_panels(world: &mut World, selecting_action: &mut SelectingAction, unit
     selecting_action.unit_description_opt =
         unit_opt.map(|u| make_unit_description_panel(u, &mut y));
     selecting_action.action_description_opt =
-        action_opt.map(|a| make_action_description_panel(a, &mut y));
+        action_opt.map(|a| make_action_description_panel(unit, a, &mut y));
 }
