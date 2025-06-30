@@ -7,6 +7,8 @@ pub const GOON_DATA: UnitData = UnitData {
     side: Side::NPC,
     vision: 2,
     movement: 3,
+    strength: 0,
+    magic: 0,
     hp_max: 5,
     tags: ShortList::empty(),
     behavior: Some(UnitBehavior {

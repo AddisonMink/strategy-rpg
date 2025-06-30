@@ -23,6 +23,8 @@ pub struct UnitData {
     pub side: Side,
     pub vision: u16,
     pub movement: u16,
+    pub strength: u16,
+    pub magic: u16,
     pub hp_max: u16,
     pub tags: ShortList<UnitTag>,
     pub behavior: Option<UnitBehavior>,
@@ -99,6 +101,7 @@ impl Unit {
         self.items
             .values()
             .flat_map(|item| item.actions())
+            .filter(|action| action.action.magic_req <= self.data().magic)
             .collect()
     }
 }

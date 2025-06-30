@@ -20,17 +20,6 @@ pub struct Level {
 
 impl Level {
     pub fn new() -> Self {
-        let hero_data = UnitData {
-            name: ShortString::new("Hero"),
-            glyph: Glyph::new('@', WHITE),
-            side: Side::Player,
-            vision: 2,
-            movement: 3,
-            hp_max: 5,
-            behavior: None,
-            tags: ShortList::empty(),
-        };
-
         let hero_items: HashMap<ItemId, Item> = vec![
             Item::new(content::item::SWORD_DATA),
             Item::new(content::item::TORCH_DATA),
@@ -40,7 +29,19 @@ impl Level {
         .collect();
 
         let mut world = World::new();
-        world.add_unit_with_items(hero_data, Coord::new(1, 1), hero_items);
+
+        world.add_unit_with_items(
+            content::unit::GALOOT_DATA,
+            Coord::new(1, 1),
+            hero_items.clone(),
+        );
+
+        world.add_unit_with_items(
+            content::unit::MAGICIAN_DATA,
+            Coord::new(1, 3),
+            hero_items.clone(),
+        );
+
         world.add_unit(content::unit::GOON_DATA, Coord::new(5, 1));
         world.add_unit(content::unit::SHADOW_DATA, Coord::new(8, 5));
 

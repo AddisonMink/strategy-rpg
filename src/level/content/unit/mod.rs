@@ -1,11 +1,15 @@
+mod galoot;
 mod goon;
+mod magician;
 mod shadow;
 
 use std::collections::VecDeque;
 
 use super::*;
 
+pub use galoot::GALOOT_DATA;
 pub use goon::GOON_DATA;
+pub use magician::MAGICIAN_DATA;
 pub use shadow::SHADOW_DATA;
 
 fn default_select_move(world: &World) -> Option<VecDeque<Coord>> {

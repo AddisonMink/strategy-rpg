@@ -7,6 +7,8 @@ pub const SHADOW_DATA: UnitData = UnitData {
     side: Side::NPC,
     vision: 99,
     movement: 3,
+    magic: 0,
+    strength: 0,
     hp_max: 3,
     tags: ShortList::new(&[UnitTag::Lurker]),
     behavior: Some(UnitBehavior {

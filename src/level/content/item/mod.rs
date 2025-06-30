@@ -8,13 +8,18 @@ pub const SWORD_DATA: ItemData = ItemData {
     actions: ShortList::new(&[Action {
         name: ShortString::new("Slash"),
         cost: 1,
+        magic_req: 0,
         range: ActionRange::Enemy {
             min_range: 1,
             max_range: 1,
         },
         effects: ShortList::new(&[
             ActionEffect::Attack,
-            ActionEffect::Damage { min: 1, max: 3 },
+            ActionEffect::Damage {
+                min: 1,
+                max: 3,
+                strength: true,
+            },
         ]),
     }]),
 };
@@ -28,6 +33,7 @@ pub const TORCH_DATA: ItemData = ItemData {
         Action {
             name: ShortString::new("Ignite"),
             cost: 1,
+            magic_req: 0,
             range: ActionRange::SelfRange,
             effects: ShortList::new(&[ActionEffect::Light {
                 light: Light {
@@ -39,6 +45,7 @@ pub const TORCH_DATA: ItemData = ItemData {
         Action {
             name: ShortString::new("Red Seed"),
             cost: 1,
+            magic_req: 1,
             range: ActionRange::Enemy {
                 min_range: 2,
                 max_range: 5,
@@ -51,7 +58,11 @@ pub const TORCH_DATA: ItemData = ItemData {
                         color: ORANGE,
                     },
                 },
-                ActionEffect::Damage { min: 1, max: 3 },
+                ActionEffect::Damage {
+                    min: 1,
+                    max: 3,
+                    strength: false,
+                },
             ]),
         },
         // TODO: Red Flower

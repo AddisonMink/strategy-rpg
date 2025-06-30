@@ -120,12 +120,15 @@ impl ItemAction {
                         effects.push_back(effect);
                     }
                 }
-                ActionEffect::Damage { min, max } => {
+                ActionEffect::Damage { min, max, strength } => {
+                    let bonus = if *strength { unit.data().strength } else { 0 };
+
                     let effect = Effect::Damage {
                         id: enemy_id,
-                        min: *min,
-                        max: *max,
+                        min: *min + bonus,
+                        max: *max + bonus,
                     };
+
                     effects.push_back(effect);
                 }
                 ActionEffect::Light { light } => {

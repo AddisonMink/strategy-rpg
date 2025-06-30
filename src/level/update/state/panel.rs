@@ -114,11 +114,13 @@ pub fn make_action_description_panel(action: &ItemAction, y: &mut f32) -> Panel 
 
     for effect in action.action.effects.iter() {
         match effect {
-            ActionEffect::Damage { min, max } => {
+            ActionEffect::Damage { min, max, strength } => {
+                let bonus_str = if *strength { " + STR" } else { "" };
+
                 if min == max {
-                    builder = builder.text(format!(" Damage: {}", min), RED);
+                    builder = builder.text(format!(" Damage: {}{}", min, bonus_str), RED);
                 } else {
-                    builder = builder.text(format!(" Damage: {}-{}", min, max), RED);
+                    builder = builder.text(format!(" Damage: {}-{}{}", min, max, bonus_str), RED);
                 }
             }
             ActionEffect::Light { light } => {

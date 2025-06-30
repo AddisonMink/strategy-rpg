@@ -12,7 +12,7 @@ pub enum ActionRange {
 pub enum ActionEffect {
     Attack,
     Projectile,
-    Damage { min: u16, max: u16 },
+    Damage { min: u16, max: u16, strength: bool },
     Light { light: Light },
 }
 
@@ -20,6 +20,7 @@ pub enum ActionEffect {
 pub struct Action {
     pub name: ShortString,
     pub cost: u16,
+    pub magic_req: u16,
     pub range: ActionRange,
     pub effects: ShortList<ActionEffect>,
 }
@@ -41,14 +42,13 @@ impl Action {
             ActionRange::Enemy {
                 min_range,
                 max_range,
-            } => self.find_enemy_targets(world, unit, origin, min_range, max_range),
+            } => self.find_enemy_targets(world, origin, min_range, max_range),
         }
     }
 
     fn find_enemy_targets(
         &self,
         world: &World,
-        unit: &Unit,
         origin: Coord,
         min_range: u16,
         max_range: u16,
@@ -58,7 +58,7 @@ impl Action {
             .filter_map(|npc| {
                 let dist = origin.manhattan_distance(npc.coord);
                 let in_range = dist >= min_range && dist <= max_range;
-                let visible = world.unit_can_see_unit(unit.id(), npc.id());
+                let visible = world.player_vision.unit_visible(npc.id());
                 (in_range && visible).then_some(npc.id())
             })
             .collect();
