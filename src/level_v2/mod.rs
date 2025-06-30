@@ -41,7 +41,7 @@ impl Level {
 
         let mut world = World::new();
         world.add_unit_with_items(hero_data, Coord::new(1, 1), hero_items);
-        //world.add_unit(content::unit::GOON_DATA, Coord::new(5, 1));
+        world.add_unit(content::unit::GOON_DATA, Coord::new(5, 1));
         world.add_unit(content::unit::SHADOW_DATA, Coord::new(8, 5));
 
         Self {

@@ -51,6 +51,15 @@ pub fn draw_text_with_offset(coord: Coord, text: &str, color: Color, offset: (f3
     crate::engine_v2::draw_big_text(x, y, text, color);
 }
 
+pub fn draw_text_panel(coord: Coord, text: &str, color: Color) {
+    let (cx, cy) = coord_to_pos(coord);
+    let mut panel = Panel::builder().text(text, color).build();
+    let x = cx + (TILE_SIZE - panel.get_width()) / 2.0;
+    let y = cy + (TILE_SIZE - panel.get_height()) / 2.0;
+    panel.set_position(x, y);
+    panel.draw();
+}
+
 pub fn draw_text_centered(text: &str, sub_text: Option<&str>, color: Color) {
     let (text_width, text_height) = huge_text_size(text);
     let x = (GRID_PANE_WIDTH - text_width) / 2.0 + GRID_PANE_ORIGIN.0;

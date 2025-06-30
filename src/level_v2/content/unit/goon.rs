@@ -16,7 +16,7 @@ pub const GOON_DATA: UnitData = UnitData {
 };
 
 fn select_action(world: &World) -> Option<VecDeque<Effect>> {
-    let (mut effects, target_id) = begin_melee_attack(world)?;
+    let (mut effects, target_id) = begin_melee_attack(world, ShortString::new("Bonk"))?;
 
     effects.push_back(Effect::Damage {
         id: target_id,

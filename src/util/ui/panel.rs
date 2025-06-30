@@ -78,6 +78,11 @@ impl Panel {
         self.y + self.height
     }
 
+    pub fn set_position(&mut self, x: f32, y: f32) {
+        self.x = x;
+        self.y = y;
+    }
+
     pub fn clicked_index(&self) -> Option<usize> {
         self.selected_index()
             .iter()

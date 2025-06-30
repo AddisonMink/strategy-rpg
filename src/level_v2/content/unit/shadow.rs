@@ -16,12 +16,21 @@ pub const SHADOW_DATA: UnitData = UnitData {
 };
 
 fn select_action(world: &World) -> Option<VecDeque<Effect>> {
-    let (mut effects, target_id) = begin_melee_attack(world)?;
+    let npc = world.active_unit()?;
+    let in_darkness = world.light_grid.distance_from_light(npc.coord) > 0;
+
+    let (name, min, max) = if in_darkness {
+        (ShortString::new("Rend"), 2, 5)
+    } else {
+        (ShortString::new("Scratch"), 0, 2)
+    };
+
+    let (mut effects, target_id) = begin_melee_attack(world, name)?;
 
     effects.push_back(Effect::Damage {
         id: target_id,
-        min: 1,
-        max: 3,
+        min,
+        max,
     });
 
     Some(effects)

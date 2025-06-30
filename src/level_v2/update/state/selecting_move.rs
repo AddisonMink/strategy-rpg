@@ -2,7 +2,6 @@ use std::collections::VecDeque;
 
 use super::*;
 use crate::constants::{PADDING, UI_ORIGIN};
-use crate::engine::input::{cancel_pressed, mouse_clicked};
 use crate::util::*;
 
 const MOVE_DURATION: f32 = 0.25;

@@ -1,3 +1,5 @@
+use macroquad::text;
+
 use super::state::*;
 use super::world::*;
 use crate::constants::*;
@@ -50,9 +52,11 @@ fn draw_animation(world: &World) -> Option<()> {
     let progress = animation.timer.progress();
 
     match &animation.kind {
-        AnimationKind::Text(coord, text, color) => grid::draw_text(*coord, text.as_str(), *color),
-        AnimationKind::FadingRisingText(coord, text, color, max_offset) => {
+        AnimationKind::Text(coord, text, color, max_offset) => {
             draw_fading_rising_text(*coord, &text.as_str(), *color, *max_offset, progress)
+        }
+        AnimationKind::PanelText(coord, text, color) => {
+            grid::draw_text_panel(*coord, text.as_str(), *color)
         }
         AnimationKind::PathMote(path, color) => draw_path_mote(path, *color, progress),
         AnimationKind::UnitAnimation(unit_animation) => match unit_animation.kind {

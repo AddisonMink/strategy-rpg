@@ -24,9 +24,9 @@ pub struct UnitAnimation {
 #[derive(Debug, Clone, Copy)]
 pub enum AnimationKind {
     Sleep,
-    Text(Coord, ShortString, Color),
-    FadingRisingText(Coord, ShortString, Color, f32), // f32 for max offset
-    PathMote(ShortList<Coord>, Color),                // f32 for duration
+    PanelText(Coord, ShortString, Color),
+    Text(Coord, ShortString, Color, f32), // f32 for max offset
+    PathMote(ShortList<Coord>, Color),    // f32 for duration
     UnitAnimation(UnitAnimation),
 }
 
@@ -44,15 +44,17 @@ impl Animation {
         }
     }
 
+    pub fn panel_text(coord: Coord, text: ShortString, color: Color) -> Self {
+        Self {
+            timer: Timer::new(TEXT_DURATION),
+            kind: AnimationKind::PanelText(coord, text, color),
+        }
+    }
+
     pub fn text(coord: Coord, text: ShortString, color: Color) -> Self {
         Self {
             timer: Timer::new(TEXT_DURATION),
-            kind: AnimationKind::FadingRisingText(
-                coord,
-                text,
-                color,
-                FADING_RISING_TEXT_MAX_OFFSET,
-            ),
+            kind: AnimationKind::Text(coord, text, color, FADING_RISING_TEXT_MAX_OFFSET),
         }
     }
 

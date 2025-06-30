@@ -1,15 +1,8 @@
 mod constants;
-mod engine;
 mod engine_v2;
-mod game;
-mod level_content;
-mod level_model;
-mod level_render;
-mod level_system;
 mod level_v2;
 mod util;
 
-use engine::*;
 use macroquad::prelude::*;
 use macroquad::rand::srand;
 

@@ -22,15 +22,20 @@ fn default_select_move(world: &World) -> Option<VecDeque<Coord>> {
     }
 }
 
-fn begin_melee_attack(world: &World) -> Option<(VecDeque<Effect>, UnitId)> {
+fn begin_melee_attack(world: &World, name: ShortString) -> Option<(VecDeque<Effect>, UnitId)> {
     let npc = world.active_unit()?;
     let nearest_player = nearest_player(world, npc)?;
     let dir = npc.coord.direction_to(nearest_player.coord).unwrap();
     (nearest_player.coord.manhattan_distance(npc.coord) == 1).then_some(())?;
 
-    let effects = VecDeque::from([Effect::Animate {
-        animation: Animation::attack(npc.id(), dir),
-    }]);
+    let effects = VecDeque::from([
+        Effect::Animate {
+            animation: Animation::panel_text(npc.coord, name, WHITE),
+        },
+        Effect::Animate {
+            animation: Animation::attack(npc.id(), dir),
+        },
+    ]);
 
     Some((effects, nearest_player.id()))
 }
