@@ -1,5 +1,5 @@
 use super::*;
-use crate::{level_v2::world::UnitId, util::Coord};
+use crate::{level::world::UnitId, util::Coord};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Effect {

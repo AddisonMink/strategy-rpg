@@ -3,8 +3,8 @@ use std::f32::consts::E;
 use macroquad::color;
 
 use super::map::Map;
-use crate::engine_v2::*;
-use crate::level_v2::world::World;
+use crate::engine::*;
+use crate::level::world::World;
 use crate::util::*;
 
 pub struct LightGrid {

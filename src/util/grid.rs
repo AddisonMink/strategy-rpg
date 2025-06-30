@@ -1,6 +1,6 @@
 use super::*;
 use crate::constants::*;
-use crate::engine_v2::*;
+use crate::engine::*;
 
 pub fn coords_iter() -> impl Iterator<Item = Coord> {
     (0..GRID_ROWS).flat_map(move |y| (0..GRID_COLUMNS).map(move |x| Coord::new(x, y)))
@@ -36,7 +36,7 @@ pub fn draw_glyph_with_offset(coord: Coord, glyph: Glyph, offset: (f32, f32)) {
     let (cx, cy) = coord_to_pos(coord);
     let x = cx + offset.0 + TILE_SIZE / 8.0;
     let y = cy + offset.1 + TILE_SIZE / 8.0;
-    crate::engine_v2::draw_glyph(x, y, glyph.symbol, glyph.color);
+    crate::engine::draw_glyph(x, y, glyph.symbol, glyph.color);
 }
 
 pub fn draw_text(coord: Coord, text: &str, color: Color) {
@@ -48,7 +48,7 @@ pub fn draw_text_with_offset(coord: Coord, text: &str, color: Color, offset: (f3
     let (text_width, text_height) = big_text_size(text);
     let x = cx + (TILE_SIZE - text_width) / 2.0 + offset.0;
     let y = cy + (TILE_SIZE - text_height) / 2.0 + offset.1;
-    crate::engine_v2::draw_big_text(x, y, text, color);
+    crate::engine::draw_big_text(x, y, text, color);
 }
 
 pub fn draw_text_panel(coord: Coord, text: &str, color: Color) {
@@ -65,13 +65,13 @@ pub fn draw_text_centered(text: &str, sub_text: Option<&str>, color: Color) {
     let x = (GRID_PANE_WIDTH - text_width) / 2.0 + GRID_PANE_ORIGIN.0;
     let y = (GRID_PANE_HEIGHT - text_height) / 2.0 + GRID_PANE_ORIGIN.1;
 
-    crate::engine_v2::draw_huge_text(x, y, text, color);
+    crate::engine::draw_huge_text(x, y, text, color);
 
     if let Some(sub_text) = sub_text {
         let (sub_text_width, _) = text_size(sub_text);
         let sub_x = (GRID_PANE_WIDTH - sub_text_width) / 2.0 + GRID_PANE_ORIGIN.0;
         let sub_y = y + text_height + PADDING;
-        crate::engine_v2::draw_text(sub_x, sub_y, sub_text, color);
+        crate::engine::draw_text(sub_x, sub_y, sub_text, color);
     }
 }
 
